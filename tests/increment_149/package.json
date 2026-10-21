@@ -1,0 +1,11 @@
+{
+  "name": "dispatch-increment-149-verification",
+  "version": "1.4.9",
+  "private": true,
+  "scripts": {
+    "test": "node reconciliation.cjs && node monthly-integration.cjs && node database.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10"
+  }
+}

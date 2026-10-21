@@ -1,0 +1,638 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>車輛管理 · 調度系統</title><style>/* Production parity system | approved charcoal / white / yellow, no gradients.
+   All sizing derives from real viewport, never prototype device toggles. */
+:root{color-scheme:dark;--bg:#17191c;--nav:#1b1d20;--canvas:#202226;--panel:#26292d;--panel2:#303338;--panel3:#373a3f;--line:#3c3f44;--line2:#4b4e53;--fg:#f5f5f2;--secondary:#c3c5c8;--muted:#a1a4a9;--yellow:#ffda36;--ink:#191b1d;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-synthesis:none}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-width:0;min-height:100%;background:var(--bg);color:var(--fg)}
+body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.45;cursor:not-allowed}a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}[hidden]{display:none!important}
+.app-shell{width:100%;max-width:1920px;min-height:100dvh;margin:auto;display:grid;grid-template-columns:194px minmax(0,1fr);background:var(--canvas)}
+.side{min-width:0;background:var(--nav);border-right:1px solid #383b40;padding:23px 13px 20px;display:flex;flex-direction:column;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 29px;font-size:15px;letter-spacing:-.025em;font-weight:800;white-space:nowrap}
+.brand-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--yellow);color:var(--ink);font-size:22px;line-height:1;font-weight:900;flex:none}
+.brand small{display:block;font-size:9px;color:#8f9399;margin-top:5px;letter-spacing:.09em;font-weight:480}
+.sidelinks{display:flex;flex-direction:column;gap:5px}.sidelinks a{display:flex;align-items:center;gap:11px;padding:13px 12px;border-radius:10px;color:#afb2b7;font-size:12px;white-space:nowrap}.sidelinks a:hover{background:#303338;color:var(--fg)}.sidelinks a.active{background:var(--yellow);color:var(--ink);font-weight:790}
+.nav-symbol{width:19px;text-align:center;font-size:18px;font-weight:550;line-height:1}.side-bottom{margin-top:auto;border-top:1px solid #383b40;padding:14px 12px 5px;color:#a1a4a9;font-size:11px}.side-logout{width:100%;padding:10px 12px;text-align:left;border:0;background:none;color:#a1a4a9;font-size:12px;border-radius:9px}.side-logout:hover,.side-bottom:hover{color:#fff}
+.main{min-width:0;width:100%;padding:clamp(20px,2.3vw,34px);overflow:hidden}
+.head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:21px}.head h1{font-size:clamp(23px,2.25vw,29px);font-weight:780;letter-spacing:-.045em;margin:0;line-height:1.25}.head p{color:#93979d;font-size:12px;margin:8px 0 0}.eyebrow{color:#9ba0a5;font-size:11px;letter-spacing:.065em;margin-bottom:7px}.account{align-self:center;color:#b7b9bd;font-size:11px;padding:9px 12px;border:1px solid #404349;border-radius:9px;background:#292c31}
+#page{min-width:0}.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:17px 0 16px}.btn{background:var(--panel2);border:1px solid #4b4e53;color:var(--fg);padding:10px 14px;border-radius:10px;min-height:42px;white-space:nowrap;font-size:12px;font-weight:640}.btn:hover{background:#3a3e42}.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:780}.btn.primary:hover{background:#ffe469}
+.field{background:#303338;color:var(--fg);border:1px solid #505358;border-radius:10px;padding:10px 12px;min-height:42px;min-width:0;max-width:100%;font-size:13px}.search{flex:1;min-width:170px;max-width:360px}.field::placeholder{color:#93979c}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.kpis:empty{display:none}.kpi{min-width:0;min-height:95px;padding:16px 17px;background:#292c30;border:1px solid #393c40;border-radius:14px}.kpi small{font-size:11px;color:#a2a6aa}.kpi strong{display:block;font-size:27px;letter-spacing:-.045em;margin-top:10px;font-weight:780;font-variant-numeric:tabular-nums}.kpi:first-child strong{color:var(--yellow)}
+.panel{background:#26292d;border:1px solid #3d4045;border-radius:16px;overflow:hidden;min-width:0;margin:14px 0 0}.panel-title{font-size:16px;font-weight:750;padding:19px 20px 15px;letter-spacing:-.02em}.scroll{max-width:100%;max-height:min(620px,calc(100dvh - 268px));overflow:auto;scrollbar-color:#5c6064 #25282c;scrollbar-width:thin;overscroll-behavior-x:contain}.gridtable{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:12px;font-variant-numeric:tabular-nums;text-align:left}.gridtable th,.gridtable td{border-bottom:1px solid #383b40;padding:13px 14px;white-space:nowrap;text-align:left}.gridtable th{position:sticky;top:0;z-index:3;background:#35383d;color:#bec0c3;font-size:11px;font-weight:640}.gridtable td{background:#26292d}.gridtable tbody tr:nth-child(even) td{background:#2b2e32}.gridtable tbody tr:hover td{background:#35383d}.gridtable .sticky{position:sticky;left:0;z-index:4;background:#303338;box-shadow:1px 0 0 #43464b;font-weight:740}.gridtable tbody tr:nth-child(even) .sticky{background:#32353a}.gridtable tbody tr:hover .sticky{background:#3a3d42}.gridtable th.sticky{background:#383b40;z-index:6}.gridtable .changed{background:#e3c547!important;color:#181a1d;font-weight:780}.gridtable .cell{padding:7px 9px;border-radius:7px;border:1px solid transparent;background:#35383c;color:inherit;min-height:35px;min-width:37px}.gridtable .cell:hover{border-color:var(--yellow)}.gridtable .changed .cell{background:var(--yellow);color:var(--ink)}.gridtable .empty,.empty{padding:28px;color:#a1a4a9;font-size:12px}.gridtable .empty{text-align:center}
+.note{font-size:11px;color:#9ea1a5;line-height:1.65;margin:14px 2px}.note.alert{border:1px solid #64593f;background:#353125;padding:12px 14px;border-radius:10px;color:#e9d18d;margin-bottom:14px}.rowlink{border:0;background:none;color:var(--yellow);font-weight:720;font-size:12px;padding:7px 0}.rowlink:hover{text-decoration:underline;text-underline-offset:3px}.tag{font-size:11px;color:#b9bbbf}.footer{border-top:1px solid #3d4045;font-size:11px;color:#a2a4a8;padding:13px 19px}
+/* Attendance: two-level grouped table based on real temperature categories. */
+body[data-dashboard="attendance"] .head{margin-bottom:18px}body[data-dashboard="attendance"] .head p{display:none}
+body[data-dashboard="attendance"] .tools{margin:0 0 16px}body[data-dashboard="attendance"] .tools input[type=date]{width:158px}body[data-dashboard="attendance"] .tools .search{margin-left:auto}
+body[data-dashboard="attendance"] .panel{margin-top:0}body[data-dashboard="attendance"] .scroll{max-height:min(900px,calc(100dvh - 248px))}
+.attendance-matrix{width:max-content;min-width:100%;table-layout:fixed}.attendance-matrix th,.attendance-matrix td{width:69px;min-width:69px;height:51px;padding:0 5px;text-align:center;border-right:1px solid #35383c}.attendance-matrix thead tr.category th{position:sticky;top:0;z-index:5;height:41px;background:#383b40;color:#f0f0ee;border-bottom:1px solid #4a4d51;font-size:12px}.attendance-matrix thead tr.subheading th{position:sticky;top:41px;z-index:5;height:37px;background:#303338;color:#b9babe;font-size:11px}.attendance-matrix thead .sticky{background:#383b40!important;top:0!important;z-index:9!important}.attendance-matrix td.sticky{position:sticky;left:0;width:112px;min-width:112px;padding-left:15px;text-align:left;background:#26292d;z-index:4;color:#f5f4f1;font-weight:750}.attendance-matrix thead .sticky{width:112px;min-width:112px;text-align:left;padding-left:15px}.attendance-matrix tbody tr:nth-child(even) td.sticky{background:#292c30}.attendance-matrix tbody tr.mine td{background:#302e25}.attendance-matrix tbody tr.mine td.sticky{background:#373325;color:#ffdc42;box-shadow:inset 3px 0 0 var(--yellow)}.attendance-matrix td.changed{background:#302e25!important;color:inherit}.attendance-matrix td.changed .cell{background:var(--yellow);color:var(--ink)}.attendance-matrix .group-start{border-left:2px solid #5a5c60}.attendance-matrix td:not(.changed) .cell{background:#35383c}.attendance-matrix td.empty-slot .cell{background:transparent}.attendance-matrix td.empty-slot{color:transparent}
+/* Vehicle layout follows approved stats + two subviews. */
+.subtabs{display:flex;gap:21px;border-bottom:1px solid #42454a;margin:8px 0 0}.subtabs button{background:none;border:0;border-bottom:3px solid transparent;color:#a8abb0;padding:13px 3px;font-size:13px}.subtabs button.on{border-bottom-color:var(--yellow);color:#f5f5f3;font-weight:740}.fleet-filter{margin:0 0 12px}.fleet-section .scroll{max-height:630px}.fleet-section .gridtable th,.fleet-section .gridtable td{height:57px}.fleet-section .gridtable td:first-child{font-weight:750}.fleet-section .gridtable .rowlink{color:#f4f4f1}
+/* Monthly parity: clear KPI strip, horizontally scrollable ledger, detail drawer. */
+body[data-dashboard="monthly"] .gridtable td:not(:first-child),body[data-dashboard="monthly"] .gridtable th:not(:first-child){text-align:right}body[data-dashboard="monthly"] .gridtable td:last-child{color:var(--yellow);font-weight:780}
+body[data-dashboard="monthly"] .tools{margin:0 0 16px}body[data-dashboard="monthly"] .tools .search{margin-left:auto}body[data-dashboard="monthly"] .panel{margin-top:0}
+.monthly-summary{margin-top:12px}.monthly-detail-overlay{position:fixed;inset:0;background:#0b0c0de0;z-index:25;display:none}.monthly-detail-overlay.open{display:block}.monthly-detail{position:fixed;top:0;right:0;bottom:0;z-index:26;width:min(535px,100vw);background:#282b2f;border-left:1px solid #46494f;box-shadow:-16px 0 50px #0008;display:none;flex-direction:column}.monthly-detail.open{display:flex}.monthly-detail-header{flex:none;padding:23px 23px 17px;border-bottom:1px solid #42454a;display:flex;align-items:center;justify-content:space-between;gap:12px}.monthly-detail-header h2{margin:2px 0;font-size:24px;letter-spacing:-.04em}.monthly-detail-body{min-height:0;overflow:auto;padding:18px 22px 28px}.monthly-detail .panel{margin:0}.monthly-detail .scroll{max-height:420px}.monthly-detail .gridtable{min-width:440px}.monthly-detail .gridtable th,.monthly-detail .gridtable td{padding:10px 11px}.monthly-detail .tools{margin:0 0 16px!important;padding:0!important}.monthly-detail .panel-title{padding:16px}.icon-close{border:1px solid #4b4e53;background:#373a3f;border-radius:9px;width:37px;height:37px;display:grid;place-items:center;font-size:24px;color:#fff}
+/* Cross-device dialog/editor */
+.dialog-back{position:fixed;inset:0;background:#08090bd9;display:none;align-items:center;justify-content:center;z-index:40;padding:14px}.dialog-back.open{display:flex}.dialog{position:relative;width:min(430px,100%);max-height:90dvh;overflow:auto;padding:24px;background:#2b2e32;border:1px solid #55585e;border-radius:18px;box-shadow:0 18px 52px #0007}.dialog h2{font-size:19px;margin:0 0 15px;letter-spacing:-.025em}.dialog label{display:block;margin:13px 0 7px;color:#d9dade;font-size:12px}.dialog .field{width:100%;max-width:none}.dialog p.note{margin:5px 0 13px}.dialog .actions{display:flex;gap:10px;margin-top:18px}.dialog .actions button{flex:1}.dialog .error{color:#ffdc42;font-size:12px;min-height:16px;margin-top:10px}.dialog-handle{display:none}
+.mobilebar{display:none}
+@media(min-width:1600px){.main{padding:34px 39px}.kpis{gap:14px}.gridtable th,.gridtable td{padding:16px 18px}}
+@media(max-width:1150px){.app-shell{grid-template-columns:156px minmax(0,1fr)}.side{padding:19px 8px}.sidelinks a{padding:12px 8px;gap:7px}.brand{font-size:13px;gap:7px;padding:2px 5px 23px}.brand-icon{width:32px;height:32px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:22px 17px}}
+@media(max-width:800px){.app-shell{display:block;min-height:100dvh}.side{display:none}.main{padding:21px 16px 92px;overflow:visible}.head{margin-bottom:18px}.head h1{font-size:24px}.head p{display:none}.account{padding:7px 9px}.kpis{gap:9px}.kpi{min-height:83px;padding:14px}.kpi strong{font-size:22px}.tools{gap:8px}.search{flex:1 1 100%;max-width:none;order:10}.panel{border-radius:13px}.scroll{max-height:min(620px,calc(100dvh - 285px))}.mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;align-items:center;justify-content:space-around;gap:4px;padding:11px 8px calc(11px + env(safe-area-inset-bottom));border-top:1px solid #45484d;background:#1b1d20}.mobilebar a{color:#a3a5aa;font-size:11px;text-align:center;padding:10px 5px;border-radius:8px;flex:1;white-space:nowrap}.mobilebar a.active{color:var(--yellow);font-weight:780}.dialog-back{align-items:flex-end;padding:0}.dialog{width:100%;border-radius:22px 22px 0 0;max-height:min(85dvh,820px);padding:25px 20px calc(28px + env(safe-area-inset-bottom))}.dialog-handle{display:block;width:37px;height:4px;background:#76797e;border-radius:9px;margin:-13px auto 20px}.monthly-detail{top:auto;left:0;right:0;bottom:0;width:100%;height:min(90dvh,890px);border-left:0;border-top:1px solid #52555a;border-radius:20px 20px 0 0}.monthly-detail-header{padding:20px}.monthly-detail-body{padding:15px 17px 22px}.attendance-matrix td.sticky,.attendance-matrix thead .sticky{width:96px;min-width:96px;padding-left:10px}.attendance-matrix th,.attendance-matrix td{height:52px;min-width:65px;width:65px}.attendance-matrix thead tr.category th{height:37px}.attendance-matrix thead tr.subheading th{top:37px;height:35px}.attendance-matrix .scroll{max-height:calc(100dvh - 250px)}body[data-dashboard="attendance"] .tools input[type=date]{width:145px}}
+@media(max-width:480px){.main{padding:18px 12px 88px}.head{gap:8px}.head h1{font-size:23px}.account{max-width:140px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.panel{margin-left:-12px;margin-right:-12px;border-left:0;border-right:0;border-radius:0}.panel-title{padding:17px 13px}.tools{gap:6px}.btn{padding:10px 11px}.field{padding:10px}.kpis{gap:7px}.kpi{padding:13px 11px}.scroll{max-height:calc(100dvh - 270px)}.gridtable th,.gridtable td{padding:13px 10px}.attendance-matrix .scroll{max-height:calc(100dvh - 275px)}.subtabs{gap:15px}}
+@media(max-width:350px){.main{padding:15px 9px 88px}.panel{margin-left:-9px;margin-right:-9px}.account{font-size:10px;max-width:95px}.head h1{font-size:22px}.btn{font-size:11px}.tools input[type=date]{width:131px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:800px){body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style><style>/* UI parity pass 1 — visual only. No data, permissions or database changes. */
+:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:#ffdc42}
+html{min-width:0}body{font-size:13px;line-height:1.45}
+.app-shell{max-width:none;grid-template-columns:196px minmax(0,1fr);min-height:100dvh}
+.side{padding:23px 12px 18px;gap:5px}
+.side .brand{display:flex;align-items:center;gap:11px;font-weight:780;font-size:15px;letter-spacing:.01em;padding:3px 10px 25px}
+.side .brand:before{content:'↗';width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--yellow);color:#1b1c1d;font-size:20px;font-weight:850;flex:none}
+.side a{font-size:12px;font-weight:550;padding:12px 13px;min-height:41px;display:flex;align-items:center;transition:background-color .12s ease}
+.side a:hover:not(.active){background:#2a2d31;color:#fff}
+.side a.active{font-weight:770}
+.side .side-bottom{margin-top:auto;font-size:11px}
+.side #logout{align-self:stretch;font-size:12px}
+.main{padding:29px clamp(18px,2.2vw,33px) 32px;min-width:0}
+.head{margin-bottom:20px;align-items:center}
+.head .muted#account-name{font-size:11px;color:#9ea1a6;letter-spacing:.035em;margin-bottom:8px}
+.head h1{font-size:clamp(24px,2vw,28px);font-weight:780;line-height:1.2;letter-spacing:-.047em}
+.tools{gap:9px;margin:17px 0;min-width:0}
+.btn{border-radius:10px;background:#303338;border-color:#494c52;font-size:12px;font-weight:630;min-height:42px;transition:background-color .12s ease,border-color .12s ease}
+.btn:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
+.btn.primary:not(:disabled):hover{background:#ffe66b;border-color:#ffe66b}
+.field{border-radius:10px;min-height:42px;background:#2e3135;border-color:#4b4e53;font-size:12px}
+.field:focus{outline:none;border-color:var(--yellow)}
+.panel{background:#25282c;border-radius:16px;margin:15px 0 18px}
+.panel-title{font-size:16px;font-weight:750;padding:19px 20px 16px;letter-spacing:-.02em}
+.kpis{gap:11px}
+.kpi{background:#292c30;border:1px solid #393c40;border-radius:14px;padding:17px 18px;min-height:90px}
+.kpi:first-child strong{color:var(--yellow)}
+.kpi small{font-size:11px;color:#a1a4aa}
+.kpi strong{font-size:26px;letter-spacing:-.04em;font-weight:780}
+.scroll{border-radius:12px;max-width:100%;max-height:min(64dvh,720px)}
+.gridtable{font-size:12px;min-width:max(760px,100%);font-variant-numeric:tabular-nums}
+.gridtable th,.gridtable td{height:53px;padding:12px 14px;border-bottom:1px solid #373a3e}
+.gridtable th{height:43px;color:#b8bbc0;font-size:11px;font-weight:610}
+.gridtable tbody tr:nth-child(even) td{background:#292c30}
+.gridtable td.sticky{background:#26292d}
+.gridtable tbody tr:nth-child(even) td.sticky{background:#292c30}
+.gridtable tbody tr:hover td.sticky{background:#35383d}
+.gridtable .sticky{min-width:108px;box-shadow:1px 0 0 #4a4d51}
+.gridtable button.cell{min-height:35px;min-width:34px;border-radius:7px}
+.gridtable .rowlink{color:#f1f1ee;font-size:12px}
+.gridtable .rowlink:hover{color:var(--yellow)}
+.note{font-size:11px;line-height:1.7;color:#9ea2a8}
+.dialog{background:#2a2d31;border-color:#53565b;border-radius:17px;padding:23px;width:min(440px,100%);box-shadow:0 25px 60px #0009}
+.dialog h2{font-size:20px;letter-spacing:-.035em}
+.dialog label{font-size:12px;color:#dedfe1;margin:15px 0 8px}
+.dialog .actions{margin-top:23px}
+.dialog .actions .btn{min-height:44px}
+.footer{font-size:11px;padding:13px 19px}
+@media(min-width:1600px){.main{padding-left:clamp(30px,3vw,64px);padding-right:clamp(30px,3vw,64px)}.gridtable th,.gridtable td{padding-left:19px;padding-right:19px}}
+@media(max-width:1150px){.app-shell{grid-template-columns:158px minmax(0,1fr)}.side{padding-inline:9px}.side a{padding-inline:10px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ .app-shell{display:block;padding-bottom:calc(70px + env(safe-area-inset-bottom));min-width:0}
+ .side{display:none}.main{padding:23px 14px 20px;min-width:0}
+ .head h1{font-size:24px}.head{margin-bottom:15px}
+ .tools{gap:8px;margin:15px 0}
+ .tools>.field.search{max-width:none;flex:1 1 100%}
+ .panel{border-radius:14px}.panel-title{padding:16px 15px 14px;font-size:15px}
+ .gridtable{min-width:max(690px,100%)}
+ .gridtable th,.gridtable td{height:53px;padding:11px 10px}
+ .gridtable .sticky{min-width:95px;max-width:145px}
+ .scroll{max-height:62dvh}
+ .kpis{gap:8px}.kpi{padding:14px 12px;min-height:82px}.kpi strong{font-size:23px}
+ .mobilebar{display:flex;min-height:58px;align-items:center;background:#1b1d20;border-top:1px solid #414449;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+ .mobilebar a{flex:1;min-width:0;font-size:11px;line-height:1.3;padding:10px 2px;white-space:nowrap}
+ .dialog-back{align-items:flex-end;padding:0}.dialog{max-height:88dvh;width:100%;border-radius:21px 21px 0 0;padding:25px 20px max(24px,env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){.main{padding-inline:10px}.head h1{font-size:22px}.btn{padding:9px 10px}.kpi{padding:11px 10px}.kpi strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style><style>/* UI/UX 對版 v2 — based on four finalized standalone prototypes.
+  Presentation only; formal dashboard JS retains Supabase queries and policies. */
+:root{--yellow:#ffda36;--fg:#f5f5f3}
+body[data-dashboard="attendance"],body[data-dashboard="vehicles"],body[data-dashboard="monthly"]{background:#1b1d20}
+body[data-dashboard="attendance"] .side .brand::before,
+body[data-dashboard="vehicles"] .side .brand::before,
+body[data-dashboard="monthly"] .side .brand::before{display:none}
+.side .brand{padding-bottom:23px;letter-spacing:-.02em}
+.side .brand-icon{flex:none;width:36px;height:36px;font-weight:850;display:grid;place-items:center;background:var(--yellow);border-radius:9px;color:#1b1c1e;font-size:19px}
+.side .brand small{display:block;font-size:9px;color:#91959c;letter-spacing:.08em;font-weight:480;white-space:nowrap;margin-top:4px}
+.side .sidelinks{display:flex;flex-direction:column;gap:5px}
+.side .sidelinks a{padding:12px 13px;font-size:12px;font-weight:540;border-radius:9px;color:#afb3b9;min-height:42px}
+.side .sidelinks a.active{color:#1b1c1d;font-weight:790;background:var(--yellow)}
+.side .side-bottom{margin-top:auto}
+.main{background:#202226;overflow:hidden}
+.head{align-items:center;gap:15px;margin-bottom:21px}
+.head .eyebrow{font-size:11px;font-weight:640;color:#9b9fa7;letter-spacing:.06em;margin-bottom:8px}
+.head p{display:block!important;color:#92979f;font-size:12px;margin-top:8px}
+.head-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:9px;margin-left:auto}
+.head .account{order:4;color:#a9adb3;font-size:11px;background:transparent;border:0;padding:7px 0 7px 8px}
+.date-navigation{display:flex;align-items:center;gap:5px;padding:4px;background:#292c30;border:1px solid #45494e;border-radius:12px}
+.date-navigation .icon-nav{width:34px;min-width:34px;height:34px;min-height:34px;display:grid;place-items:center;border:0;background:transparent;padding:2px;font-size:23px;line-height:1}
+.date-navigation .field{border:0;background:none;min-height:34px;height:34px;padding:5px 2px;max-width:153px;color:#f3f3f1}
+.date-navigation .field:focus{outline:1px solid var(--yellow)}
+.board-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px!important}
+.board-tools .search{margin-left:auto;order:0!important}
+.board-legend{font-size:11px;color:#b3b6bb;display:flex;align-items:center;gap:8px}
+.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:#ffda36;border-radius:3px}
+.attendance-panel .scroll{border-radius:0}
+.attendance-panel .footer{display:flex;justify-content:space-between;gap:10px}
+body[data-dashboard="attendance"] .kpis{display:none}
+body[data-dashboard="attendance"] .attendance-matrix thead .subheading th{font-size:11px}
+body[data-dashboard="attendance"] .attendance-matrix tbody tr.mine td:not(.changed){background:#302e25}
+body[data-dashboard="vehicles"] .head{margin-bottom:25px}
+body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:19px}
+body[data-dashboard="vehicles"] .kpi{min-height:105px}
+body[data-dashboard="vehicles"] .subtabs{margin-top:3px;margin-bottom:0}
+body[data-dashboard="vehicles"] .fleet-section{margin-top:15px}
+body[data-dashboard="vehicles"] .fleet-filter{gap:9px;padding-bottom:12px!important}
+body[data-dashboard="vehicles"] .fleet-filter .btn{min-height:40px}
+.status-pill{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:680;background:#343b37;border:1px solid #486650;color:#c9efd1}
+.status-pill.off{background:#373233;border-color:#584648;color:#cab9bb}
+body[data-dashboard="monthly"] .head{margin-bottom:18px}
+body[data-dashboard="monthly"] .subtabs{margin:0 0 15px}
+body[data-dashboard="monthly"] .report-panel{margin-top:0}
+.report-panel .panel-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px 16px}
+.report-panel .panel-heading h2{font-size:16px;font-weight:770;letter-spacing:-.025em;margin:0 0 7px}
+.report-panel .panel-heading p{margin:0;font-size:11px;color:#a5a8ad;line-height:1.5}
+.report-filters{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.report-filters label{color:#a7abb1;font-size:11px;white-space:nowrap}
+.report-filters select{min-width:145px}
+.report-filters .search{min-width:110px;max-width:180px}
+.report-panel .gridtable{min-width:max(980px,100%)}
+.report-panel .gridtable tbody tr td:last-child{color:#aaadb2;font-weight:540}
+.report-panel .note{padding:0 16px 14px}
+.rule-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rule-card{margin:0;padding:23px;line-height:1.8}
+.rule-card h3{font-size:16px;margin:0 0 10px}
+.rule-card p{color:#c1c4c9;font-size:12px;margin:0 0 14px}
+.rule-card strong{font-size:20px;color:var(--yellow)}
+.rule-card:last-child{grid-column:1/-1}
+.drawer-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.drawer-stat-grid .kpi{min-height:76px;padding:13px}
+.drawer-stat-grid .kpi strong{margin-top:7px;font-size:22px}
+.monthly-detail .drawer-tabs{margin-bottom:17px}
+.monthly-detail-body section[hidden],#month-panel[hidden],#rule-panel[hidden]{display:none!important}
+.monthly-detail .panel-title{font-size:14px}
+.monthly-detail .gridtable{min-width:420px}
+body[data-dashboard="routes"] .inc-bar{display:none!important}
+body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}
+body[data-dashboard="routes"] .prototype{padding:0}
+body[data-dashboard="routes"] #reset-btn{display:none!important}
+body[data-dashboard="routes"] .nav-bottom{margin-top:auto}
+body[data-dashboard="routes"] .nav{border-right:1px solid #36393d}
+body[data-dashboard="routes"] .mobile-navbar a{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;text-decoration:none;color:#9ea2aa;font-size:10px}
+body[data-dashboard="routes"] .mobile-navbar a.active{color:var(--yellow)}
+body[data-dashboard="routes"] .mobile-navbar svg{width:19px;height:19px}
+@media(max-width:1100px){.head-actions .account{display:none}.head p{font-size:11px}.report-panel .panel-heading{align-items:flex-start;flex-direction:column}.report-filters{justify-content:flex-start}}
+@media(max-width:800px){.head{align-items:flex-start}.head-actions{justify-content:flex-start;width:100%;margin-left:0}.date-navigation{max-width:100%}.board-tools .search{max-width:none;flex:1 1 170px;order:0}.board-legend{white-space:nowrap}.attendance-panel .footer{font-size:10px}.report-filters{width:100%}.report-filters .search{max-width:none;flex:1 1 100%}.rule-info-grid{grid-template-columns:1fr}.rule-card:last-child{grid-column:auto}.head .eyebrow{font-size:10px}.head p{display:block!important}}
+@media(max-width:900px){body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}body[data-dashboard="routes"] .mobile-navbar{padding-bottom:max(11px,env(safe-area-inset-bottom));gap:4px}body[data-dashboard="routes"] .mobile-navbar a{min-width:0}}
+@media(max-width:480px){.head .head-actions{gap:6px}.head-actions>.btn{min-height:39px}.date-navigation{padding:2px}.date-navigation .field{max-width:129px}.date-navigation .icon-nav{width:27px;min-width:27px}.board-legend{font-size:10px}.report-panel .panel-heading{padding:15px 13px}.rule-card{padding:17px}.drawer-stat-grid .kpi strong{font-size:19px}}
+@media(max-width:360px){.head-actions{gap:5px}.date-navigation .field{max-width:122px}.head-actions .btn:not(.icon-nav){padding:8px 9px}.board-tools .search{min-width:155px}}
+
+body[data-dashboard="routes"] .route-status{font-size:11px;color:#a9adb3;margin-bottom:5px;min-height:0}
+body[data-dashboard="routes"] .stage.mobile .app{max-width:100%;width:100%;border-radius:0}
+body[data-dashboard="routes"] .stage.mobile{width:100%;max-width:none}
+body[data-dashboard="routes"] .stage.mobile .mobile-navbar{display:flex}
+</style><style>body:not([data-finance-access="allowed"]) a[href="ui-monthly.html"],
+body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!important}
+body[data-finance-access="denied"] .mobilebar,
+body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
+body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+</style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head><body data-dashboard="vehicles"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div><div class="app-shell"><aside class="side"><div class="brand"><span class="brand-icon" aria-hidden="true">↗</span><span>物流調度<small>DISPATCH / 管理後台</small></span></div><div class="sidelinks"><a href="ui-attendance.html" class="">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="active">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></div><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="btn" id="logout">登出</button></aside><main class="main"><div class="head"><div><div class="eyebrow">車輛資料與自有車綁定</div><h1>車輛管理</h1><p>管理自有車司機、車號與綁定關係</p></div><div class="head-actions" id="head-actions"><div class="account" id="account-name"></div></div></div><section id="stats" class="kpis"></section><div id="message" class="note" hidden></div><div id="page"></div></main></div><nav class="mobilebar"><a href="ui-attendance.html" class="">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="active">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></nav><div id="modal" class="dialog-back"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title"><h2 id="modal-title"></h2><div id="modal-fields"></div><div id="modal-error" class="error"></div><div class="actions"><button id="modal-cancel" class="btn">取消</button><button id="modal-save" class="btn primary">儲存</button></div></div></div><script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
+(()=>{
+const D='11111111-1111-4111-8111-111111111111',E='22222222-2222-4222-8222-222222222222',F='33333333-3333-4333-8333-333333333333',M='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const copy=x=>JSON.parse(JSON.stringify(x));
+window.mock143={role:'dispatcher',fail:null,calls:[],tables:{
+ profiles:[{id:M,display_name:'測試主管',role:'dispatcher',active:true,can_manage_finance:true},{id:D,display_name:'測試司機 A',role:'driver',active:true},{id:E,display_name:'測試司機 B',role:'driver',active:true},{id:F,display_name:'測試司機 C',role:'driver',active:true}],
+ vehicles:[{id:1,plate_number:'1001',active:true},{id:2,plate_number:'1002',active:true}],
+ routes:[{id:1,route_code:'01',route_name:'測試日配一',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'},
+ {id:2,route_code:'02',route_name:'測試日配二',temperature_zone:'冷藏',active:true,default_start_time:'09:00:00',default_end_time:'11:00:00'},
+ {id:3,route_code:'03',route_name:'測試替代路線',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'}],
+ runs:[{id:1,service_date:'2026-10-15',route_id:1,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'01',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:1,dashboard_schedule_revision:1},
+ {id:2,service_date:'2026-10-15',route_id:2,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'02',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:2,dashboard_schedule_revision:1}],
+ vehicle_owner_bindings:[{id:1,driver_id:D,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:E,vehicle_id:1,effective_from:'2026-10-01',effective_to:null},{id:3,driver_id:D,vehicle_id:2,effective_from:'2026-10-10',effective_to:null}],
+ daily_attendance_slot_counts:[],daily_run_observations:[],daily_attendance_extra_trips:[],daily_attendance_closeouts:[],driver_day_templates:[],attendance_driver_days:[{service_date:'2026-10-15',driver_id:F,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}],trip_executions:[]}};
+const t=mock143.tables;
+function day(date,id){let d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===id);if(!d){d={service_date:date,driver_id:id,is_leave:false,revision:0,has_plan_exception:false,applied_rows:null};t.attendance_driver_days.push(d);}return d;}
+function hasRuns(date,id){return t.runs.some(x=>x.service_date===date&&x.driver_id===id&&x.status!=='cancelled')||t.daily_attendance_extra_trips.some(x=>x.service_date===date&&x.driver_id===id&&x.status==='active');}
+class Q{
+ constructor(table){this.table=table;this.filters=[];this.bounds=null;this.op='read';}
+ select(){return this;}eq(k,v){this.filters.push(x=>x[k]===v);return this;}in(k,v){this.filters.push(x=>v.includes(x[k]));return this;}
+ gte(k,v){this.filters.push(x=>x[k]>=v);return this;}lte(k,v){this.filters.push(x=>x[k]<=v);return this;}
+ order(){return this;}range(a,b){this.bounds=[a,b];return this;}single(){this.one=true;return this;}maybeSingle(){this.one=true;return this;}
+ insert(x){this.op='insert';this.payload=x;return this;}update(x){this.op='update';this.payload=x;return this;}upsert(x){this.op='upsert';this.payload=x;return this;}
+ match(x){for(const [k,v]of Object.entries(x))this.eq(k,v);return this;}
+ then(resolve,reject){return Promise.resolve().then(()=>{
+  if(mock143.fail===this.table)return {error:{message:'測試：資料表尚未安裝'}};
+  let data=t[this.table]||[];
+  if(this.op==='insert'){const x={id:100+data.length,...this.payload};data.push(x);}
+  if(this.op==='upsert'){const old=data.find(x=>x.service_date===this.payload.service_date);if(old)Object.assign(old,this.payload);else data.push(copy(this.payload));}
+  data=data.filter(x=>this.filters.every(f=>f(x)));
+  if(this.op==='update')data.forEach(x=>Object.assign(x,this.payload));
+  if(this.bounds)data=data.slice(this.bounds[0],this.bounds[1]+1);
+  return {data:copy(this.one?data[0]||null:data),error:null};
+ }).then(resolve,reject);}
+}
+async function rpc(fn,p){
+ mock143.calls.push({fn,args:copy(p)});
+ if(mock143.fail===fn){mock143.fail=null;return {data:null,error:{message:'測試：資料已被其他人更新'}};}
+ if(mock143.role!=='dispatcher'&&['dashboard_save_day_template','dashboard_apply_day_template','dashboard_set_driver_leave','dashboard_save_day_plan'].includes(fn))return {error:{message:'只有主管可執行'}};
+ try{
+ let data;
+ if(fn==='dashboard_save_day_template'){
+  let old=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);if((old?.revision||0)!==p.p_expected_revision)throw Error('範本已被更新');
+  data={driver_id:p.p_driver_id,rows:copy(p.p_rows),revision:(old?.revision||0)+1,updated_at:new Date().toISOString()};if(old)Object.assign(old,data);else t.driver_day_templates.push(data);
+ }else if(fn==='dashboard_get_schedule_month'){
+  const month=p.p_month.slice(0,7),n=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
+  data=Array.from({length:n},(_,i)=>{const date=month+'-'+String(i+1).padStart(2,'0'),d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===p.p_driver_id);
+   return {date,revision:d?.revision||0,is_leave:!!d?.is_leave,closed:!!t.daily_attendance_closeouts.find(x=>x.service_date===date)?.closed_at,has_runs:hasRuns(date,p.p_driver_id),has_plan_exception:!!d?.has_plan_exception,template_revision:d?.template_revision};});
+ }else if(fn==='dashboard_set_driver_leave'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.revision!==p.p_expected_revision)throw Error('此日出勤已被更新');
+  if(p.p_is_leave&&hasRuns(p.p_service_date,p.p_driver_id))throw Error('此日已有趟次');d.is_leave=p.p_is_leave;d.revision++;data=d;
+ }else if(fn==='dashboard_apply_day_template'){
+  const template=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);data={applied_dates:[],skipped:[]};
+  for(const date of p.p_dates){const d=day(date,p.p_driver_id);if(d.is_leave){data.skipped.push({date,reason:'休假'});continue;}if(d.has_plan_exception&&!p.p_overwrite){data.skipped.push({date,reason:'保留單日調整'});continue;}
+   d.applied_rows=copy(template.rows);d.template_revision=template.revision;d.has_plan_exception=false;d.revision++;
+   for(const x of template.rows){let r=t.runs.find(r=>r.service_date===date&&r.driver_id===p.p_driver_id&&r.attendance_category===x.category&&r.attendance_slot_index===x.slot_index);const vals={service_date:date,driver_id:p.p_driver_id,route_id:x.route_id,vehicle_id:x.vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(x.vehicle_id)&&b.effective_from<=date&&(!b.effective_to||b.effective_to>=date))),status:'assigned',attendance_category:x.category,attendance_slot_index:x.slot_index,dashboard_schedule_revision:1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});}
+   data.applied_dates.push(date);
+  }
+ }else if(fn==='dashboard_save_day_plan'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.is_leave)throw Error('已休假');if(d.revision!==p.p_expected_day_revision)throw Error('此日出勤已被更新');
+  let r=p.p_run_id?t.runs.find(x=>x.id===p.p_run_id):null;
+  if(d.applied_rows===null)d.applied_rows=t.runs.filter(x=>x.service_date===p.p_service_date&&x.driver_id===p.p_driver_id).map(x=>({category:x.attendance_category,slot_index:x.attendance_slot_index,route_id:x.route_id,vehicle_id:x.vehicle_id}));
+  const vals={service_date:p.p_service_date,driver_id:p.p_driver_id,route_id:p.p_route_id,vehicle_id:p.p_vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(p.p_vehicle_id)&&b.effective_from<=p.p_service_date&&(!b.effective_to||b.effective_to>=p.p_service_date))),dispatcher_notes:p.p_note,status:p.p_route_id?'assigned':'cancelled',attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,dashboard_schedule_revision:(r?.dashboard_schedule_revision||0)+1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});d.revision++;d.has_plan_exception=true;data={};
+ }else if(fn==='dashboard_set_attendance_slot_counts'){
+  for(const[category,slot_count]of Object.entries(p.p_counts)){const old=t.daily_attendance_slot_counts.find(x=>x.service_date===p.p_service_date&&x.category===category);if(old)old.slot_count=slot_count;else t.daily_attendance_slot_counts.push({service_date:p.p_service_date,category,slot_count});}data=null;
+ }else if(fn==='dashboard_edit_run_direct'){
+  const r=t.runs.find(x=>x.id===p.p_run_id);if(!r)throw Error('找不到趟次');
+  if(mock143.role!=='dispatcher'&&r.driver_id!==D)throw Error('沒有編輯權限');
+  if(!['assigned','in_progress'].includes(r.status)||t.trip_executions.some(x=>x.run_id===r.id))throw Error('已確認的趟次不可直接修改');
+  if(r.dashboard_schedule_revision!==p.p_expected_run_revision)throw Error('趟次已被其他人更新');
+  const obs=t.daily_run_observations.find(x=>x.run_id===r.id);
+  if((obs?.revision||0)!==p.p_expected_observation_revision)throw Error('配送資料已被其他人更新');
+  if(p.p_cancel&&mock143.role!=='dispatcher')throw Error('只有主管可以取消趟次');
+  const d=day(r.service_date,r.driver_id);if(d.is_leave)throw Error('休假不可排車');
+  if(t.daily_attendance_closeouts.some(x=>x.service_date===r.service_date&&x.closed_at))throw Error('已結案');
+  if(obs){const i=t.daily_run_observations.indexOf(obs);t.daily_run_observations.splice(i,1);}
+  if(p.p_cancel){r.status='cancelled';}
+  else {r.route_id=p.p_route_id;r.vehicle_id=p.p_vehicle_id;
+    r.is_rental=!t.vehicle_owner_bindings.some(b=>b.driver_id===r.driver_id&&String(b.vehicle_id)===String(r.vehicle_id)&&b.effective_from<=r.service_date&&(!b.effective_to||b.effective_to>=r.service_date));
+    r.route_code_snapshot=t.routes.find(x=>x.id===r.route_id)?.route_code||'';}
+  r.dispatcher_notes=p.p_note;r.dashboard_schedule_revision++;d.revision++;d.has_plan_exception=true;
+  data={run_id:r.id,revision:r.dashboard_schedule_revision,cancelled:!!p.p_cancel};
+ }else if(fn==='dashboard_save_actual_observation'){
+  const r=t.runs.find(x=>x.id===p.p_run_id),old=t.daily_run_observations.find(x=>x.run_id===r.id);const next={id:old?.id||1,driver_id:r.driver_id,run_id:r.id,actual_route_id:p.p_actual_route_id,actual_vehicle_id:p.p_actual_vehicle_id,actual_note:p.p_note,revision:(old?.revision||0)+1};if(old)Object.assign(old,next);else t.daily_run_observations.push(next);data=next.revision;
+ }else if(fn==='dashboard_save_extra_actual_trip'){
+  data=1;
+ }else throw Error('未模擬 RPC '+fn);
+ return {data:copy(data),error:null};
+ }catch(e){return {data:null,error:{message:e.message}};}
+}
+window._testDB143={auth:{async getUser(){return {data:{user:{id:mock143.role==='dispatcher'?M:D}},error:null};},async signOut(){return {error:null};}},from:table=>new Q(table),rpc};
+})();
+
+/* UI-only fixture layered on mock_supabase_143.js. Never loaded in production. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;mock143.financeAllowed=false;t.attendance_change_requests=[];let cutoff=null,reopened=new Set();
+ const isClosed=d=>!!cutoff&&d<=cutoff&&!reopened.has(d);
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_capabilities','dashboard_get_attendance_day_state','dashboard_request_attendance_change','dashboard_review_attendance_change','dashboard_close_attendance_through','dashboard_reopen_attendance_date'].includes(fn))return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：資料載入失敗'}};
+  let data;
+  if(fn==='dashboard_get_capabilities')data={increment:'1.4.6',can_manage_finance:mock143.financeAllowed};
+  if(fn==='dashboard_get_attendance_day_state')data={service_date:p.p_date,closed:isClosed(p.p_date),closed_at:isClosed(p.p_date)?'2026-10-20T00:00:00Z':null};
+  if(fn==='dashboard_request_attendance_change'){
+   const r=t.runs.find(r=>r.id===p.p_run_id),x=t.daily_attendance_extra_trips.find(x=>x.id===p.p_extra_trip_id);
+   data={id:1+t.attendance_change_requests.length,run_id:r?.id||null,extra_trip_id:x?.id||null,service_date:(r||x).service_date,driver_id:(r||x).driver_id,base_record:{route_id:r?.route_id||x?.actual_route_id,vehicle_id:r?.vehicle_id||x?.actual_vehicle_id,note:r?.dispatcher_notes||x?.actual_note},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:p.p_void,revision:1,status:'pending'};
+   t.attendance_change_requests.push(data);
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   data=t.attendance_change_requests.find(q=>q.id===p.p_request_id);data.status=p.p_approve?'approved':'rejected';data.review_reason=p.p_reason;data.revision++;
+   if(p.p_approve){const r=t.runs.find(r=>r.id===data.run_id);if(r){r.route_id=data.proposed_route_id;r.vehicle_id=data.proposed_vehicle_id;r.dispatcher_notes=data.proposed_note;r.dashboard_schedule_revision++;}}
+  }
+  if(fn==='dashboard_close_attendance_through'){
+   cutoff=cutoff&&cutoff>p.p_through_date?cutoff:p.p_through_date;reopened=new Set([...reopened].filter(d=>d>p.p_through_date));
+   for(const q of t.attendance_change_requests)if(q.status==='pending'&&q.service_date<=p.p_through_date){q.status='stale';q.revision++;}data={through_date:p.p_through_date,closed_dates:[],expired_requests:0};
+  }
+  if(fn==='dashboard_reopen_attendance_date'){reopened.add(p.p_date);data={reopened:true};}
+  return {data:structuredClone(data),error:null};
+ };
+})();
+
+/* Browser-only finalized-report fixture. Never load in production. */
+(()=>{
+ const base=_testDB143.rpc,from=_testDB143.from;
+ mock143.reads=[];_testDB143.from=(name)=>{mock143.reads.push(name);return from(name);};
+ const driver=mock143.tables.profiles[1].id,other=mock143.tables.profiles[2].id;
+ const row=(id,date,who,rental,zone)=>({id,source_type:id.split(':')[0],run_id:id.startsWith('run:')?Number(id.slice(4)):null,extra_trip_id:id.startsWith('extra:')?Number(id.slice(6)):null,service_date:date,driver_id:who,route_id:1,vehicle_id:1,route_code_snapshot:'FROZEN-01',route_temperature_zone:zone,plate_snapshot:'FROZEN-CAR',is_rental:rental,status:'assigned',finalized:true,close_event_id:10,closed_at:'2026-10-20T00:00:00Z'});
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:[row('run:1','2026-10-15',driver,false,'常溫'),row('run:2','2026-10-19',driver,true,'冷藏'),row('extra:1','2026-10-19',other,null,null)],standby:[{id:1,service_date:'2026-10-15',driver_id:driver,finalized:true,converted_to_support:false,review_status:'pending'},{id:2,service_date:'2026-10-19',driver_id:other,finalized:true,converted_to_support:true,review_status:'pending'}],special_work:[],attendance_records:[],original_runs:[],dates:[{service_date:'2026-10-15',status:'finalized'},{service_date:'2026-10-19',status:'finalized'},{service_date:'2026-10-20',status:'reopened'}]};
+ mock143.tables.trip_executions=[{id:999,service_date:'2026-10-20',driver_id:driver,review_status:'confirmed',route_id:1,is_rental:true}];
+ mock143.tables.payroll_adjustments=[{id:1,service_date:'2026-10-15',driver_id:driver,category:'allowance',amount:100,reason:'approved adjustment'}];
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn!=='dashboard_get_finalized_monthly')return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：結案月報無法讀取'}};
+  if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可查看月度報表'}};
+  const result=structuredClone(mock143.finalized);
+  if(p.p_month!==result.month){result.month=p.p_month;for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])result[k]=[];}
+  if(mock143.reportDelay)await new Promise(resolve=>setTimeout(resolve,mock143.reportDelay));
+  return {data:result,error:null};
+ };
+})();
+
+/* Test-only request queue; no production data or connection. */
+(()=>{
+ const base=_testDB143.rpc,t=mock143.tables;
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_request_attendance_add'){
+   mock143.calls.push({fn,args:structuredClone(p)});
+   if(mock143.fail===fn)return {data:null,error:{message:'測試：新增申請未送出'}};
+   const driver=t.profiles.find(x=>x.role==='driver').id;
+   let q=t.attendance_change_requests.find(q=>q.request_kind==='add'&&q.status==='pending'&&q.driver_id===driver&&q.service_date===p.p_service_date&&q.attendance_category===p.p_category&&q.attendance_slot_index===p.p_slot_index);
+   if(!q){q={id:t.attendance_change_requests.length+1,request_kind:'add',service_date:p.p_service_date,driver_id:driver,attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,source_revision:p.p_expected_revision,base_record:{status:'empty'},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:false,status:'pending',revision:1};t.attendance_change_requests.push(q);}
+   return {data:structuredClone(q),error:null};
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   const q=t.attendance_change_requests.find(q=>q.id===p.p_request_id);
+   if(q?.request_kind==='add'){
+    mock143.calls.push({fn,args:structuredClone(p)});
+    if(mock143.fail===fn)return {data:null,error:{message:'測試：審核失敗'}};
+    if(q.status!=='pending')return {data:{status:q.status,already_reviewed:true},error:null};
+    if(p.p_approve){
+     let x=t.daily_attendance_extra_trips.find(x=>x.driver_id===q.driver_id&&x.service_date===q.service_date&&x.attendance_category===q.attendance_category&&x.attendance_slot_index===q.attendance_slot_index);
+     const values={service_date:q.service_date,driver_id:q.driver_id,attendance_category:q.attendance_category,attendance_slot_index:q.attendance_slot_index,actual_route_id:q.proposed_route_id,actual_vehicle_id:q.proposed_vehicle_id,actual_note:q.proposed_note,is_rental:false,status:'active',revision:(x?.revision||0)+1};
+     if(x)Object.assign(x,values);else {x={id:100+t.daily_attendance_extra_trips.length,...values};t.daily_attendance_extra_trips.push(x);}q.result_extra_trip_id=x.id;
+    }
+    q.status=p.p_approve?'approved':'rejected';q.review_reason=p.p_reason;q.revision++;return {data:structuredClone(q),error:null};
+   }
+   const result=await base(fn,p);
+   if(!result.error&&p.p_approve&&q?.proposed_void){
+    if(q.run_id)t.runs.find(r=>r.id===q.run_id).status='cancelled';
+    else {const x=t.daily_attendance_extra_trips.find(x=>x.id===q.extra_trip_id);x.status='void';x.revision++;}
+   }
+   return result;
+  }
+  return base(fn,p);
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. All names, rates and records are fictional. */
+(()=>{
+ const t=mock143.tables,copy=x=>structuredClone(x),base=_testDB143.rpc,originalFrom=_testDB143.from;
+ const [manager,a,b,c]=t.profiles;manager.display_name='演示 Brian';mock143.financeAllowed=true;
+ t.delivery_regions=[{id:1,name:'示範北區'},{id:2,name:'示範南區'}];t.delivery_temperature_zones=[{name:'冷藏'},{name:'常溫'}];
+ t.delivery_region_zone_rates=[{region_id:1,zone_name:'冷藏',delivery_fee:900},{region_id:1,zone_name:'常溫',delivery_fee:800},{region_id:2,zone_name:'冷藏',delivery_fee:1100},{region_id:2,zone_name:'常溫',delivery_fee:1000}];
+ t.routes=Array.from({length:6},(_,i)=>({id:i+1,route_code:'DEMO-'+String(i+1).padStart(2,'0'),route_name:'示範路線 '+(i+1),temperature_zone:i===5?'常溫':'冷藏',delivery_region_id:i===5?2:1,active:true,default_start_time:String(5+i).padStart(2,'0')+':00:00',default_end_time:String(6+i).padStart(2,'0')+':00:00'}));
+ t.vehicle_owner_bindings=[{id:1,driver_id:a.id,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:b.id,vehicle_id:2,effective_from:'2026-09-01',effective_to:null}];
+ t.vehicles[0].label='示範自有車';t.vehicles[1].label='示範共用車';
+ t.runs=[];for(const date of ['2026-10-15','2026-10-20'])for(let i=0;i<7;i++){
+  const route=t.routes[i<5?i:i-4],driver=i<5?a:b;
+  t.runs.push({id:t.runs.length+1,service_date:date,route_id:route.id,driver_id:driver.id,vehicle_id:1,status:'assigned',is_rental:driver===b,dispatcher_notes:'隔離示範資料',route_code_snapshot:route.route_code,temperature_zone_snapshot:route.temperature_zone,attendance_category:'日配',attendance_slot_index:i<5?i+1:i-4,dashboard_schedule_revision:1});
+ }
+ t.daily_attendance_slot_counts=['2026-10-15','2026-10-20'].map(service_date=>({service_date,category:'日配',slot_count:5}));
+ t.attendance_driver_days=[{service_date:'2026-10-20',driver_id:c.id,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}];
+ t.daily_attendance_closeouts=[{service_date:'2026-10-15',closed_at:'2026-10-16T00:00:00Z'}];
+ t.payroll_configs=[];t.payroll_rules=[];t.payroll_supplement_rates=[{id:1,component:'standby',amount:400,effective_from:'2026-10-01',reason:'虛構示範值班津貼'},{id:2,component:'rental',amount:80,effective_from:'2026-10-01',reason:'虛構示範租車扣款'}];
+ t.payroll_adjustments=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'allowance',amount:500,reason:'示範加給'},{id:2,driver_id:a.id,service_date:'2026-10-15',category:'deduction',amount:-100,reason:'示範懲處'}];
+ t.expense_records=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'parking',amount:50,description:'示範獨立停車費'}];
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:t.runs.filter(r=>r.service_date==='2026-10-15').map(r=>({...r,id:'run:'+r.id,run_id:r.id,original_driver_id:r.driver_id,source_type:'run',route_temperature_zone:r.temperature_zone_snapshot,plate_snapshot:t.vehicles[0].plate_number,finalized:true,close_event_id:10,closed_at:'2026-10-16T00:00:00Z'})),standby:[{id:1,driver_id:c.id,service_date:'2026-10-15',converted_to_support:false,finalized:true,close_event_id:10}],special_work:[{id:1,kind:'follow_along',driver_id:b.id,run_id:1,service_date:'2026-10-15',follow_stage_snapshot:'trainee',finalized:true,close_event_id:10}],attendance_records:[],original_runs:copy(t.runs.filter(r=>r.service_date==='2026-10-15')),dates:Array.from({length:31},(_,i)=>({service_date:'2026-10-'+String(i+1).padStart(2,'0'),status:i===14?'finalized':'open'}))};
+ // Seed the existing fixture's close-state before disabling operational mutations.
+ base('dashboard_close_attendance_through',{p_through_date:'2026-10-15'});
+ const actor=typeof location!=='undefined'?new URLSearchParams(location.search).get('actor'):null;
+ if(actor==='driver'){mock143.role='driver';mock143.financeAllowed=false;}
+ if(actor==='karen'){mock143.financeAllowed=false;manager.display_name='演示 Karen';manager.can_manage_finance=false;}
+ _testDB143.from=name=>{const q=originalFrom(name),then=q.then.bind(q);for(const op of ['insert','update','upsert','delete'])q[op]=()=>{q.demoBlocked=true;return q;};q.then=(resolve,reject)=>q.demoBlocked?Promise.resolve({data:null,error:{message:'營運示範僅供瀏覽；值班／租車設定可在記憶體試填。'}}).then(resolve,reject):then(resolve,reject);return q;};
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_route_payroll','dashboard_save_payroll_supplements'].includes(fn)){
+   if(fn.startsWith('dashboard_get_'))return base(fn,p);
+   return {data:null,error:{message:'營運示範僅供瀏覽；不連接 Supabase。'}};
+  }
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可使用月度計薪對帳');let data;
+   if(fn==='dashboard_get_route_payroll'){
+    const finalized=copy(mock143.finalized);finalized.month=p.p_month;
+    if(p.p_month!=='2026-10-01')for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])finalized[k]=[];
+    const route_rates=t.routes.map(r=>{const fee=t.delivery_region_zone_rates.find(f=>f.region_id===r.delivery_region_id&&f.zone_name===r.temperature_zone);return {route_id:r.id,region_id:r.delivery_region_id,zone_name:r.temperature_zone,amount:fee?.delivery_fee??null};});
+    data={version:1491,month:p.p_month,finalized,route_rates,supplements:t.payroll_supplement_rates,adjustments:t.payroll_adjustments.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7))),expenses:t.expense_records.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7)))};
+   }else{
+    let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+    if(p.p_expected_revision!==revision)throw Error('設定已變更');
+    if(!p.p_reason?.trim())throw Error('請填原因');
+    const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount]].filter(x=>x[1]!==null);
+    if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+    for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+    data={revision};
+   }
+   return {data:copy(data),error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. Never loaded by a production page. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;
+ t.v055_standby_shifts=[
+  {id:1,driver_id:t.profiles[3].id,service_date:'2026-10-15',attendance_category:'OC',attendance_slot_index:1,start_time:'12:00:00',end_time:'16:00:00',note:'虛構已結案值班',revision:1},
+  {id:2,driver_id:t.profiles[2].id,service_date:'2026-10-20',attendance_category:'冷凍',attendance_slot_index:1,start_time:'14:00:00',end_time:'18:00:00',note:'虛構未結案值班，不指定車輛、不限溫層',revision:1}
+ ];
+ Object.assign(mock143.finalized.standby[0],structuredClone(t.v055_standby_shifts[0]));
+ _testDB143.rpc=async(fn,p={})=>fn==='dashboard_get_attendance_standby'
+  ?{data:structuredClone(t.v055_standby_shifts.filter(s=>s.service_date===p.p_date)),error:null}
+  :fn==='dashboard_save_attendance_standby'
+   ?{data:null,error:{message:'隔離展示可試填值班時段；儲存及審核請在開發系統驗收。示範資料保持不變。'}}
+   :base(fn,p);
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional duties and amounts, no network writes. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc,copy=x=>structuredClone(x),driver=t.profiles[2].id;
+ t.attendance_duty_entries=[];
+ for(const [i,date] of ['2026-10-15','2026-10-20'].entries()){
+  const main=t.runs.find(r=>r.service_date===date&&r.attendance_slot_index===1&&r.driver_id===t.profiles[1].id);
+  for(let n=1;n<=3;n++)t.attendance_duty_entries.push({id:i*3+n,service_date:date,driver_id:driver,attendance_category:'OC',attendance_slot_index:n,
+   kind:n===1?'follow_along':'learning',linked_run_id:n===1?main.id:null,
+   linked_run:n===1?{id:main.id,service_date:date,driver_id:main.driver_id,vehicle_id:main.vehicle_id,route_id:main.route_id,revision:1,observation_revision:0}:null,
+   revision:1,note:n===1?'虛構跟車，共用主線車輛':'虛構學習，每筆各計一次'});
+ }
+ t.payroll_supplement_rates.push({id:3,component:'follow_along',amount:120,effective_from:'2026-10-01',reason:'虛構跟車費，每筆'},
+  {id:4,component:'learning',amount:60,effective_from:'2026-10-01',reason:'虛構學習費，每筆'});
+ mock143.finalized.special_work=t.attendance_duty_entries.filter(x=>x.service_date==='2026-10-15').map(x=>({...copy(x),id:'duty:'+x.id,source_type:'attendance_duty',run_id:x.linked_run_id,plate_snapshot:x.linked_run?t.vehicles.find(v=>v.id===x.linked_run.vehicle_id)?.plate_number:null,pay_basis:'per_entry',finalized:true,close_event_id:10}));
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_get_attendance_duties')return {data:copy(t.attendance_duty_entries.filter(x=>x.service_date===p.p_date)),error:null};
+  if(fn==='dashboard_save_attendance_duty')return {data:null,error:{message:'隔離展示可試填勤務；儲存及審核請在開發系統驗收。'}};
+  if(fn!=='dashboard_save_duty_supplements')return base(fn,p);
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可設定勤務／租車');
+   let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+   if(revision!==p.p_expected_revision)throw Error('設定已變更');
+   if(!p.p_reason?.trim()||!/^\d{4}-\d{2}-\d{2}$/.test(p.p_effective_from))throw Error('請填寫生效日及原因');
+   const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount],['follow_along',p.p_follow_along_amount],['learning',p.p_learning_amount]].filter(x=>x[1]!==null&&x[1]!==undefined);
+   if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+   for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+   return {data:{revision},error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional notes-only duties. */
+(()=>{
+ const t=mock143.tables;
+ for(const d of t.attendance_duty_entries){delete d.linked_run_id;delete d.linked_run;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of t.v055_standby_shifts){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+ for(const d of mock143.finalized.special_work){delete d.linked_run_id;delete d.linked_run;d.run_id=null;d.vehicle_id=null;d.plate_snapshot=null;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of mock143.finalized.standby){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+})();
+
+/* OFFLINE MOCK ONLY: production uses the database calculation; this demo has no network. */
+(()=>{
+ const base=_testDB143.rpc;
+ mock143.tables.payroll_supplement_rates=mock143.tables.payroll_supplement_rates.filter(x=>x.component==='rental');
+ _testDB143.rpc=async(fn,p={})=>{
+  if(['dashboard_save_driver_base_salary','dashboard_save_duty_supplements','dashboard_save_payroll_supplements'].includes(fn))return {data:null,error:{message:'此設定已停用'}};
+  if(fn==='dashboard_save_rental_rate'){
+   if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可設定租車費用'}};
+   const table=mock143.tables.payroll_supplement_rates,revision=Math.max(0,...table.map(x=>x.id));
+   if(revision!==p.p_expected_revision)return {data:null,error:{message:'設定已變更，請重新整理'}};
+   if(!Number.isInteger(p.p_amount)||p.p_amount<0||p.p_amount>10000000||!p.p_reason?.trim())return {data:null,error:{message:'金額或原因不正確'}};
+   table.push({id:revision+1,component:'rental',amount:p.p_amount,effective_from:p.p_effective_from,reason:p.p_reason});return {data:{revision:revision+1},error:null};
+  }
+  if(fn!=='dashboard_get_calculated_payroll')return base(fn,p);
+  const response=await base('dashboard_get_route_payroll',p);if(response.error)return response;
+  const b=response.data,drivers=mock143.tables.profiles.filter(x=>x.role==='driver');
+  const report=PayrollReconciliation1491.build({...b,month:p.p_month.slice(0,7),drivers});
+  for(const x of report.summaries){
+   const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);
+   Object.assign(x,{standbyCount:b.finalized.standby.filter(r=>r.driver_id===x.driverId&&!r.converted_to_support).length,
+    followAlongCount:dw.filter(r=>r.kind==='follow_along').length,learningCount:dw.filter(r=>r.kind==='learning').length,
+    rentalCount:rr.filter(r=>r.is_rental===true).length,unknownRentalCount:rr.filter(r=>r.is_rental==null).length,knownItemsReady:x.basicSubtotal!==null});
+  }
+  b.calculation={...report,version:1415,engine:'database'};return {data:b,error:null};
+ };
+})();
+</script><script>const db=window._testDB143;window.db=db;</script><script>/* Server capability is authoritative. Hidden by default, including legacy links. */
+const DashboardAccess146=(()=>{
+ let pending=null,allowed=false;
+ async function load(){
+  if(!pending)pending=(async()=>{
+   try{
+    const {data,error}=await db.rpc('dashboard_get_capabilities',{});
+    allowed=!error&&data?.increment==='1.4.6'&&data.can_manage_finance===true;
+   }catch(e){allowed=false;}
+   document.body.dataset.financeAccess=allowed?'allowed':'denied';
+   return allowed;
+  })();
+  return pending;
+ }
+ document.addEventListener('DOMContentLoaded',load);
+ return {load,finance:()=>allowed};
+})();
+</script><script>const $=s=>document.querySelector(s);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('zh-TW');
+const today=()=> '2026-10-20';
+const notify=msg=>{const e=$('#message');if(e){e.textContent=msg;e.hidden=false;}else alert(msg)};
+let currentUser=null,currentProfile=null;
+async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
+const supervisor=()=>currentProfile?.role==='dispatcher';
+const finance=()=>supervisor()&&DashboardAccess146.finance();
+async function rows(table,fields='*',q){let req=db.from(table).select(fields);if(q)req=q(req);const {data,error}=await req;if(error)throw error;return data||[]}
+// Supabase's default API page size is often 1,000. Reports must fetch every page.
+// Call only for tables with a stable unique numeric 'id' column.
+async function allPagedRows(table,fields='*',scope){
+ const out=[];const size=500;let offset=0;
+ while(true){
+  let q=db.from(table).select(fields);
+  if(scope)q=scope(q);
+  q=q.order('id',{ascending:true}).range(offset,offset+size-1);
+  const {data,error}=await q;if(error)throw error;
+  out.push(...(data||[]));
+  if(!data||data.length<size)break;
+  offset+=size;
+  if(offset>100000)throw Error('報表筆數超出安全上限，請分批查詢');
+ }
+ return out;
+}
+async function save(table,payload,match){const q=match?db.from(table).update(payload).match(match):db.from(table).insert(payload);const {error}=await q;if(error)throw error;return true}
+function modal(title,fields,onSave){$('#modal-title').textContent=title;$('#modal-fields').innerHTML=fields;$('#modal-error').textContent='';$('#modal').classList.add('open');$('#modal-save').hidden=false;$('#modal-save').onclick=async()=>{try{$('#modal-save').disabled=true;await onSave();closeModal()}catch(e){$('#modal-error').textContent=e.message||String(e)}finally{$('#modal-save').disabled=false}}}
+function closeModal(){$('#modal').classList.remove('open')}
+function option(v,t,selected){return `<option value="${esc(v)}" ${String(v)===String(selected)?'selected':''}>${esc(t)}</option>`}
+function dropdown(arr,key,label,selected){return arr.map(x=>option(x[key],x[label]||x[key],selected)).join('')}
+function field(label,id,value='',type='text'){return `<label for="${id}">${label}</label><input id="${id}" class="field" type="${type}" value="${esc(value)}">`}
+function chosen(id){return $('#'+id).value}
+function wrapTable(headers,body){return `<div class="panel"><div class="scroll"><table class="gridtable"><thead><tr>${headers.map((h,i)=>`<th class="${i?'':'sticky'}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料</td></tr>`}</tbody></table></div></div>`}
+async function init(){if(!await requireLogin())return;try{await window.loadPage()}catch(e){console.error(e);notify('載入失敗：'+e.message)}}
+document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});$('#logout').onclick=async()=>{await db.auth.signOut();location.replace('index.html')};init()});
+</script><script>let vehicles=[],drivers=[],bindings=[],fleetTab="vehicles";
+async function loadPage(){if(!supervisor()){$('#page').innerHTML='<p class="empty">車輛綁定由主管管理。</p>';return}$('#head-actions').insertAdjacentHTML('afterbegin','<button class="btn primary" id="header-new-vehicle">＋ 新增車輛</button>');await reloadVehicles()}
+async function reloadVehicles(){[vehicles,drivers,bindings]=await Promise.all([rows('vehicles','id,plate_number,label,active'),rows('profiles','id,display_name,role,active',q=>q.eq('role','driver')),rows('vehicle_owner_bindings','id,driver_id,vehicle_id,effective_from,effective_to,note')]);renderVehicles()}
+const dName=id=>drivers.find(x=>x.id===id)?.display_name||'未綁定';
+const vehicleName=id=>vehicles.find(x=>String(x.id)===String(id))?.plate_number||'—';
+function renderVehicles(){
+ const active=bindings.filter(b=>b.effective_from<=today()&&(!b.effective_to||b.effective_to>=today()));
+ const boundVehicleIds=new Set(active.map(b=>String(b.vehicle_id)));
+ const ownDrivers=new Set(active.map(b=>b.driver_id));
+ $('#stats').innerHTML=`<div class="kpi"><small>自有車司機</small><strong>${ownDrivers.size}</strong></div><div class="kpi"><small>已綁定車輛</small><strong>${boundVehicleIds.size}</strong></div><div class="kpi"><small>未綁定車輛</small><strong>${vehicles.filter(v=>v.active&&!boundVehicleIds.has(String(v.id))).length}</strong></div>`;
+ $('#page').innerHTML=`<div class="subtabs"><button type="button" id="fleet-tab-vehicles" class="${fleetTab==='vehicles'?'on':''}">車輛與綁定</button><button type="button" id="fleet-tab-drivers" class="${fleetTab==='drivers'?'on':''}">司機名單</button></div><section class="panel fleet-section"><div class="panel-title" id="fleet-title">${fleetTab==='vehicles'?'車輛與綁定':'司機名單'}</div><div class="tools fleet-filter" style="padding:0 18px"><input class="field search" id="filter" placeholder="搜尋司機或車號"><button class="btn" id="new-binding" ${fleetTab==='vehicles'?'':'hidden'}>＋ 綁定司機</button><button class="btn" id="edit-driver" ${fleetTab==='drivers'?'':'hidden'}>編輯司機</button></div><div id="fleet-table"></div><div class="footer">${fleetTab==='vehicles'?'點選車號編輯車輛；綁定保留生效日期與歷史。':'查閱司機姓名及所屬車輛，可透過「編輯司機」修改顯示名稱。'}</div></section>`;
+ $('#fleet-tab-vehicles').onclick=()=>{fleetTab='vehicles';renderVehicles()};
+ $('#fleet-tab-drivers').onclick=()=>{fleetTab='drivers';renderVehicles()};
+ $('#header-new-vehicle').onclick=()=>vehicleEditor();$('#new-binding').onclick=()=>bindingEditor();$('#edit-driver').onclick=()=>driverEditor();
+ $('#filter').oninput=renderFleetTable;renderFleetTable();
+}
+function renderFleetTable(){
+ const term=($('#filter')?.value||'').toLocaleLowerCase();
+ if(fleetTab==='drivers'){
+  const list=drivers.filter(d=>[d.display_name,...bindings.filter(b=>b.driver_id===d.id).map(b=>vehicleName(b.vehicle_id))].join(' ').toLocaleLowerCase().includes(term));
+  const body=list.map(d=>{
+   const current=bindings.filter(b=>b.driver_id===d.id&&b.effective_from<=today()&&(!b.effective_to||b.effective_to>=today()));
+   const plates=current.map(b=>vehicleName(b.vehicle_id)).filter(Boolean).join('、');
+   return `<tr><td class="sticky">${esc(d.display_name)}</td><td>${esc(plates||'')}</td><td>${current.length||''}</td></tr>`;
+  }).join('');
+  $('#fleet-table').innerHTML=wrapTable(['司機姓名','綁定車號','車輛數'],body);
+  return;
+ }
+ const list=vehicles.filter(v=>[v.plate_number,v.label,...bindings.filter(b=>String(b.vehicle_id)===String(v.id)).map(b=>dName(b.driver_id))].join(' ').toLocaleLowerCase().includes(term));
+ const body=list.map(v=>{
+  const match=bindings.filter(b=>String(b.vehicle_id)===String(v.id)).sort((a,b)=>b.effective_from.localeCompare(a.effective_from));
+  const cur=match.filter(b=>b.effective_from<=today()&&(!b.effective_to||b.effective_to>=today()));
+  return `<tr><td class="sticky"><button class="rowlink" data-v="${v.id}">${esc(v.plate_number)}</button></td><td>${esc(v.label||'')}</td><td>${esc(cur.map(b=>dName(b.driver_id)).join('、'))}</td><td>${esc(cur.map(b=>b.effective_from).join('、'))}</td><td>${esc(cur.map(b=>b.effective_to||'持續有效').join('、'))}</td><td><span class="status-pill ${v.active?'ok':'off'}">${v.active?'使用中':'停用'}</span></td><td><button class="btn" data-b="${v.id}">管理綁定</button></td></tr>`;
+ }).join('');
+ $('#fleet-table').innerHTML=wrapTable(['車號','名稱','綁定司機','生效日期','到期日期','狀態','操作'],body);
+ document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>vehicleEditor(vehicles.find(v=>v.id==b.dataset.v)));
+ document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>bindingHistory(Number(b.dataset.b)));
+}
+
+function vehicleEditor(v){modal(v?'編輯車輛':'新增車輛',field('車號','plate',v?.plate_number||'')+field('名稱／備註','vlabel',v?.label||'')+`<label>狀態</label><select class="field" id="vactive">${option('true','使用中',String(v?.active??true))}${option('false','停用',String(v?.active??true))}</select>`,async()=>{const plate=chosen('plate').trim();if(!plate)throw Error('請填寫車號');await save('vehicles',{plate_number:plate,label:chosen('vlabel'),active:chosen('vactive')==='true'},v?{id:v.id}:null);await reloadVehicles()})}
+// Open existing binding history instead of silently creating a duplicate period.
+function bindingHistory(vehicleId){
+ const v=vehicles.find(x=>String(x.id)===String(vehicleId));if(!v)return;
+ const history=bindings.filter(x=>String(x.vehicle_id)===String(vehicleId)).sort((a,b)=>b.effective_from.localeCompare(a.effective_from));
+ const body=history.map(b=>`<tr><td>${esc(dName(b.driver_id))}</td><td>${esc(b.effective_from)}</td><td>${esc(b.effective_to||'持續有效')}</td><td>${esc(b.note||'')}</td><td><button type="button" class="rowlink" data-edit-binding="${b.id}">編輯／結束</button></td></tr>`).join('');
+ modal('綁定歷史 · '+v.plate_number,`<p class="note">舊綁定保留歷史紀錄，不刪除已發生的期間。</p>${wrapTable(['司機','起始','截止','備註','操作'],body)}<div class="actions"><button class="btn primary" type="button" id="add-binding-here">＋ 新增綁定期間</button></div>`,async()=>{});
+ $('#modal-save').hidden=true;
+ $('#add-binding-here').onclick=()=>bindingEditor(vehicleId);
+ document.querySelectorAll('[data-edit-binding]').forEach(btn=>btn.onclick=()=>bindingEditor(vehicleId,Number(btn.dataset.editBinding)));
+}
+function bindingEditor(vid=null,editId=null){
+ const entry=editId?bindings.find(x=>x.id===editId):null;
+ $('#modal-save').hidden=false;
+ const vList=entry?vehicles.filter(v=>String(v.id)===String(entry.vehicle_id)):vehicles.filter(v=>v.active);
+ const dList=entry?drivers.filter(d=>d.id===entry.driver_id):drivers.filter(d=>d.active);
+ modal(entry?'編輯／結束車輛綁定':'設定自有車綁定',`<p class="note">同一台車可同時綁定多位司機，同一司機也可綁定多台車；同一組司機與車輛的生效期間不可重疊。結束日期包含當日。</p><label>車輛</label><select id="bvehicle" class="field">${dropdown(vList,'id','plate_number',entry?.vehicle_id??vid)}</select><label>司機</label><select id="bdriver" class="field">${dropdown(dList,'id','display_name',entry?.driver_id)}</select>${field('生效日期','bfrom',entry?.effective_from||today(),'date')}${field('結束日期（不填代表持續有效）','bto',entry?.effective_to||'','date')}${field('備註','bnote',entry?.note||'')}`,async()=>{
+   const vehicle_id=Number(chosen('bvehicle')),driver_id=chosen('bdriver'),effective_from=chosen('bfrom'),effective_to=chosen('bto')||null;
+   if(!Number.isInteger(vehicle_id)||!vehicle_id||!drivers.some(d=>d.id===driver_id))throw Error('請選擇車輛與司機');
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(effective_from))throw Error('請填寫生效日期');
+   if(effective_to&&effective_to<effective_from)throw Error('結束日期不得早於生效日期');
+   // Same condition as DB guard; database remains the final arbiter during races.
+   if(bindings.some(b=>b.id!==entry?.id&&String(b.vehicle_id)===String(vehicle_id)&&b.driver_id===driver_id&&b.effective_from<=(effective_to||'9999-12-31')&&(b.effective_to||'9999-12-31')>=effective_from))throw Error('這位司機與此車輛的綁定期間已存在重疊紀錄，請先結束原綁定。');
+   await save('vehicle_owner_bindings',{vehicle_id,driver_id,effective_from,effective_to,note:chosen('bnote').trim()},entry?{id:entry.id}:null);
+   await reloadVehicles();notify('車輛綁定已儲存');
+ });
+}
+
+function driverEditor(driverId){modal('修改司機顯示名稱',`<label>司機</label><select class="field" id="ename">${dropdown(drivers,'id','display_name',driverId)}</select>${field('新顯示名稱','newname')}`,async()=>{if(!chosen('newname').trim())throw Error('請輸入姓名');const {error}=await db.rpc('dashboard_rename_driver',{p_driver:chosen('ename'),p_name:chosen('newname').trim()});if(error)throw error;await reloadVehicles()})}
+
+</script></body></html>

@@ -1,0 +1,22 @@
+PASS: monthly page uses the calculated payroll RPC
+PASS: server result is displayed without browser payroll recalculation
+PASS: follow and learning columns appear beside standby
+PASS: summary displays one follow and two learning entries
+PASS: duty entries do not increase delivery count
+PASS: driver names remain escaped
+PASS: pay details retain each duty amount and calculation explanation
+PASS: attendance CSV includes separate duty counts
+PASS: reconciliation CSV keeps one line per entry and amount
+PASS: exports refetch server authority
+PASS: reopening clears duty counts and calculated amount together
+PASS: network failure prevents stale payroll exports
+PASS: missing server calculation never falls back to browser pricing
+PASS: inconsistent duty count is rejected
+PASS: inconsistent subtotal is rejected
+PASS: duplicate driver results are rejected
+PASS: duplicate pay source lines are rejected
+PASS: late response cannot replace current month
+PASS: non-finance user has no payroll fetch or settings
+PASS: invalid month fails before API
+PASS: no duplicate pricing tab or completion step added
+RESULT: 21 Increment 1.4.12 monthly UI integration checks passed

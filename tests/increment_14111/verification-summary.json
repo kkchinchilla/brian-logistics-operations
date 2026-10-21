@@ -1,0 +1,19 @@
+{
+  "increment": "1.4.11.1",
+  "date": "2026-10-21",
+  "localChecks": 305,
+  "suites": {
+    "databasePayroll": 48,
+    "uiVm": 30,
+    "standbyRegression": 52,
+    "earlierDatabaseRegressions": 150,
+    "demo": 25
+  },
+  "javascriptSyntaxFiles": 35,
+  "liveSchemaInvariants": 8,
+  "desktopBrowserDemoChecked": true,
+  "mobileBrowserChecked": false,
+  "hostedFrontendDeployed": false,
+  "migration": "20261021072737_increment_14111_simple_duty_entries",
+  "liveDataUnchanged": true
+}

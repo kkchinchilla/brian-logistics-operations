@@ -1,0 +1,39 @@
+PASS: migration installs over accepted 148 without adding business tables
+PASS: Brian saves explicit basis with current actor
+PASS: stale basis cannot overwrite
+PASS: basis update preserves ID
+PASS: basis needs reason
+PASS: non-driver cannot be configured
+PASS: new rate saves no guessed defaults
+PASS: inclusive date overlap blocked
+PASS: negative rate blocked
+PASS: fractional new rate blocked per approved integer input
+PASS: blank rate evidence rejected
+PASS: route required for trip pay
+PASS: rate change preserves old amount and ends on preceding day
+PASS: stale rate replacement rejected
+PASS: dated ending keeps rate active for historical interval
+PASS: ending cannot overwrite changed rate
+PASS: explicit zero accepted as real rate
+PASS: disable requires reason and retains record
+PASS: disable needs reason
+PASS: all pricing changes use existing audit trail
+PASS: non-Brian cannot read bundle 2
+PASS: non-Brian cannot save basis 2
+PASS: non-Brian cannot create rate 2
+PASS: non-Brian cannot end rate 2
+PASS: raw finance read blocked by RLS 2
+PASS: non-Brian cannot read bundle 3
+PASS: non-Brian cannot save basis 3
+PASS: non-Brian cannot create rate 3
+PASS: non-Brian cannot end rate 3
+PASS: raw finance read blocked by RLS 3
+PASS: anonymous cannot call new read endpoint
+PASS: mid-month parameter rejected
+PASS: unclosed runs absent from bundle
+PASS: bundle includes only closed canonical deliveries
+PASS: real SQL payload matches 149 engine and effective rate boundary
+PASS: reopened date removed from pricing quantity immediately
+PASS: reclose restores one current contribution
+PASS: all four public endpoints remain invoker with fixed search path
+RESULT: 38 Increment 1.4.9 database checks passed

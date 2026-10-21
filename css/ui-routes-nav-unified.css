@@ -1,0 +1,174 @@
+/* Route Management: sidebar spacing parity with the three other Dashboards.
+   Route-only stylesheet; no HTML, JavaScript, data, or auth changes.
+   Desktop reference: css/production.css + css/production-parity.css + css/ui-parity-pass2.css.
+*/
+
+/* The old prototype leaves 1px top/bottom borders. Production dashboards do not. */
+body[data-dashboard="routes"] .app {
+  border-top: 0;
+  border-bottom: 0;
+}
+
+/* Shared desktop shell: 196px rail / 23px vertical padding / 5px row gap. */
+body[data-dashboard="routes"] .route-side {
+  width: 196px;
+  flex: 0 0 196px;
+  min-width: 0;
+  padding: 23px 12px 18px;
+  gap: 5px;
+  line-height: 1.45;
+  background: #1b1d20;
+  border-right: 1px solid #383b40;
+}
+
+body[data-dashboard="routes"] .route-side .brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 3px 10px 23px;
+  font-size: 15px;
+  font-weight: 780;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+body[data-dashboard="routes"] .route-side .brand-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--yellow);
+  color: #1b1c1e;
+  font-weight: 850;
+  font-size: 19px;
+  line-height: 1;
+}
+body[data-dashboard="routes"] .route-side .brand small {
+  display: block;
+  margin-top: 4px;
+  color: #91959c;
+  font-size: 9px;
+  font-weight: 480;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+body[data-dashboard="routes"] .route-side .sidelinks {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 42px;
+  padding: 12px 13px;
+  border-radius: 9px;
+  color: #afb3b9;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 540;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a:hover {
+  background: #303338;
+  color: #f5f5f3;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a.active,
+body[data-dashboard="routes"] .route-side .sidelinks a[aria-current="page"] {
+  background: var(--yellow);
+  color: #1b1c1d;
+  font-weight: 790;
+}
+
+/* Footer lines/button now occupy exactly the shared production sidebar slots. */
+body[data-dashboard="routes"] .route-side .side-bottom {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  min-height: 41px;
+  border-top: 1px solid #383b40;
+  padding: 12px 13px;
+  color: #a1a4a9;
+  font-size: 11px;
+  text-decoration: none;
+}
+body[data-dashboard="routes"] .route-side .side-bottom:hover {color: #fff;}
+body[data-dashboard="routes"] .route-side .route-side-logout {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #4b4e53;
+  border-radius: 10px;
+  background: #303338;
+  color: #f5f5f2;
+  font-size: 12px;
+  font-weight: 640;
+  text-align: center;
+  white-space: nowrap;
+}
+body[data-dashboard="routes"] .route-side .route-side-logout:hover {
+  background: #3a3e42;
+}
+
+/* At <=1150px the other three Dashboards use a 158px sidebar; keep the same
+   top/vertical spacing and logo size rather than shrinking them independently. */
+@media (max-width: 1150px) and (min-width: 801px) {
+  body[data-dashboard="routes"] .route-side {
+    width: 158px;
+    flex-basis: 158px;
+    padding: 23px 9px 18px;
+  }
+}
+
+/* The route page uses a different class name for the same mobile bottom bar. */
+@media (max-width: 800px) {
+  body[data-dashboard="routes"] .route-side {display: none !important;}
+  body[data-dashboard="routes"] .stage.mobile .app {flex-direction: column;}
+  body[data-dashboard="routes"] .stage.mobile .workspace {padding-bottom: 100px;}
+  body[data-dashboard="routes"] .mobile-navbar,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    align-items: center;
+    justify-content: space-around;
+    gap: 4px;
+    min-height: 58px;
+    padding: 11px 8px calc(11px + env(safe-area-inset-bottom));
+    border-top: 1px solid #45484d;
+    background: #1b1d20;
+  }
+  body[data-dashboard="routes"] .mobile-navbar a,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a {
+    display: block;
+    min-width: 0;
+    flex: 1;
+    padding: 10px 5px;
+    border-radius: 8px;
+    color: #a3a5aa;
+    text-align: center;
+    text-decoration: none;
+    font-size: 11px;
+    line-height: 1.45;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  body[data-dashboard="routes"] .mobile-navbar a.active,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a.active {
+    color: var(--yellow);
+    font-weight: 780;
+  }
+}
+
+/* The production mobile bar reduces link line-height below 760px. */
+@media (max-width: 760px) {
+  body[data-dashboard="routes"] .mobile-navbar a,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a {line-height: 1.3;}
+}

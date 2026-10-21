@@ -1,0 +1,21 @@
+/* Approved route prototype reused verbatim; these overrides only remove preview framing and use actual viewport size. */
+html,body{overflow-x:hidden}
+.prototype{padding:0;min-height:100dvh}
+.stage{max-width:none;min-height:100dvh;width:100%}
+.app,.stage.mobile .app{max-width:none;width:100%;height:100dvh;min-height:0;border-radius:0;border:0;box-shadow:none}
+.stage.mobile{max-width:none;width:100%}
+.stage.mobile .nav{display:none}
+.stage.mobile .app{height:100dvh}
+.stage.mobile .mobile-navbar{flex:none}
+.nav-bottom{display:flex;flex-direction:column;gap:7px}
+.nav-bottom a,.nav-bottom button{display:block;border:0;background:transparent;padding:9px 0;color:#aeb0b4;font:inherit;text-align:left;font-size:12px;text-decoration:none;cursor:pointer}
+.nav-bottom a:hover,.nav-bottom button:hover{color:#fff}
+.mobile-navbar a{display:flex;flex-direction:column;align-items:center;gap:4px;color:#898d93;font-size:10px;text-decoration:none;flex:1;padding:7px 2px}.mobile-navbar a.active{color:var(--yellow)}
+.page-header,.header-actions,.section-header{min-width:0}
+.page-header{flex-wrap:wrap}
+.workspace,.table-scroll,.tariff-scroller{min-width:0;max-width:100%}
+/* Fit on tablets without squashing route data cells. */
+@media(min-width:801px) and (max-width:1150px){.nav{width:164px;flex-basis:164px;padding:19px 8px}.workspace{padding:0 18px 25px}.page-header{padding:25px 18px 18px}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.prototype,.stage,.app,.stage.mobile .app{width:100%;height:100dvh;min-height:0}.stage{max-width:none}.stage.mobile .app{border-radius:0}.stage.mobile .main{min-width:0}.stage.mobile .workspace{padding:0 12px 20px}.stage.mobile .page-header{padding:18px 15px 16px}.stage.mobile .summary{grid-template-columns:repeat(2,minmax(0,1fr))}.stage.mobile .section-shell{margin:0}.stage.mobile .routes-table th,.stage.mobile .routes-table td{white-space:nowrap}.stage.mobile .drawer.open{max-height:85dvh}.stage.mobile .mobile-navbar{padding-bottom:calc(10px + env(safe-area-inset-bottom));justify-content:space-around}.stage.mobile .section-header{gap:11px}.stage.mobile .tab-row{max-width:100%;overflow-x:auto;flex-wrap:nowrap}.stage.mobile .tab{white-space:nowrap}}
+@media(max-width:350px){.stage.mobile .page-header{padding:14px 12px}.stage.mobile .workspace{padding:0 8px 16px}.stage.mobile .summary{gap:7px}.stage.mobile .stat{padding:10px}.stage.mobile .tab{font-size:10px;padding:8px 7px}.stage.mobile .mobile-navbar a{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.drawer,.app{transition:none!important}}

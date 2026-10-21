@@ -1,0 +1,41 @@
+{
+  "version": "1.4.9.1",
+  "automated_checks": 236,
+  "javascript_files_syntax_checked": 35,
+  "results": {
+    "demo-results.txt": [
+      "RESULT: 15 isolated demo data checks passed (no browser/visual QA)"
+    ],
+    "calculation-results.txt": [
+      "RESULT: 32 Increment 1.4.9.1 calculation checks passed"
+    ],
+    "regression-149-results.txt": [
+      "RESULT: 38 Increment 1.4.9 database checks passed"
+    ],
+    "regression-148-results.txt": [
+      "RESULT: 30 new database scenarios passed"
+    ],
+    "database-results.txt": [
+      "RESULT: 32 Increment 1.4.9.1 database checks passed"
+    ],
+    "regression-147-results.txt": [
+      "RESULT: 29 integration scenarios passed",
+      "RESULT: 21 Increment 1.4.7 scenarios passed plus 29 Increment 1.4.6 regressions"
+    ],
+    "integration-results.txt": [
+      "RESULT: 23 Node VM monthly integration checks passed (no browser/visual QA)"
+    ],
+    "export-results.txt": [
+      "RESULT: 10 export and aggregation assertions passed"
+    ],
+    "legacy-export-results.txt": [
+      "RESULT: 6 legacy monthly and Excel consistency checks passed"
+    ]
+  },
+  "live_database": "passed; all verification writes rolled back",
+  "existing_public_tables_unchanged": 38,
+  "existing_rows_unchanged": 88,
+  "new_table_rows": 0,
+  "security_advisors": "no new findings; three prior finding categories unchanged",
+  "browser_visual_qa": "not run: required supported browser capability unavailable"
+}

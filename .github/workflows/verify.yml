@@ -1,0 +1,22 @@
+name: Verify accepted application
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build && npm run check
+      - run: npm test
+      - run: npm run schema:generate && npm run test:schema
+      - run: npm run test:demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-1.4.15
+          path: dist/

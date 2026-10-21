@@ -1,0 +1,17 @@
+{
+  "increment": "1.4.10",
+  "status": "awaiting_user_acceptance",
+  "accepted_baseline": "1.4.9.1",
+  "local_checks": 251,
+  "new_database": 52,
+  "attendance_vm": 31,
+  "database_regressions": 150,
+  "demo": 18,
+  "live_checks": 6,
+  "application_js_syntax_files": 35,
+  "browser_visual_qa": false,
+  "hosted_frontend_deployed": false,
+  "database_migration": "20261021014817",
+  "existing_tables_unchanged": 39,
+  "existing_records_unchanged": 92
+}

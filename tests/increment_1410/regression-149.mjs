@@ -1,0 +1,52 @@
+import {PGlite} from '@electric-sql/pglite';
+import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),E=require('../../js/payroll-reconciliation-149.js');
+const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'../..'),pg=new PGlite();let count=0;
+const keep=setInterval(()=>{},1000),id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+const scalar=async(sql,args)=>(Object.values((await pg.query(sql,args)).rows[0]))[0];
+const actor=async n=>pg.exec(`RESET ROLE;SELECT set_config('request.jwt.claim.sub','${id(n)}',false);SET ROLE authenticated;`);
+const ok=(name,test=true)=>{assert.ok(test,name);console.log('PASS:',name);count++};
+const denied=async(name,sql,args,re)=>{await assert.rejects(()=>pg.query(sql,args),re);ok(name)};
+const config=(basis='per_run_only',expected=null)=>scalar('select dashboard_save_payroll_config($1,$2,$3,$4)',[id(3),basis,'Isolated test only',expected]);
+const rate=(amount=100,from='2026-10-01',to=null,prior=null)=>scalar('select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id(3),'per_run',1,amount,from,to,'Isolated test only',prior?.id||null,prior]);
+const report=()=>scalar("select dashboard_get_payroll_reconciliation('2026-10-01')");
+try{
+ await pg.exec(fs.readFileSync(here+'/../increment_146/baseline_fixture.sql','utf8'));
+ for(const inc of ['146','147','148','149','1491','1410']){const f=fs.readdirSync(root+'/supabase/migrations').find(f=>f.includes('increment_'+inc+'_'));await pg.exec(fs.readFileSync(root+'/supabase/migrations/'+f,'utf8'));}
+ ok('earlier payroll APIs remain compatible with the correction migration');
+ await actor(1);await pg.exec("INSERT INTO delivery_temperature_zones(name) VALUES('常溫');INSERT INTO vehicles(id,plate_number) VALUES(1,'TEST-1');INSERT INTO routes(id,route_code,temperature_zone,default_start_time,default_end_time) VALUES(1,'01','常溫','06:00','08:00'),(2,'02','常溫','09:00','11:00');");
+ let c=await config();ok('Brian saves explicit basis with current actor',c.pay_basis==='per_run_only'&&c.updated_by===id(1));
+ await denied('stale basis cannot overwrite','select dashboard_save_payroll_config($1,$2,$3,$4)',[id(3),'fixed_only','test',null],/已變更/);
+ c=await config('fixed_plus_run',c);ok('basis update preserves ID',c.id===1);
+ await denied('basis needs reason','select dashboard_save_payroll_config($1,$2,$3,$4)',[id(3),'manual',' ',c],/依據/);
+ await denied('non-driver cannot be configured','select dashboard_save_payroll_config($1,$2,$3,$4)',[id(1),'manual','test',null],/司機/);
+ let r=await rate();ok('new rate saves no guessed defaults',r.amount==='100.00'||Number(r.amount)===100);
+ await denied('inclusive date overlap blocked','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',1,50,'2026-10-31','2026-11-01','test'],/重疊/);
+ await denied('negative rate blocked','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',2,-1,'2026-10-01',null,'test'],/整數/);
+ await denied('fractional new rate blocked per approved integer input','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',2,0.01,'2026-10-01',null,'test'],/整數/);
+ await denied('blank rate evidence rejected','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',2,0,'2026-10-01',null,' '],/依據/);
+ await denied('route required for trip pay','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',null,0,'2026-10-01',null,'test'],/路線/);
+ const newRate=await rate(200,'2026-10-16',null,r);const original=await scalar('select to_jsonb(r) from payroll_rules r where id=$1',[r.id]);
+ ok('rate change preserves old amount and ends on preceding day',Number(original.amount)===100&&original.effective_to==='2026-10-15'&&Number(newRate.amount)===200);
+ await denied('stale rate replacement rejected','select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id(3),'per_run',1,300,'2026-10-20',null,'test',r.id,r],/已變更/);
+ const ended=await scalar('select dashboard_end_payroll_rate($1,$2,$3,$4)',[newRate.id,newRate,'2026-10-30','last applicable day']);
+ ok('dated ending keeps rate active for historical interval',ended.active&&ended.effective_to==='2026-10-30');
+ await denied('ending cannot overwrite changed rate','select dashboard_end_payroll_rate($1,$2,$3,$4)',[newRate.id,newRate,null,'wrong stale'],/已變更/);
+ const zero=await rate(0,'2026-10-31','2026-10-31');ok('explicit zero accepted as real rate',Number(zero.amount)===0);
+ const disabled=await scalar('select dashboard_end_payroll_rate($1,$2,$3,$4)',[zero.id,zero,null,'entered in error']);ok('disable requires reason and retains record',!disabled.active&&disabled.explanation.includes('entered in error'));
+ await denied('disable needs reason','select dashboard_end_payroll_rate($1,$2,$3,$4)',[ended.id,ended,null,' '],/原因/);
+ const audit=await scalar("select count(*) from finance_audit_logs where source_table in ('payroll_rules','payroll_configs')");ok('all pricing changes use existing audit trail',Number(audit)>=8);
+ for(const who of [2,3]){await actor(who);await denied('non-Brian cannot read bundle '+who,"select dashboard_get_payroll_reconciliation('2026-10-01')",[],/Brian/);await denied('non-Brian cannot save basis '+who,'select dashboard_save_payroll_config($1,$2,$3,$4)',[id(3),'manual','test',c],/Brian/);await denied('non-Brian cannot create rate '+who,'select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'per_run',1,1,'2027-01-01',null,'test'],/Brian/);await denied('non-Brian cannot end rate '+who,'select dashboard_end_payroll_rate($1,$2,$3,$4)',[ended.id,ended,null,'test'],/Brian/);ok('raw finance read blocked by RLS '+who,Number(await scalar('select count(*) from payroll_rules'))===0);}
+ await pg.exec('RESET ROLE;SET ROLE anon;');await denied('anonymous cannot call new read endpoint',"select dashboard_get_payroll_reconciliation('2026-10-01')",[],/permission denied/);await actor(1);
+ await denied('mid-month parameter rejected',"select dashboard_get_payroll_reconciliation('2026-10-02')",[],/第一日/);
+ await pg.exec(`INSERT INTO runs(id,service_date,route_id,driver_id,vehicle_id,attendance_category,attendance_slot_index) VALUES(10,'2026-10-15',1,'${id(3)}',1,'日配',1),(11,'2026-10-16',1,'${id(3)}',1,'日配',1),(12,'2026-10-31',1,'${id(3)}',1,'日配',1);`);
+ let data=await report();ok('unclosed runs absent from bundle',data.finalized.deliveries.length===0);
+ await scalar("select dashboard_close_attendance_through('2026-10-16','test closing')");data=await report();ok('bundle includes only closed canonical deliveries',data.finalized.deliveries.length===2&&data.version===149&&data.configs.length===1);
+ const fx=await scalar('select dashboard_add_payroll_rate($1,$2,$3,$4,$5,$6,$7)',[id(3),'fixed_monthly',null,30000,'2026-10-01','2026-10-31','test']);
+ data=await report();let result=E.build({...data,month:'2026-10',drivers:[{id:id(3),display_name:'Test'}]});let summary=result.summaries[0];ok('real SQL payload matches 149 engine and effective rate boundary',summary.fixed===30000&&summary.variable===300&&summary.basicSubtotal===30300&&summary.salary===null);
+ await scalar("select dashboard_reopen_attendance_date('2026-10-16','test correction')");data=await report();result=E.build({...data,month:'2026-10',drivers:[{id:id(3),display_name:'Test'}]});ok('reopened date removed from pricing quantity immediately',result.summaries[0].count===1&&result.summaries[0].variable===100);
+ await scalar("select dashboard_close_attendance_through('2026-10-16','test reclose')");ok('reclose restores one current contribution',(await report()).finalized.deliveries.length===2);
+ await pg.exec('RESET ROLE;');const funcs=await pg.query("select p.proname,p.prosecdef,p.proconfig from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('dashboard_get_payroll_reconciliation','dashboard_save_payroll_config','dashboard_add_payroll_rate','dashboard_end_payroll_rate')");ok('all four public endpoints remain invoker with fixed search path',funcs.rows.length===4&&funcs.rows.every(x=>!x.prosecdef&&x.proconfig.includes('search_path=""')));
+ console.log(`RESULT: ${count} Increment 1.4.9 database checks passed`);
+}catch(e){console.error(e.stack,e.detail||'',e.where||'');process.exitCode=1;}finally{await pg.close();clearInterval(keep);}

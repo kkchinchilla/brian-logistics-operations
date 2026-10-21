@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-21",
+  "migration": "20261021094142_increment_1414_driver_base_salary.sql",
+  "database": "dispatch-system-dev",
+  "tablesBefore": 40,
+  "tablesAfter": 41,
+  "changed": [],
+  "added": [
+    {
+      "table": "driver_base_salaries",
+      "rows": 0
+    }
+  ],
+  "securityFindingIdentitiesUnchanged": true,
+  "securityCounts": [
+    {
+      "name": "anon_security_definer_function_executable",
+      "count": 4,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "count": 21,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "count": 1,
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ],
+  "calculationVersion": 1414,
+  "liveSalarySettings": 0,
+  "liveMissingBaseDrivers": 3,
+  "frontEndDeployed": false
+}

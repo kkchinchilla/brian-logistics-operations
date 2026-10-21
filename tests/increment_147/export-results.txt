@@ -1,0 +1,11 @@
+PASS: closing finalizes pending special duties without additional review
+PASS: trainee day deduplicated and support replaces standby
+PASS: unapproved special-duty pay remains unsettled
+PASS: zone totals include all finalized sources once
+PASS: Excel maps same-day run and extra without review_status prerequisite
+PASS: Excel contains frozen labels and never current master replacements
+PASS: legacy missing metadata is explicit in Excel
+PASS: Excel labels closing as final status
+PASS: Excel formula injection escaped
+PASS: client rejects old API, wrong month, duplicate and unfinalized payloads
+RESULT: 10 export and aggregation assertions passed

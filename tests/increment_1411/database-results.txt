@@ -1,0 +1,82 @@
+PASS: no operational duty records seeded
+PASS: dispatcher creates standalone learning without route vehicle or hours
+PASS: multiple same-day learning entries retained
+PASS: duties supported in all five display groups
+PASS: two same-day follows link to distinct main runs and shared vehicle
+PASS: duplicate follow of same main run rejected
+PASS: follow without main run rejected
+PASS: cannot follow own delivery
+PASS: learning cannot pretend to be a route
+PASS: learning cannot carry follow link
+PASS: invalid slot rejected
+PASS: occupied cell rejects stale source
+PASS: cannot cancel a main run with active follows
+PASS: parent route or vehicle cannot change beneath follow
+PASS: new own delivery cannot overlap follow
+PASS: driver edit remains pending without modifying canonical record
+PASS: same pending request is idempotent
+PASS: competing pending request rejected
+PASS: driver cannot approve
+PASS: driver cannot write another driver
+PASS: driver raw insert prohibited
+PASS: approval applies one exact edit
+PASS: approved edit increments canonical revision
+PASS: approval retry cannot apply twice
+PASS: driver delete does not remove before approval
+PASS: rejection preserves canonical duty
+PASS: approved deletion retires and retains historical row
+PASS: driver add creates no canonical record
+PASS: approved addition creates canonical duty
+PASS: stale approval cannot overwrite dispatcher
+PASS: raw dispatcher writes also prohibited
+PASS: empty deletion reason rejected
+PASS: learning prevents leave
+PASS: slot shrink cannot hide a duty
+PASS: legacy route writer cannot overwrite duty
+PASS: legacy standby writer cannot overwrite duty
+PASS: template overwrite preserves duty records
+PASS: invalid conversion rolls back retirement
+PASS: invalid conversion retains duty
+PASS: duty converts atomically to standby
+PASS: standby converts atomically to learning
+PASS: duty converts into one actual delivery
+PASS: delivery converts into duty without duplicate delivery
+PASS: no duty rates seeded
+PASS: all blank rates rejected
+PASS: invalid duty amount rejected -1
+PASS: invalid duty amount rejected 0.5
+PASS: invalid duty amount rejected 10000001
+PASS: invalid duty amount rejected NaN
+PASS: separate follow and learning rates saved
+PASS: stale rate write rejected
+PASS: blank leaves follow unchanged and zero learning is explicit
+PASS: non-Brian rate settings prohibited
+PASS: non-Brian payroll prohibited
+PASS: closing expires pending driver addition
+PASS: closed duty edit blocked
+PASS: all active canonical duties frozen with per-entry basis
+PASS: follows do not create additional delivery runs
+PASS: two same-day follow entries paid twice
+PASS: each learning entry paid once including explicit zero date
+PASS: duty-only driver has no delivery or rental pay
+PASS: duty amounts enter basic subtotal while final payroll stays pending
+PASS: payroll CSV includes per-entry amounts and provenance
+PASS: missing learning rate leaves subtotal pending
+PASS: dated rate correction reprices each finalized entry
+PASS: rate edits preserve closing snapshots
+PASS: reopened date duties excluded
+PASS: reclosing restores exactly one contribution per active entry
+PASS: driver follow addition is pending without canonical entry
+PASS: changed parent invalidates pending follow
+PASS: approved follow uses refreshed shared vehicle
+PASS: driver type conversion leaves original follow until approval
+PASS: approved follow-to-learning changes one canonical entry
+PASS: cannot add follow over existing own delivery
+PASS: private mutation helper inaccessible
+PASS: anonymous duty read denied
+PASS: anonymous duty write denied
+PASS: anonymous rate write denied
+PASS: new table RLS is enabled
+PASS: new public RPCs are invoker
+PASS: duty changes audited
+RESULT: 81 Increment 1.4.11 database and payroll checks passed

@@ -1,0 +1,31 @@
+PASS: addition saves a proposal without an extra, run, execution, or driver-day mutation
+PASS: duplicate addition is idempotent
+PASS: different second proposal for same slot blocked
+PASS: legacy RPC and raw extra inserts cannot bypass approval
+PASS: other driver cannot see request
+PASS: rejection with reason leaves attendance empty
+PASS: pending addition absent from monthly report
+PASS: Karen can approve addition; exactly one saved extra with correct rental
+PASS: repeated approval cannot duplicate addition
+PASS: extra deletion request leaves active trip in place
+PASS: extra deletion applies only after approval, preserving record
+PASS: adding back into voided slot does not restore before approval
+PASS: approved re-add restores one record and links request result
+PASS: scheduled deletion request leaves saved run unchanged
+PASS: rejected deletion preserves scheduled run
+PASS: approved scheduled deletion cancels rather than physically deletes
+PASS: scheduled deletion reason required
+PASS: starting run after deletion request makes request stale
+PASS: legacy observation, raw observation and note/revision mutations blocked
+PASS: slot filled after request makes addition stale
+PASS: leave introduced while pending prevents addition
+PASS: inactive route at approval prevents addition
+PASS: removed slot at approval prevents addition
+PASS: inactive driver at approval prevents addition
+PASS: closing expires pending addition without saving it
+PASS: monthly counts approved closed extras and excludes cancellation/pending proposals
+PASS: closed day rejects additions
+PASS: reopen, approve addition, reclose feeds monthly exactly once
+PASS: anonymous new RPC denied
+PASS: addition request cannot be submitted as an arbitrary driver by dispatcher API
+RESULT: 30 new database scenarios passed

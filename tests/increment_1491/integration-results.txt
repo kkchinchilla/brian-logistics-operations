@@ -1,0 +1,24 @@
+PASS: monthly page requests one coherent server bundle
+PASS: settings enabled only after successful load
+PASS: untrusted driver names escaped in summary
+PASS: basic subtotal available while full salary remains pending
+PASS: details retain saved route label rather than current master
+PASS: reconciliation export refetches authority first
+PASS: reconciliation CSV contains basic subtotal and unresolved policy
+PASS: fresh export reflects dispatcher reopening
+PASS: failed export clears current state and creates no stale CSV
+PASS: failure disables setting entry
+PASS: late month response cannot replace selected month
+PASS: wrong database version blocks controls and exports
+PASS: non-finance user does not fetch payroll or render controls
+PASS: blank month input fails closed without RPC
+PASS: settings dialog has only standby and rental inputs
+PASS: both blank rejected before write
+PASS: negative rental input rejected
+PASS: reason required before write
+PASS: zero rental and unchanged standby sent with expected revision
+PASS: server save failure surfaced to modal
+PASS: render error cannot re-enable stale exports
+PASS: duplicate pricing tab removed from current monthly page
+PASS: legacy page also uses shared route-pay engine
+RESULT: 23 Node VM monthly integration checks passed (no browser/visual QA)

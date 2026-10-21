@@ -1,0 +1,16 @@
+{
+  "name": "dispatch-increment-146-verification",
+  "version": "1.4.6",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node database.mjs",
+    "test:browser": "node browser.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "@sparticuz/chromium": "153.0.0",
+    "@fontsource/noto-sans-tc": "5.2.9",
+    "playwright": "1.58.2"
+  }
+}

@@ -1,0 +1,122 @@
+
+> dispatch-increment-1415-verification@1.4.15 test
+> node database.mjs && node monthly-integration.cjs && node vehicles.cjs && node exports.cjs
+
+PASS: migration preserves all historical settings
+PASS: attendance snapshots remain exactly unchanged
+PASS: three-component formula excludes stored base and duty rates
+PASS: duty counts are retained independently
+PASS: removed pay fields and lines are absent
+PASS: report exposes only rental settings
+PASS: driver with no pay settings has a valid zero total
+PASS: database result passes production decoder
+PASS: independent reference calculation agrees
+PASS: base salary read disabled for app
+PASS: base salary RPC disabled
+PASS: direct base inserts disabled
+PASS: retired duty rate RPC disabled
+PASS: direct standby rate write blocked
+PASS: direct follow_along rate write blocked
+PASS: direct learning rate write blocked
+PASS: rental-only editor recalculates retained components
+PASS: stale rental editor rejected
+PASS: future rental rate does not affect current month
+PASS: invalid rental null
+PASS: invalid rental -1
+PASS: invalid rental 1.5
+PASS: invalid rental 10000001
+PASS: invalid rental NaN
+PASS: invalid rental Infinity
+PASS: explicit zero rental accepted
+PASS: missing rental rate still blocks a rental total
+PASS: missing duty rates never produce issues
+PASS: reopening excludes all attendance counts and pay but keeps adjustments
+PASS: reclosing restores each included amount once
+PASS: role 2 cannot set rental
+PASS: role 2 cannot read financial report
+PASS: role 3 cannot set rental
+PASS: role 3 cannot read financial report
+PASS: anonymous rental RPC denied
+PASS: rental function remains invoker
+RESULT: 36 focused database checks passed
+PASS: monthly page uses the calculated payroll RPC
+PASS: server result is displayed without browser payroll recalculation
+PASS: follow and learning columns appear beside standby
+PASS: summary displays one follow and two learning entries
+PASS: salary is shown as 100 and removed regional placeholder stays absent
+PASS: duty entries do not increase delivery count
+PASS: driver names remain escaped
+PASS: pay details contain only retained pay components
+PASS: attendance CSV includes separate duty counts
+PASS: reconciliation CSV excludes attendance-only pay lines
+PASS: both CSVs carry the simplified total without removed amounts
+PASS: exports refetch server authority
+PASS: reopening clears attendance and its calculated pay
+PASS: network failure prevents stale payroll exports
+PASS: missing server calculation never falls back to browser pricing
+PASS: inconsistent duty count is rejected
+PASS: inconsistent subtotal is rejected
+PASS: incorrect salary cannot be displayed or exported
+PASS: inconsistent salary readiness is rejected
+PASS: duplicate driver results are rejected
+PASS: duplicate pay source lines are rejected
+PASS: missing rate still blocks salary and displays reason
+PASS: unresolved legacy record shows pending instead of incomplete salary
+PASS: late response cannot replace current month
+PASS: non-finance user has no payroll fetch or settings
+PASS: invalid month fails before API
+PASS: no duplicate pricing tab or completion step added
+PASS: temperature count does not add dashboard columns
+PASS: base field is neither fetched nor required
+PASS: obsolete base component rejected
+PASS: obsolete duty pay line rejected
+PASS: settings display rental only
+PASS: rental editor sends only rental amount and rental revision
+RESULT: 33 Increment 1.4.15 monthly UI integration checks passed
+PASS: driver roster has only name and vehicle columns
+PASS: driver names remain escaped
+PASS: no salary reads occur
+PASS: top driver editor remains and row editor stays removed
+PASS: top editor still opens the name form
+PASS: driver roster has only name and vehicle columns
+PASS: driver names remain escaped
+PASS: no salary reads occur
+PASS: top driver editor remains and row editor stays removed
+PASS: top editor still opens the name form
+RESULT: 10 vehicle UI checks passed
+PASS: Excel exposes only three components without regional/base columns
+PASS: Excel excludes removed pay headings
+PASS: Excel rental deduction remains negative numeric
+PASS: Excel salary preserves exact formula total
+PASS: Excel missing rate salary is not exported as zero
+PASS: Excel unresolved record remains pending
+PASS: legacy screen displays retained components and the final total
+PASS: legacy flat Excel row agrees with dynamic workbook
+RESULT: 8 salary export checks passed
+PASS: mock calculated response passes production decoder
+PASS: four-board fixture has seven closed and seven open deliveries
+PASS: five cold-chain trips appear for same driver on same date
+PASS: monthly records reference the same routes, vehicles and drivers
+PASS: fixture includes rental, special work, standby and both adjustment signs
+PASS: fictional salary uses the approved total
+PASS: demo rental cost deducted for two rental trips
+PASS: standby-only driver has zero pay
+PASS: closed attendance and monthly show the same untimed standby
+PASS: open standby is visible but not yet included in monthly
+PASS: standby demo has no vehicle or temperature fields
+PASS: operational demonstration mutations blocked
+PASS: operational RPC simulation cannot mutate canonical demo
+PASS: Karen demo denied monthly data
+PASS: driver demo denied monthly data
+PASS: open duties displayed separately from closed monthly duties
+PASS: duties require no linked delivery or vehicle
+PASS: standby has no invented hours
+PASS: duty counts do not add pay
+PASS: operational duty writes blocked
+PASS: rental settings can be tried in page memory
+PASS: non-Brian demo cannot save new duty rates
+PASS: ui-attendance.html has no external script/config and blocks network
+PASS: ui-routes.html has no external script/config and blocks network
+PASS: ui-vehicles.html has no external script/config and blocks network
+PASS: ui-monthly.html has no external script/config and blocks network
+RESULT: 26 isolated demo data checks passed (no browser/visual QA)

@@ -1,0 +1,51 @@
+import {PGlite} from '@electric-sql/pglite';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'../..'),pg=new PGlite();let count=0;
+// Keep Node alive while the embedded WASM database finishes asynchronous calls.
+const keepAlive=setInterval(()=>{},1000);
+const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+const one=async sql=>(await pg.query(sql)).rows[0],scalar=async sql=>Object.values(await one(sql))[0];
+const actor=async n=>pg.exec(`RESET ROLE;SELECT set_config('request.jwt.claim.sub','${id(n)}',false);SET ROLE authenticated;`);
+const ok=(name,test=true)=>{assert.ok(test,name);console.log('PASS:',name);count++;};
+const denied=async(sql,re=/.+/)=>assert.rejects(()=>pg.query(sql),re);
+const add=async(date='2026-11-01',slot=1,note='new',route=1,rev=0)=>scalar(`SELECT dashboard_request_attendance_add('${date}','日配',${slot},${route},1,'${note}',${rev})`);
+const review=async(q,approve=true,reason='approved')=>scalar(`SELECT dashboard_review_attendance_change(${q.id},${q.revision},${approve},'${reason}')`);
+const extras=()=>scalar('SELECT count(*)::int FROM daily_attendance_extra_trips');
+const report=()=>scalar("SELECT dashboard_get_finalized_monthly('2026-11-01')");
+async function run(n,date,slot=1){await pg.query(`INSERT INTO runs(id,service_date,route_id,driver_id,vehicle_id,attendance_category,attendance_slot_index) VALUES(${n},'${date}',1,'${id(3)}',1,'日配',${slot})`);}
+const cancel=async(n,note='cancel')=>scalar(`SELECT dashboard_request_attendance_change(${n},NULL,1,1,'${note}',(SELECT dashboard_schedule_revision FROM runs WHERE id=${n}),0,true)`);
+try{
+ await pg.exec(fs.readFileSync(here+'/../increment_146/baseline_fixture.sql','utf8'));
+ for(const inc of ['146','147','148','149','1491','1410','1411','14111']){const f=fs.readdirSync(root+'/supabase/migrations').find(f=>f.includes('increment_'+inc+'_'));await pg.exec(fs.readFileSync(root+'/supabase/migrations/'+f,'utf8'));}
+ await actor(1);await pg.exec(`INSERT INTO delivery_temperature_zones(name) VALUES('常溫');INSERT INTO vehicles(id,plate_number) VALUES(1,'TEST-1'),(2,'TEST-2');INSERT INTO routes(id,route_code,temperature_zone,default_start_time,default_end_time) VALUES(1,'01','常溫','06:00','08:00'),(2,'02','常溫','09:00','11:00');INSERT INTO vehicle_owner_bindings(vehicle_id,driver_id,effective_from) VALUES(1,'${id(3)}','2020-01-01');`);
+ await actor(3);let q=await add();
+ ok('addition saves a proposal without an extra, run, execution, or driver-day mutation',await extras()===0&&await scalar('SELECT count(*)::int FROM runs')===0&&await scalar('SELECT count(*)::int FROM attendance_driver_days')===0&&await scalar('SELECT count(*)::int FROM trip_executions')===0);
+ ok('duplicate addition is idempotent',(await add()).id===q.id);
+ await denied("SELECT dashboard_request_attendance_add('2026-11-01','日配',1,2,1,'different',0)",/已有待審/);ok('different second proposal for same slot blocked');
+ await denied(`SELECT dashboard_save_extra_actual_trip('2026-11-01','${id(3)}','日配',1,1,1,false,'bypass',0,false)`,/申請/);
+ await denied(`INSERT INTO daily_attendance_extra_trips(service_date,driver_id,attendance_category,attendance_slot_index,actual_route_id,actual_vehicle_id,is_rental) VALUES('2026-11-01','${id(3)}','日配',1,1,1,false)`,/permission denied/);ok('legacy RPC and raw extra inserts cannot bypass approval');
+ await denied(`SELECT dashboard_review_attendance_change(${q.id},1,true,'self')`,/主管|調度/);await actor(4);ok('other driver cannot see request',await scalar('SELECT count(*)::int FROM attendance_change_requests')===0);await denied(`SELECT dashboard_review_attendance_change(${q.id},1,true,'other driver')`,/主管|調度/);
+ await actor(2);await denied(`SELECT dashboard_review_attendance_change(${q.id},1,false,' ')`,/原因/);await review(q,false,'not needed');ok('rejection with reason leaves attendance empty',await extras()===0);
+ await actor(3);q=await add();await actor(1);ok('pending addition absent from monthly report',(await report()).deliveries.length===0);
+ await actor(2);const accepted=await review(q);ok('Karen can approve addition; exactly one saved extra with correct rental',accepted.status==='approved'&&await extras()===1&&(await one('SELECT driver_id,is_rental FROM daily_attendance_extra_trips')).driver_id===id(3)&&(await scalar('SELECT is_rental FROM daily_attendance_extra_trips'))===false);
+ await review(q);ok('repeated approval cannot duplicate addition',await extras()===1);
+ const extra=await one('SELECT id,revision FROM daily_attendance_extra_trips');
+ await actor(3);q=await scalar(`SELECT dashboard_request_attendance_change(NULL,${extra.id},1,1,'delete extra',${extra.revision},0,true)`);ok('extra deletion request leaves active trip in place',await scalar(`SELECT status FROM daily_attendance_extra_trips WHERE id=${extra.id}`)==='active');await actor(2);await review(q);ok('extra deletion applies only after approval, preserving record',await scalar(`SELECT status FROM daily_attendance_extra_trips WHERE id=${extra.id}`)==='void');
+ await actor(3);q=await add('2026-11-01',1,'restore',1,2);ok('adding back into voided slot does not restore before approval',await scalar(`SELECT status FROM daily_attendance_extra_trips WHERE id=${extra.id}`)==='void');await actor(2);await review(q);ok('approved re-add restores one record and links request result',await extras()===1&&await scalar(`SELECT result_extra_trip_id FROM attendance_change_requests WHERE id=${q.id}`)===extra.id&&await scalar(`SELECT status FROM daily_attendance_extra_trips WHERE id=${extra.id}`)==='active');
+ await run(10,'2026-11-02');await actor(3);q=await cancel(10);ok('scheduled deletion request leaves saved run unchanged',await scalar('SELECT status FROM runs WHERE id=10')==='assigned');await actor(2);await review(q,false,'keep delivery');ok('rejected deletion preserves scheduled run',await scalar('SELECT status FROM runs WHERE id=10')==='assigned');await actor(3);q=await cancel(10);await actor(2);await review(q);ok('approved scheduled deletion cancels rather than physically deletes',await scalar('SELECT status FROM runs WHERE id=10')==='cancelled');
+ await run(11,'2026-11-03');await actor(3);await denied("SELECT dashboard_request_attendance_change(11,NULL,1,1,' ',1,0,true)",/原因/);ok('scheduled deletion reason required');
+ q=await cancel(11);await pg.exec("UPDATE runs SET status='in_progress' WHERE id=11");await actor(2);ok('starting run after deletion request makes request stale',(await review(q)).status==='stale'&&await scalar('SELECT status FROM runs WHERE id=11')==='in_progress');
+ await actor(3);await denied("SELECT dashboard_save_actual_observation(11,2,2,'bypass',0)",/申請/);
+ await denied(`INSERT INTO daily_run_observations(run_id,driver_id,actual_route_id,actual_vehicle_id,actual_note) VALUES(11,'${id(3)}',2,2,'bypass')`,/申請|permission denied/);
+ await denied("UPDATE runs SET driver_notes='bypass' WHERE id=11",/申請/);await denied("UPDATE runs SET notes='bypass' WHERE id=11",/申請/);await denied("UPDATE runs SET dashboard_schedule_revision=99 WHERE id=11",/申請/);ok('legacy observation, raw observation and note/revision mutations blocked');
+ q=await add('2026-11-04');await actor(2);await run(12,'2026-11-04');ok('slot filled after request makes addition stale',(await review(q)).status==='stale'&&await extras()===1);
+ await actor(3);q=await add('2026-11-05');await actor(2);await scalar(`SELECT dashboard_set_driver_leave('2026-11-05','${id(3)}',true,0)`);ok('leave introduced while pending prevents addition',(await review(q)).status==='stale');
+ await actor(3);q=await add('2026-11-06',1,'inactive route',2);await actor(2);await pg.exec('UPDATE routes SET active=false WHERE id=2');ok('inactive route at approval prevents addition',(await review(q)).status==='stale');await pg.exec('UPDATE routes SET active=true WHERE id=2');
+ await actor(3);q=await add('2026-11-06',2);await actor(2);await pg.exec("INSERT INTO daily_attendance_slot_counts(service_date,category,slot_count) VALUES('2026-11-06','日配',1)");ok('removed slot at approval prevents addition',(await review(q)).status==='stale');
+ await actor(3);q=await add('2026-11-07');await actor(2);await pg.exec(`RESET ROLE;UPDATE profiles SET active=false WHERE id='${id(3)}'`);await actor(2);ok('inactive driver at approval prevents addition',(await review(q)).status==='stale');await pg.exec(`RESET ROLE;UPDATE profiles SET active=true WHERE id='${id(3)}'`);await actor(3);
+ q=await add('2026-11-08');await actor(2);await scalar("SELECT dashboard_close_attendance_through('2026-11-08','final')");ok('closing expires pending addition without saving it',await scalar(`SELECT status FROM attendance_change_requests WHERE id=${q.id}`)==='stale'&&await extras()===1);await actor(1);const m=await report();ok('monthly counts approved closed extras and excludes cancellation/pending proposals',m.deliveries.some(x=>x.extra_trip_id===extra.id)&&!m.deliveries.some(x=>x.run_id===10||x.service_date==='2026-11-08'));
+ await actor(3);await denied("SELECT dashboard_request_attendance_add('2026-11-08','日配',1,1,1,'closed',0)",/已結案/);ok('closed day rejects additions');
+ await actor(2);await scalar("SELECT dashboard_reopen_attendance_date('2026-11-08','correct')");await actor(3);q=await add('2026-11-08');await actor(2);await review(q);await scalar("SELECT dashboard_close_attendance_through('2026-11-08','reclose')");await actor(1);ok('reopen, approve addition, reclose feeds monthly exactly once',(await report()).deliveries.filter(x=>x.service_date==='2026-11-08').length===1);
+ await pg.exec('RESET ROLE;SET ROLE anon;');await denied("SELECT dashboard_request_attendance_add('2026-12-01','日配',1,1,1,'anon',0)",/permission denied/);ok('anonymous new RPC denied');
+ await actor(1);await denied("SELECT dashboard_request_attendance_add('2026-12-01','日配',1,1,1,'not driver',0)",/司機/);ok('addition request cannot be submitted as an arbitrary driver by dispatcher API');
+ console.log(`RESULT: ${count} new database scenarios passed`);
+}catch(e){console.error(e.stack,e.detail||'',e.where||'',e.query?.slice(0,650)||'');process.exitCode=1;}finally{await pg.close();clearInterval(keepAlive);}

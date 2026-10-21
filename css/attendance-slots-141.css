@@ -1,0 +1,22 @@
+/* Increment 1.4.1: finalized attendance column controls, isolated to attendance page. */
+body[data-dashboard="attendance"] .attendance-operations{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+body[data-dashboard="attendance"] .board-tools{flex-wrap:wrap}
+body[data-dashboard="attendance"] #adjust-slots{border:1px solid #4d5056;background:#31343a;color:#f4f4f3;border-radius:10px;padding:11px 15px;white-space:nowrap;font-size:12px;font-weight:720;min-height:40px}
+body[data-dashboard="attendance"] #adjust-slots:hover{border-color:#808389;background:#3d4046}
+body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list){width:min(550px,100%);padding:28px 28px 25px}
+body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list) h2{font-size:24px;margin:0 0 11px}
+body[data-dashboard="attendance"] .attendance-slot-description{color:#adb0b6;line-height:1.65;font-size:13px;margin:0 0 17px}
+body[data-dashboard="attendance"] #attendance-slot-list{display:flex;flex-direction:column;gap:9px}
+body[data-dashboard="attendance"] .attendance-slot-item{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:78px;padding:13px 15px;border:1px solid #3c3f44;border-radius:14px;background:#22252a}
+body[data-dashboard="attendance"] .attendance-slot-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+body[data-dashboard="attendance"] .attendance-slot-copy strong{font-size:15px;color:#f4f4f2}
+body[data-dashboard="attendance"] .attendance-slot-copy span{font-size:11px;color:#969aa1}
+body[data-dashboard="attendance"] .attendance-slot-steps{display:flex;align-items:center;gap:12px;flex:none}
+body[data-dashboard="attendance"] .attendance-slot-steps output{min-width:21px;text-align:center;font-size:17px;font-weight:780;font-variant-numeric:tabular-nums}
+body[data-dashboard="attendance"] .attendance-slot-steps button{display:grid;place-items:center;flex:none;width:43px;height:43px;border:0;border-radius:11px;background:#3a3d43;color:#f4f4f2;font-size:30px;line-height:1}
+body[data-dashboard="attendance"] .attendance-slot-steps button.increase{background:#ffda36;color:#17191c}
+body[data-dashboard="attendance"] .attendance-slot-steps button:disabled{opacity:.28}
+body[data-dashboard="attendance"] .attendance-slot-footnote{color:#92969d;font-size:11px;line-height:1.7;margin:15px 0 0}
+body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list) .actions{margin-top:24px}
+@media(max-width:800px){body[data-dashboard="attendance"] .board-tools{align-items:stretch}body[data-dashboard="attendance"] .attendance-operations{width:100%;justify-content:space-between;gap:10px}body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list){padding:27px 19px max(25px,env(safe-area-inset-bottom))}}
+@media(max-width:380px){body[data-dashboard="attendance"] .attendance-slot-item{padding:10px 9px;gap:5px}body[data-dashboard="attendance"] .attendance-slot-steps{gap:7px}body[data-dashboard="attendance"] .attendance-slot-steps button{width:37px;height:39px}body[data-dashboard="attendance"] .attendance-slot-copy strong{font-size:13px}}

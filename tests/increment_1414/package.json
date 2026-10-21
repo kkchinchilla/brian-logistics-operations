@@ -1,0 +1,11 @@
+{
+  "name": "dispatch-increment-1414-verification",
+  "version": "1.4.14",
+  "private": true,
+  "scripts": {
+    "test": "node database.mjs && node monthly-integration.cjs && node vehicles.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10"
+  }
+}

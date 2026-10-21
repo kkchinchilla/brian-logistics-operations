@@ -1,0 +1,71 @@
+PASS: 320px driver sees three boards
+PASS: 320px unified proposal editor
+PASS: 320px no overflow
+PASS: 320px proposal does not update displayed saved run
+PASS: 320px pending request is read-only
+PASS: 320px approval updates board values
+PASS: 320px no JavaScript errors
+PASS: 375px driver sees three boards
+PASS: 375px unified proposal editor
+PASS: 375px no overflow
+PASS: 375px proposal does not update displayed saved run
+PASS: 375px pending request is read-only
+PASS: 375px approval updates board values
+PASS: 375px no JavaScript errors
+PASS: 390px driver sees three boards
+PASS: 390px unified proposal editor
+PASS: 390px no overflow
+PASS: 390px proposal does not update displayed saved run
+PASS: 390px pending request is read-only
+PASS: 390px approval updates board values
+PASS: 390px no JavaScript errors
+PASS: 768px driver sees three boards
+PASS: 768px unified proposal editor
+PASS: 768px no overflow
+PASS: 768px proposal does not update displayed saved run
+PASS: 768px pending request is read-only
+PASS: 768px approval updates board values
+PASS: 768px no JavaScript errors
+PASS: 1024px driver sees three boards
+PASS: 1024px unified proposal editor
+PASS: 1024px no overflow
+PASS: 1024px proposal does not update displayed saved run
+PASS: 1024px pending request is read-only
+PASS: 1024px approval updates board values
+PASS: 1024px no JavaScript errors
+PASS: 1366px driver sees three boards
+PASS: 1366px unified proposal editor
+PASS: 1366px no overflow
+PASS: 1366px proposal does not update displayed saved run
+PASS: 1366px pending request is read-only
+PASS: 1366px approval updates board values
+PASS: 1366px no JavaScript errors
+PASS: 1920px driver sees three boards
+PASS: 1920px unified proposal editor
+PASS: 1920px no overflow
+PASS: 1920px proposal does not update displayed saved run
+PASS: 1920px pending request is read-only
+PASS: 1920px approval updates board values
+PASS: 1920px no JavaScript errors
+PASS: cumulative close explains range
+PASS: closed board offers reasoned reopen
+PASS: reopen requires reason in UI
+PASS: reopen sends selected date and reason
+PASS: open completed run stays editable
+PASS: closing flow no JS errors
+PASS: unavailable closing service prevents edits and closing
+PASS: ui-attendance.html: monthly links hidden for Karen
+PASS: ui-attendance.html: no JS errors: 
+PASS: ui-routes.html: monthly links hidden for Karen
+PASS: ui-routes.html: no JS errors: 
+PASS: ui-vehicles.html: monthly links hidden for Karen
+PASS: ui-vehicles.html: no JS errors: 
+PASS: ui-monthly.html: monthly links hidden for Karen
+PASS: new monthly direct URL blocked
+PASS: ui-monthly.html: no JS errors: 
+PASS: monthly.html: monthly links hidden for Karen
+PASS: legacy monthly direct URL blocked
+PASS: monthly.html: no JS errors: 
+PASS: Brian monthly report and export remain available
+PASS: Brian monthly no JS errors
+RESULT: 70 browser assertions passed

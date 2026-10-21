@@ -1,0 +1,18 @@
+{
+  "project": "dispatch-system-dev",
+  "migration": "20261020073916_increment_149_payroll_reconciliation",
+  "verified_at": "2026-10-20",
+  "data_comparison": {
+    "tables": 38,
+    "changed": []
+  },
+  "security": {
+    "new_findings": 0,
+    "existing_categories": [
+      "anon_security_definer_function_executable",
+      "authenticated_security_definer_function_executable",
+      "auth_leaked_password_protection"
+    ]
+  },
+  "live_verification": "Brian: bundle read, explicit zero, dated replacement, stale and overlap rejection, deactivate, audit. Other dispatcher/driver: denied. All test writes rolled back. No fake Auth users. Identity sequences may advance."
+}

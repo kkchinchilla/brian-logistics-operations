@@ -1,0 +1,44 @@
+PASS: effective-date boundary and extra trip use exact respective rates
+PASS: snapshot route label retained for traceability
+PASS: basic subtotal never substitutes for unapproved salary
+PASS: missing configuration keeps subtotal unknown
+PASS: duplicate configuration fails closed
+PASS: manual calculation cannot become numeric salary
+PASS: unknown basis is not treated as zero
+PASS: explicit zero rate is valid
+PASS: blank amount is not zero
+PASS: negative rate is rejected
+PASS: missing rate blocks complete route subtotal
+PASS: inactive rate cannot be used
+PASS: overlapping per-run rates are not chosen arbitrarily
+PASS: fixed monthly mid-period rate change is not prorated
+PASS: full month plus overlapping partial monthly rule is ambiguous
+PASS: partial monthly coverage cannot imply full monthly pay
+PASS: per-run basis excludes fixed monthly rule
+PASS: fixed-only basis excludes rate table contribution
+PASS: legacy decimal money adds using integer cents
+PASS: unsupported extra precision cannot silently round
+PASS: invalid adjustment cannot silently drop out
+PASS: wrong-month adjustment invalidates subtotal
+PASS: rental known true needs policy decision
+PASS: unknown rental remains unknown
+PASS: missing snapshot temperature is flagged
+PASS: unconverted standby flagged without adding delivery
+PASS: converted standby is not counted or paid again
+PASS: C replacement marks both payees but physical delivery only once
+PASS: follow-along classification does not become another delivery
+PASS: attendance exception affects unresolved list
+PASS: expense stays separate from payroll
+PASS: reopened dates excluded and visible as unresolved
+PASS: malformed or unfinalized payload fails closed 32
+PASS: malformed or unfinalized payload fails closed 33
+PASS: malformed or unfinalized payload fails closed 34
+PASS: malformed or unfinalized payload fails closed 35
+PASS: malformed or unfinalized payload fails closed 36
+PASS: more than 1000 finalized rows all reconciled
+PASS: unknown historical driver is not silently omitted
+PASS: CSV preserves real zero and negative numbers while escaping formulas
+PASS: reconciliation export has source, closing and rate provenance
+PASS: month range handles leap February
+PASS: invalid month rejected
+RESULT: 43 reconciliation checks passed

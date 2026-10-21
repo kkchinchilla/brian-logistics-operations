@@ -1,0 +1,12 @@
+PASS: addition saves a proposal without an extra, run, execution, or driver-day mutation
+PASS: duplicate addition is idempotent
+PASS: different second proposal for same slot blocked
+PASS: legacy RPC and raw extra inserts cannot bypass approval
+PASS: other driver cannot see request
+PASS: rejection with reason leaves attendance empty
+PASS: pending addition absent from monthly report
+PASS: Karen can approve addition; exactly one saved extra with correct rental
+PASS: repeated approval cannot duplicate addition
+PASS: extra deletion request leaves active trip in place
+PASS: extra deletion applies only after approval, preserving record
+PASS: adding back into voided slot does not restore before approval

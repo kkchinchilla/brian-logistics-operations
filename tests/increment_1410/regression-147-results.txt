@@ -1,0 +1,52 @@
+PASS: driver proposal leaves canonical run unchanged
+PASS: duplicate submission is idempotent
+PASS: driver cannot bypass proposal or approve requests
+PASS: driver request history is private
+PASS: Karen can approve operational changes
+PASS: repeat approval does not apply twice
+PASS: reasoned rejection retains original
+PASS: stale request cannot overwrite a newer correction
+PASS: open completed/confirmed run corrected atomically with same execution
+PASS: no duplicate executions
+PASS: conflicting approval leaves run and request unchanged
+PASS: completion after proposal makes it stale
+PASS: existing extra trip changes only upon approval
+PASS: driver extra-trip void requires approval
+PASS: Brian capability and finance RLS allow access
+PASS: Karen finance capability and row access denied
+PASS: renaming another profile cannot gain Brian access
+PASS: linked special-duty assignment guard retained
+PASS: closure covers all unclosed known dates through cutoff
+PASS: close freezes current approved records and expires pending requests
+PASS: close stores permanent complete snapshot
+PASS: closed dates and empty earlier dates reject late writes and cached direct closeout writes
+PASS: empty past-date state and batch calendar reflect cumulative close
+PASS: dates after cutoff remain editable
+PASS: reasoned reopening affects only selected date
+PASS: reopening retains original close snapshot and reason
+PASS: empty historical date can be deliberately reopened
+PASS: later cumulative close includes reopened dates
+PASS: anonymous RPC access denied
+RESULT: 29 integration scenarios passed
+PASS: closed assigned/in-progress runs count without execution review
+PASS: open next date and void extra excluded
+PASS: pending special work finalized by closing
+PASS: every included delivery has event provenance
+PASS: reopened date excluded immediately
+PASS: open correction does not leak into monthly source
+PASS: reclose replaces one date and preserves older closed dates
+PASS: prior snapshot stays unchanged
+PASS: later master changes cannot alter frozen report metadata
+PASS: Karen denied through public and private entry points
+PASS: driver denied
+PASS: anonymous denied
+PASS: invalid month rejected
+PASS: legacy snapshots supported; run/execution not double counted; extra ID distinct
+PASS: B/C replacement remains one delivery attributed to actual replacement driver
+PASS: old corrected metadata remains unknown instead of borrowing current masters
+PASS: support/follow-along excluded from delivery count; rejected work excluded
+PASS: standby converted once and unconverted pending shift finalized
+PASS: attendance exceptions finalized without per-row review; rejected excluded
+PASS: monthly JSON source is not truncated at 1000 records
+PASS: empty month returns valid complete structure
+RESULT: 21 Increment 1.4.7 scenarios passed plus 29 Increment 1.4.6 regressions

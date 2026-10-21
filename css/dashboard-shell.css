@@ -1,0 +1,85 @@
+/* Increment 1.2 UI integration: responsive, flat charcoal / gray / white / yellow.
+   Loaded AFTER the original approved page stylesheet. No gradients, no avatars. */
+:root { --inc-bg:#17191c; --inc-surface:#202226; --inc-line:#393c40; --inc-yellow:#ffda36; }
+html { min-width:0; }
+body { min-width:0; max-width:100%; overflow-x:hidden; }
+.inc-bar,.inc-demo { font-family: Inter,"Noto Sans TC","PingFang TC",system-ui,sans-serif; box-sizing:border-box; }
+.inc-bar *,.inc-demo *{box-sizing:border-box}
+.inc-bar { position:relative; z-index:2; width:100%; background:#1b1d20; color:#f5f5f3; border-bottom:1px solid #383b41; }
+.inc-bar-inner { max-width:1640px; padding:10px 18px; margin:auto; display:flex; align-items:center; gap:20px; min-width:0; }
+.inc-product{white-space:nowrap;font-size:13px;line-height:1.3;font-weight:760;color:#f7f7f2}
+.inc-product span{font-weight:480;color:#8f9298;margin-left:5px;font-size:10px}
+.inc-nav { display:flex;flex:1;align-items:center;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none; }
+.inc-nav::-webkit-scrollbar{display:none}
+.inc-nav a,.inc-old { color:#bcbec2;flex:none;white-space:nowrap;padding:9px 13px;font-size:12px;border-radius:9px;text-decoration:none; }
+.inc-nav a:hover,.inc-old:hover{background:#33363b;color:#fff}
+.inc-nav a[aria-current=page]{background:#ffda36;color:#191a1c;font-weight:750}
+.inc-old{border:1px solid #4a4d52;margin-left:auto}
+.inc-demo{padding:8px 18px;text-align:center;background:#26292d;color:#aeb1b5;font-size:11px;line-height:1.5;border-bottom:1px solid #393c40;}
+/* Prototype-only device selectors are no longer necessary; actual viewport is authoritative. */
+body[data-dashboard="routes"] .demo-top,
+body[data-dashboard="vehicles"] .preview-toolbar,
+body[data-dashboard="monthly"] .demo-top {display:none!important;}
+body[data-dashboard="attendance"] .demo-controls {justify-content:flex-end; margin-bottom:9px;}
+body[data-dashboard="attendance"] .demo-controls .control-cluster:first-child{display:none!important}
+body[data-dashboard="attendance"] .demo-note {max-width:1600px;}
+/* Editable anchors blend with approved side navigation (no extra visual clutter). */
+.rail a.rail-item,.sidebar a.nav,.nav-list a.nav-item,.sidebar .nav a.nav-item{display:flex;align-items:center;gap:11px;text-decoration:none;cursor:pointer;}
+.rail a.rail-item{display:block;text-decoration:none;}
+/* The page height adapts to the actual browser rather than a 390px preview canvas. */
+body[data-dashboard="attendance"] .prototype {padding-top:13px}
+body[data-dashboard="attendance"] .app {height:clamp(580px,calc(100dvh - 160px),1180px)}
+body[data-dashboard="routes"] .app,
+body[data-dashboard="vehicles"] .app {height:clamp(600px,calc(100dvh - 150px),1180px)}
+body[data-dashboard="monthly"] .stage {min-height:clamp(600px,calc(100dvh - 150px),1180px)}
+/* Width and table scrolling are independent; never squeeze the large matrix to viewport. */
+.stage,.preview-stage,.app,.workspace,.main,.panel,.section,.table-surface,.section-shell{min-width:0}
+.table-scroll,.table-scroller,.scroll-x,.rate-scroll,.tariff-scroller{max-width:100%;overscroll-behavior-x:contain}
+/* Tablet and phone render the same native mobile layout, not a scaled-down desktop frame. */
+@media(max-width:900px){
+  .inc-bar-inner{padding:8px 12px;gap:7px;flex-wrap:wrap}
+  .inc-product{width:100%;font-size:12px;}
+  .inc-nav{order:2;width:100%;flex-basis:100%;}
+  .inc-nav a{padding:10px 12px;font-size:12px;min-height:39px}
+  .inc-old{position:absolute;top:6px;right:10px;font-size:10px;padding:7px 8px}
+  .inc-demo{padding:6px 12px;font-size:10px}
+  body[data-dashboard="attendance"] .prototype,
+  body[data-dashboard="routes"] .prototype,
+  body[data-dashboard="vehicles"] .prototype,
+  body[data-dashboard="monthly"] .layout {padding:8px 0 20px;max-width:none;width:100%;}
+  body[data-dashboard="attendance"] .preview-stage,
+  body[data-dashboard="routes"] .stage,
+  body[data-dashboard="vehicles"] .stage,
+  body[data-dashboard="monthly"] .stage {max-width:none;width:100%;margin:0}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .app,
+  body[data-dashboard="routes"] .stage.mobile .app,
+  body[data-dashboard="vehicles"] .stage.mobile .app,
+  body[data-dashboard="monthly"] .stage.mobile {width:100%;max-width:none;border-radius:0;border-left:0;border-right:0;}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .app,
+  body[data-dashboard="routes"] .stage.mobile .app,
+  body[data-dashboard="vehicles"] .stage.mobile .app {height:clamp(520px,calc(100dvh - 148px),1250px);}
+  body[data-dashboard="monthly"] .stage.mobile {height:clamp(560px,calc(100dvh - 142px),1250px);min-height:0}
+  body[data-dashboard="attendance"] .demo-controls {padding:0 12px;}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .main,
+  body[data-dashboard="routes"] .stage.mobile .main,
+  body[data-dashboard="vehicles"] .stage.mobile .main,
+  body[data-dashboard="monthly"] .stage.mobile .main {min-width:0;}
+  body[data-dashboard="routes"] .stage.mobile .workspace,
+  body[data-dashboard="vehicles"] .stage.mobile .workspace {max-width:100%;}
+  /* Large editing dialogs use available viewport height and scroll internally. */
+  .dialog.show,.drawer.open,.rate-modal.open {max-height:min(90dvh,780px);}
+  .drawer.open,.drawer-form,.drawer-body,.dialog{overscroll-behavior:contain;}
+}
+@media(max-width:390px){
+ .inc-nav a{font-size:11px;padding:9px 10px}
+ .inc-product span{font-size:9px}
+ body[data-dashboard="attendance"] .preview-stage.is-mobile .head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
+ body[data-dashboard="attendance"] .preview-stage.is-mobile .head-actions{width:100%;justify-content:space-between;}
+ body[data-dashboard="monthly"] .stage.mobile .head{gap:8px;}
+ body[data-dashboard="monthly"] .stage.mobile .actions{width:100%;justify-content:flex-start;}
+ body[data-dashboard="routes"] .stage.mobile .page-header,
+ body[data-dashboard="vehicles"] .stage.mobile .header{flex-wrap:wrap;gap:8px;}
+ body[data-dashboard="routes"] .stage.mobile .header-actions,
+ body[data-dashboard="vehicles"] .stage.mobile .header-actions{width:100%;justify-content:flex-end;}
+}
+@media(prefers-reduced-motion:reduce){.app,.drawer,.dialog,.rate-modal{transition:none!important;scroll-behavior:auto!important}}

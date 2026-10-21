@@ -1,0 +1,44 @@
+PASS: 320px closing-only totals, rental and standby
+PASS: 320px no live execution or standby reads
+PASS: 320px page does not overflow
+PASS: 320px detail uses frozen route and closing label
+PASS: 320px CSV matches displayed closing counts
+PASS: 320px no JavaScript errors: 
+PASS: 390px closing-only totals, rental and standby
+PASS: 390px no live execution or standby reads
+PASS: 390px page does not overflow
+PASS: 390px detail uses frozen route and closing label
+PASS: 390px CSV matches displayed closing counts
+PASS: 390px no JavaScript errors: 
+PASS: 768px closing-only totals, rental and standby
+PASS: 768px no live execution or standby reads
+PASS: 768px page does not overflow
+PASS: 768px detail uses frozen route and closing label
+PASS: 768px CSV matches displayed closing counts
+PASS: 768px no JavaScript errors: 
+PASS: 1366px closing-only totals, rental and standby
+PASS: 1366px no live execution or standby reads
+PASS: 1366px page does not overflow
+PASS: 1366px detail uses frozen route and closing label
+PASS: 1366px CSV matches displayed closing counts
+PASS: 1366px no JavaScript errors: 
+PASS: 1920px closing-only totals, rental and standby
+PASS: 1920px no live execution or standby reads
+PASS: 1920px page does not overflow
+PASS: 1920px detail uses frozen route and closing label
+PASS: 1920px CSV matches displayed closing counts
+PASS: 1920px no JavaScript errors: 
+PASS: export reloads authoritative source after another dispatcher reopens a date
+PASS: failed refresh clears totals and blocks stale CSV
+PASS: empty month has zero closed deliveries
+PASS: month race cannot restore earlier month data
+PASS: malformed/unfinalized payload fails closed
+PASS: Karen blocked from current monthly URL
+PASS: ui-monthly.html does not request financial records when unauthorized
+PASS: ui-monthly.html no JS errors
+PASS: Karen blocked from legacy monthly URL
+PASS: monthly.html does not request financial records when unauthorized
+PASS: monthly.html no JS errors
+PASS: legacy monthly uses finalized RPC without raw execution query
+PASS: legacy monthly no JavaScript errors: 
+RESULT: 43 Increment 1.4.7 browser assertions passed

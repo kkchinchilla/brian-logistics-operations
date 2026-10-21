@@ -1,0 +1,35 @@
+const assert=require('node:assert/strict'),E=require('../../js/payroll-reconciliation-1491.js');let count=0;
+const ok=(name,test)=>{assert.ok(test,name);console.log('PASS:',name);count++};
+const date='2026-10-15',run={id:'run:1',run_id:1,driver_id:'a',route_id:1,service_date:date,route_code_snapshot:'R1',route_temperature_zone:'冷藏',is_rental:true,finalized:true,close_event_id:10};
+const base={month:'2026-10',drivers:[{id:'a',display_name:'Test'}],finalized:{version:147,month:'2026-10-01',deliveries:[run],standby:[{id:1,driver_id:'a',service_date:date,converted_to_support:false,finalized:true,close_event_id:10}],special_work:[],attendance_records:[],original_runs:[{id:1,driver_id:'a'}],dates:[{service_date:date,status:'finalized'}]},route_rates:[{route_id:1,region_id:1,zone_name:'冷藏',amount:'1000.25'}],supplements:[{id:1,component:'standby',amount:400,effective_from:'2026-10-01'},{id:2,component:'rental',amount:80,effective_from:'2026-10-01'}],adjustments:[{id:1,driver_id:'a',service_date:date,amount:-20}],expenses:[]};
+function report(change=()=>{}){const x=structuredClone(base);change(x);return E.build(x)}
+let r=report(),s=r.summaries[0];ok('route plus standby minus rental plus adjustment',s.variable===1000.25&&s.standbyPay===400&&s.rentalDeduction===-80&&s.basicSubtotal===1300.25);
+ok('rental line is negative',r.lines.find(l=>l.kind==='rental').amount===-80);
+ok('rental does not create another physical delivery',s.count===1);
+ok('full salary still pending unsupported policies',s.salary===null);
+s=report(x=>{x.configs=[{driver_id:'a',pay_basis:'fixed_plus_run'}];x.rules=[{driver_id:'a',component:'fixed_monthly',amount:999999,active:true},{driver_id:'a',route_id:1,component:'per_run',amount:5,active:true}]}).summaries[0];ok('legacy pricing cannot override or double-count route pay',s.basicSubtotal===1300.25);
+s=report(x=>x.finalized.standby[0].converted_to_support=true).summaries[0];ok('converted standby not paid twice',s.standbyPay===0&&s.basicSubtotal===900.25);
+s=report(x=>x.finalized.deliveries[0].is_rental=false).summaries[0];ok('own vehicle has no deduction',s.rentalDeduction===0&&s.basicSubtotal===1380.25);
+s=report(x=>x.finalized.deliveries[0].is_rental=null).summaries[0];ok('unknown rental is not silently zero',s.rentalDeduction===null&&s.basicSubtotal===null);
+s=report(x=>x.supplements=[]).summaries[0];ok('missing rates remain unknown',s.standbyPay===null&&s.rentalDeduction===null&&s.basicSubtotal===null);
+s=report(x=>x.supplements.forEach(r=>r.amount=0)).summaries[0];ok('explicit zero is valid',s.standbyPay===0&&s.rentalDeduction===0&&s.basicSubtotal===980.25);
+s=report(x=>x.supplements.push({id:3,component:'rental',amount:100,effective_from:date})).summaries[0];ok('new rate includes its effective date',s.rentalDeduction===-100);
+s=report(x=>x.supplements.push({id:3,component:'rental',amount:100,effective_from:'2026-10-16'})).summaries[0];ok('future rate does not alter earlier dates',s.rentalDeduction===-80);
+s=report(x=>x.supplements.push({id:3,component:'rental',amount:100,effective_from:'2026-10-01'})).summaries[0];ok('same-day correction chooses latest version once',s.rentalDeduction===-100);
+s=report(x=>x.supplements[1].effective_from='2026-10-16').summaries[0];ok('no applicable rate before first effective date',s.rentalDeduction===null);
+for(const value of [null,'',-1,'NaN']){s=report(x=>x.route_rates[0].amount=value).summaries[0];ok('invalid/missing route amount unknown '+value,s.variable===null&&s.basicSubtotal===null);}
+s=report(x=>x.route_rates[0].amount=0).summaries[0];ok('zero route rate allowed',s.variable===0&&s.basicSubtotal===300);
+s=report(x=>x.route_rates=[]).summaries[0];ok('missing route never guessed from route code',s.variable===null);
+s=report(x=>x.route_rates.push({...x.route_rates[0]})).summaries[0];ok('duplicate route rates rejected',s.variable===null);
+s=report(x=>x.route_rates[0].zone_name='常溫').summaries[0];ok('changed current zone does not silently reprice closed temperature',s.variable===null);
+s=report(x=>x.route_rates[0].region_id=null).summaries[0];ok('missing region remains unknown',s.variable===null);
+r=report(x=>x.finalized.special_work.push({id:1,driver_id:'b',run_id:1,service_date:date,kind:'breakdown_replacement',finalized:true,close_event_id:10}));ok('replacement preserves one physical delivery and both payee questions',r.summaries.reduce((n,x)=>n+x.count,0)===1&&r.summaries.length===2&&r.summaries.every(x=>x.issues.some(i=>i.code==='special_pay')));
+r=report(x=>x.finalized.special_work.push({id:1,driver_id:'b',run_id:1,service_date:date,kind:'follow_along',finalized:true,close_event_id:10}));ok('follow-along adds no trip or rental charge',r.summaries.find(x=>x.driverId==='b').count===0&&r.summaries.find(x=>x.driverId==='b').rentalDeduction===0);
+r=report(x=>x.expenses.push({id:1,driver_id:'a',service_date:date,amount:50}));ok('expense not silently added to salary',r.summaries[0].basicSubtotal===1300.25);
+assert.throws(()=>report(x=>x.finalized.deliveries[0].finalized=false),/來源/);ok('unclosed record rejected',true);
+assert.throws(()=>report(x=>x.finalized.dates[0].status='reopened'),/來源/);ok('stale reopened record rejected',true);
+assert.throws(()=>report(x=>x.finalized.deliveries.push({...run})),/來源/);ok('duplicate closed record rejected',true);
+const csv=E.csv(E.exportRows(report()));ok('CSV preserves negative rental as numeric amount',csv.includes('"-80"')&&!csv.includes('"\'-80"'));
+ok('CSV carries formula and route-rate identity',csv.includes('路線趟次＋值班津貼－租車費用＋人工調整')&&csv.includes('route:1:冷藏'));
+ok('untrusted string formula escaped',E.csv([['=1+1','-bad',-80]]).includes('"\'=1+1","\'-bad","-80"'));
+console.log(`RESULT: ${count} Increment 1.4.9.1 calculation checks passed`);

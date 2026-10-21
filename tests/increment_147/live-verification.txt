@@ -1,0 +1,8 @@
+Development project: dispatch-system-dev
+Installed migration: 20261020053837_increment_147_finalized_monthly_reporting
+Live October read: 4 closed deliveries; October 20 reopened and excluded; 1 special duty; 0 standby.
+Live transaction assertions: PASS (reopen, reclose, frozen monthly metadata, earlier snapshot preservation, later reopened date preserved, Brian-only public/private entry points, driver denied, anonymous/helper grants revoked). Transaction rolled back.
+Public-table integrity: 38 tables; all pre/post row counts and complete row-content fingerprints unchanged.
+Security advisor: no new 147 function finding. Inherited findings retained for separate follow-up.
+Application JavaScript syntax: 31 files passed.
+Frontend is packaged, not deployed to a hosting destination. User acceptance pending.

@@ -1,0 +1,1272 @@
+/* =========================================================
+   配送趟次管理系統 — style.css
+   Visual direction: clean, modern SaaS / finance dashboard
+   ========================================================= */
+
+/* ---------- Design tokens ---------- */
+
+:root {
+    --bg: #f7f9fa;
+    --surface: #ffffff;
+    --surface-soft: #f8fafb;
+    --surface-hover: #f1f4f6;
+
+    --text: #171a1f;
+    --text-secondary: #69707a;
+    --text-muted: #9299a3;
+
+    --border: #e5e8ec;
+    --border-strong: #d8dde3;
+
+    --primary: #171a1f;
+    --primary-hover: #2a2e35;
+    --primary-contrast: #ffffff;
+
+    /* Top-bar text accents */
+    --topbar-title: #176b66;
+    --topbar-accent: #6573ad;
+    --topbar-user: #424851;
+
+    --accent: #dff6e8;
+    --accent-strong: #38a169;
+    --accent-text: #1f6b46;
+
+    --warning-bg: #fff5d9;
+    --warning-text: #8c6510;
+
+    --danger-bg: #ffe8e8;
+    --danger-text: #a33838;
+
+    --info-bg: #eaf1ff;
+    --info-text: #355b9b;
+
+    --shadow-sm: 0 1px 2px rgba(18, 24, 32, 0.04);
+    --shadow-md: 0 10px 30px rgba(18, 24, 32, 0.06);
+    --shadow-lg: 0 24px 60px rgba(18, 24, 32, 0.10);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+
+    --content-width: 1240px;
+}
+
+
+/* ---------- Reset / base ---------- */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    background: var(--bg);
+
+    font-family:
+        Inter,
+        "Noto Sans TC",
+        "PingFang TC",
+        "Microsoft JhengHei",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 6px;
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+}
+
+h2 {
+    margin-bottom: 18px;
+    font-size: 20px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+}
+
+h3 {
+    margin-bottom: 14px;
+    font-size: 16px;
+    line-height: 1.3;
+    font-weight: 650;
+}
+
+p {
+    color: var(--text-secondary);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* ---------- Buttons ---------- */
+
+button {
+    min-height: 42px;
+    padding: 10px 16px;
+
+    border: 1px solid transparent;
+    border-radius: 999px;
+
+    color: var(--primary-contrast);
+    background: var(--primary);
+
+    font-weight: 650;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 120ms ease,
+        background-color 120ms ease,
+        border-color 120ms ease,
+        opacity 120ms ease;
+}
+
+button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(56, 161, 105, 0.20);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+    transform: none;
+}
+
+button[hidden] {
+    display: none !important;
+}
+
+#cancel-edit-button,
+#logout-button,
+#refresh-report-button {
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+#cancel-edit-button:hover,
+#logout-button:hover,
+#refresh-report-button:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+}
+
+#export-csv-button {
+    color: var(--accent-text);
+    background: var(--accent);
+    border-color: transparent;
+}
+
+#export-csv-button:hover {
+    background: #d1f0dd;
+}
+
+
+/* ---------- Form controls ---------- */
+
+label {
+    display: block;
+    margin-bottom: 7px;
+
+    color: #424851;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: 44px;
+
+    padding: 10px 13px;
+
+    color: var(--text);
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    outline: none;
+
+    transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        background-color 120ms ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--border-strong);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #9fbfae;
+    box-shadow: 0 0 0 4px rgba(56, 161, 105, 0.08);
+}
+
+textarea {
+    min-height: 92px;
+    resize: vertical;
+}
+
+::placeholder {
+    color: #a5abb3;
+}
+
+
+/* =========================================================
+   Login
+   ========================================================= */
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 28px;
+
+    background:
+        radial-gradient(
+            circle at 75% 20%,
+            rgba(199, 241, 217, 0.82),
+            transparent 24rem
+        ),
+        radial-gradient(
+            circle at 15% 85%,
+            rgba(225, 231, 255, 0.7),
+            transparent 26rem
+        ),
+        #f7f8fa;
+}
+
+.login-card {
+    width: min(440px, 100%);
+    padding: 38px;
+
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(225, 229, 234, 0.95);
+    border-radius: 24px;
+
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(16px);
+}
+
+.login-card::before {
+    content: "";
+    display: block;
+
+    width: 42px;
+    height: 8px;
+    margin-bottom: 28px;
+
+    background: var(--primary);
+    border-radius: 999px;
+}
+
+.login-card h1 {
+    margin-bottom: 30px;
+}
+
+.login-card form {
+    display: grid;
+    gap: 18px;
+}
+
+.login-card button[type="submit"] {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 4px;
+}
+
+#error-message {
+    min-height: 22px;
+    margin: 0;
+
+    color: var(--danger-text);
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   Dashboard shell
+   Direction D — 頂部光帶背景（continuous fade）
+   ========================================================= */
+
+.dashboard-page {
+    position: relative;
+    min-height: 100vh;
+    isolation: isolate;
+
+    /*
+       Continuous gradients on the whole page eliminate the hard
+       horizontal cutoff caused by the previous fixed-height layer.
+    */
+    background:
+        radial-gradient(
+            78rem 30rem at 2% -8%,
+            rgba(183, 236, 223, 0.92) 0%,
+            rgba(183, 236, 223, 0.42) 36%,
+            rgba(183, 236, 223, 0.12) 57%,
+            transparent 76%
+        ),
+        radial-gradient(
+            70rem 29rem at 52% -12%,
+            rgba(187, 231, 239, 0.86) 0%,
+            rgba(187, 231, 239, 0.32) 40%,
+            rgba(187, 231, 239, 0.08) 61%,
+            transparent 78%
+        ),
+        radial-gradient(
+            68rem 29rem at 100% -10%,
+            rgba(219, 214, 241, 0.86) 0%,
+            rgba(219, 214, 241, 0.30) 40%,
+            rgba(219, 214, 241, 0.08) 62%,
+            transparent 80%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(239, 251, 247, 0.90) 0%,
+            rgba(241, 249, 250, 0.72) 20rem,
+            rgba(246, 249, 250, 0.46) 38rem,
+            rgba(247, 249, 250, 0.88) 56rem,
+            var(--bg) 72rem
+        );
+
+    background-color: var(--bg);
+    background-repeat: no-repeat;
+}
+
+/* Old fixed-height background layers are intentionally disabled. */
+.dashboard-page::before,
+.dashboard-page::after {
+    content: none;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 18px max(28px, calc((100vw - var(--content-width)) / 2));
+
+    background: rgba(255, 255, 255, 0.58);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.72);
+
+    box-shadow: 0 1px 0 rgba(38, 52, 61, 0.04);
+
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+}
+
+.topbar h1 {
+    margin-bottom: 4px;
+    color: var(--topbar-title);
+    font-size: 24px;
+}
+
+.topbar p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* Dispatcher user's name uses a dark neutral. */
+#dispatcher-name {
+    color: var(--topbar-user);
+}
+
+/* Driver greeting: accented name, dark “，你好”. */
+.topbar h1:has(#driver-name) {
+    color: var(--text);
+}
+
+#driver-name {
+    color: var(--topbar-accent);
+}
+
+.dashboard {
+    position: relative;
+    z-index: 1;
+
+    width: min(var(--content-width), calc(100% - 56px));
+    margin: 32px auto 64px;
+
+    display: grid;
+    gap: 22px;
+}
+
+/* ---------- Panels ---------- */
+
+.panel {
+    position: relative;
+    overflow: hidden;
+
+    padding: 26px;
+
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(229, 232, 236, 0.88);
+    border-radius: var(--radius-lg);
+
+    box-shadow:
+        0 1px 2px rgba(18, 24, 32, 0.03),
+        0 12px 34px rgba(30, 54, 64, 0.055);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.panel > h2:first-child {
+    margin-bottom: 22px;
+}
+
+.panel:hover {
+    border-color: #dde2e7;
+}
+
+
+/* =========================================================
+   Dispatcher form
+   ========================================================= */
+
+#run-form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#form-message {
+    min-height: 22px;
+    margin: 0;
+
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Show failed dispatch / scheduling-conflict messages in red. */
+#form-message.is-error {
+    color: var(--danger-text);
+}
+
+
+/* =========================================================
+   Board / tables
+   ========================================================= */
+
+.board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 20px;
+}
+
+.board-header h2 {
+    margin-bottom: 0;
+}
+
+.board-header p {
+    margin: 3px 0 0;
+    font-size: 13px;
+}
+
+.board-header > input,
+.board-header input[type="date"] {
+    width: auto;
+    min-width: 160px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+}
+
+thead {
+    background: var(--surface-soft);
+}
+
+th,
+td {
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: middle;
+
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+td {
+    color: #353a42;
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: background-color 120ms ease;
+}
+
+tbody tr:hover {
+    background: #fbfcfc;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.table-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.table-actions button {
+    min-height: 32px;
+    padding: 7px 11px;
+
+    color: var(--text);
+    background: #f5f7f8;
+    border-color: var(--border);
+
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.table-actions button:hover {
+    background: #ebeff2;
+}
+
+.table-actions .delete-run-button {
+    color: var(--danger-text);
+    background: var(--danger-bg);
+    border-color: transparent;
+}
+
+#empty-message,
+#driver-report-empty,
+#vehicle-report-empty {
+    margin: 16px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   Monthly report
+   ========================================================= */
+
+.report-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.report-controls input {
+    width: auto;
+    min-width: 156px;
+}
+
+.report-summary {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.summary-card {
+    display: grid;
+    gap: 8px;
+
+    min-width: 210px;
+    padding: 20px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7fbf8 0%,
+            #edf8f1 100%
+        );
+
+    border: 1px solid #dceee2;
+    border-radius: var(--radius-md);
+}
+
+.summary-card span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.summary-card strong {
+    color: var(--text);
+
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.report-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.report-columns > div {
+    padding: 18px;
+
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.report-columns table {
+    background: transparent;
+}
+
+
+/* =========================================================
+   Driver dashboard
+   ========================================================= */
+
+.driver-dashboard {
+    width: min(820px, calc(100% - 40px));
+}
+
+#driver-runs {
+    display: grid;
+    gap: 14px;
+}
+
+.run-card {
+    padding: 20px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        border-color 140ms ease;
+}
+
+.run-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.run-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.run-card-header h3 {
+    margin: 5px 0 0;
+    font-size: 18px;
+}
+
+.run-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+    padding: 6px 11px;
+
+    color: var(--accent-text);
+    background: var(--accent);
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.run-details {
+    display: grid;
+    gap: 4px;
+
+    padding: 16px 0;
+}
+
+.run-details p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.run-details strong {
+    color: var(--text);
+    font-weight: 650;
+}
+
+.run-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.run-actions button {
+    width: 100%;
+    min-height: 46px;
+}
+
+.run-actions textarea {
+    margin-bottom: 2px;
+}
+
+.completed-message {
+    margin: 0;
+    padding: 12px 14px;
+
+    color: var(--accent-text);
+    background: var(--accent);
+
+    border-radius: 12px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   Small utility / feedback details
+   ========================================================= */
+
+::selection {
+    color: #fff;
+    background: #20242a;
+}
+
+a {
+    color: inherit;
+}
+
+strong {
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1050px) {
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    body {
+        font-size: 14px;
+    }
+
+    .dashboard-page {
+        background:
+            radial-gradient(
+                42rem 21rem at -12% -4%,
+                rgba(181, 236, 222, 0.88) 0%,
+                rgba(181, 236, 222, 0.28) 48%,
+                transparent 74%
+            ),
+            radial-gradient(
+                40rem 21rem at 112% -4%,
+                rgba(218, 214, 241, 0.80) 0%,
+                rgba(218, 214, 241, 0.24) 48%,
+                transparent 76%
+            ),
+            linear-gradient(
+                180deg,
+                rgba(238, 251, 247, 0.92) 0%,
+                rgba(241, 248, 250, 0.66) 18rem,
+                rgba(247, 249, 250, 0.90) 34rem,
+                var(--bg) 46rem
+            );
+
+        background-color: var(--bg);
+        background-repeat: no-repeat;
+    }
+
+    .topbar {
+        position: static;
+
+        padding: 18px 20px;
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+
+    .dashboard {
+        width: min(100% - 28px, var(--content-width));
+        margin: 18px auto 40px;
+        gap: 14px;
+    }
+
+    .panel {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .board-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .board-header > input,
+    .board-header input[type="date"] {
+        width: 100%;
+    }
+
+    .report-controls {
+        width: 100%;
+    }
+
+    .report-controls input,
+    .report-controls button {
+        flex: 1 1 auto;
+    }
+
+    .report-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .report-summary {
+        display: block;
+    }
+
+    .summary-card {
+        width: 100%;
+    }
+
+    .table-wrapper {
+        border-radius: 12px;
+    }
+
+    th,
+    td {
+        padding: 12px 13px;
+    }
+
+    .driver-dashboard {
+        width: min(100% - 28px, 820px);
+    }
+}
+
+@media (max-width: 560px) {
+    .login-page {
+        padding: 18px;
+    }
+
+    .login-card {
+        padding: 28px 22px;
+        border-radius: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .topbar {
+        align-items: flex-start;
+    }
+
+    .topbar #logout-button {
+        min-height: 38px;
+        padding: 9px 13px;
+    }
+
+    .run-card {
+        padding: 17px;
+    }
+
+    .run-card-header {
+        gap: 12px;
+    }
+
+    .status-badge {
+        flex-shrink: 0;
+    }
+}
+
+
+/* =========================================================
+   Print
+   ========================================================= */
+
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .topbar,
+    .form-actions,
+    .table-actions,
+    .report-controls,
+    #logout-button {
+        display: none !important;
+    }
+
+    .dashboard {
+        width: 100%;
+        margin: 0;
+    }
+
+    .panel {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+}
+
+/* === 實際趟次審核：fits the existing Finora-inspired style === */
+.route-details {
+    margin: 7px 0 0;
+    color: var(--topbar-title, #176b66);
+    font-size: 12px;
+    font-weight: 550;
+}
+.report-summary {
+    flex-wrap: wrap;
+}
+#execution-review-panel .review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 145px;
+}
+.review-actions button {
+    min-height: 33px;
+    padding: 7px 12px;
+    font-size: 12px;
+}
+.review-actions .review-reject {
+    color: var(--danger-text);
+    background: var(--danger-bg);
+}
+.review-actions .review-confirm {
+    color: var(--accent-text);
+    background: var(--accent);
+}
+.review-warning {
+    display: block;
+    width: 100%;
+    color: var(--danger-text);
+    font-size: 12px;
+}
+#execution-review-panel td {
+    font-size: 13px;
+}
+@media (max-width: 760px) {
+    #execution-review-panel .table-wrapper { overflow-x: auto; }
+    #execution-review-panel table { min-width: 720px; }
+}
+
+/* =========================================================
+   月出勤報表模組（沿用 Direction D 視覺）
+   ========================================================= */
+.finance-page .dashboard { width: min(1320px,calc(100% - 40px)); }
+.finance-page .panel { overflow: visible; }
+.finance-header-actions,.finance-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.finance-header-actions { justify-content: flex-end; }
+.finance-back {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 42px; padding: 9px 17px; border: 1px solid var(--border);
+    border-radius: 999px; background: #fff; color: var(--text);
+    font-size: 14px; font-weight: 650; text-decoration: none;
+}
+.finance-back:hover { background: var(--surface-hover); }
+.finance-controls { margin-bottom: 14px; align-items: flex-end; }
+.finance-controls > div { min-width: 185px; }
+.finance-controls > div input,.finance-controls > div select { width: 100%; }
+.finance-controls button { margin-bottom: 1px; }
+.finance-disclaimer { padding: 12px 16px; background: #fff6e5; border-radius: 12px; color: #785a24; }
+.finance-kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-top: 20px; }
+.finance-kpis .summary-card { min-width: 0; }
+.finance-kpis .summary-card strong { font-size: 27px; }
+.finance-issues { margin: 6px 0 0; padding-left: 24px; color: #805b21; }
+.finance-issues li { margin: 7px 0; }
+.finance-page form { display: grid; gap: 14px; }
+.finance-page form > .form-actions { margin-bottom: 8px; }
+.finance-form-grid { grid-template-columns: repeat(3,minmax(160px,1fr)); }
+.finance-table { margin-top: 24px; }
+.finance-page td { font-size: 13px; }
+.finance-page th { white-space: nowrap; }
+.finance-page textarea { min-height: 76px; }
+.finance-small-btn { min-height: 31px; padding: 7px 12px; font-size: 12px; margin-right: 5px; }
+.finance-blocked { max-width: 680px; margin: 80px auto; padding: 26px; background: #fff; border-radius: 18px; }
+#finance-feedback { min-height: 23px; margin: 12px 0 0; font-weight: 650; }
+@media(max-width:900px) {
+    .finance-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .finance-form-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:560px) {
+    .finance-page .dashboard { width: calc(100% - 24px); }
+    .finance-kpis,.finance-form-grid { grid-template-columns: 1fr; }
+    .finance-header-actions { justify-content: flex-start; }
+    .finance-controls { display: grid; grid-template-columns: 1fr 1fr; }
+    .finance-controls > div,.finance-controls button { min-width: 0; width: 100%; }
+}
+
+/* v0.4 original-template reconciliation mapping controls */
+#finance-template-mapping form {display: grid;gap: 13px;margin-bottom: 20px;}
+#finance-template-mapping .report-columns > div {min-width:0;}
+#finance-template-mapping .template-check {display:flex;align-items:center;gap:10px;margin:0;}
+#finance-template-mapping .template-check input {width:18px;min-height:18px;height:18px;margin:0;flex:0 0 auto;}
+#finance-template-mapping .finance-table {margin-top:16px;}
+@media (max-width: 850px) {#finance-template-mapping .report-columns {grid-template-columns:1fr;}}
+
+/* v0.5: Route management + dynamic-zone report */
+#route-management-form { display:grid;gap:20px; }
+#route-form-feedback { min-height:22px;margin:0;font-size:13px;font-weight:600; }
+#routes-main .table-wrapper { overflow-x:auto; }
+/* Route list: give the explanatory notice breathing room below the table. */
+#routes-main .table-wrapper + .finance-disclaimer {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+#finance-zone-summary td:nth-child(n+3),
+#finance-zone-summary th:nth-child(n+3) { text-align:right; }
+.finance-header-actions { display:flex;gap:10px;align-items:center;flex-wrap:wrap; }
+#finance-zone-summary .finance-disclaimer { margin-top:14px; }
+@media(max-width:720px) {
+  .topbar { flex-wrap:wrap; }
+  #route-management-form .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .finance-header-actions { justify-content:flex-start; }
+}
+@media(max-width:440px) { #route-management-form .form-grid { grid-template-columns:1fr; } }
+
+/* v0.5.5 / stage 1 - special-work administration */
+.special-page .panel form{display:grid;gap:13px;margin-top:15px;margin-bottom:16px}
+.special-page .table-wrapper{overflow-x:auto;margin-top:18px}
+.special-page .table-wrapper table{min-width:720px}
+.special-page .special-feedback{min-height:24px;font-weight:650;color:#176b66}
+.special-page .special-feedback.is-error{color:#a33838}
+.special-page .special-action-wrap{display:flex;align-items:flex-end}
+.special-page .special-action-wrap button{width:100%}
+.special-page .form-grid select:disabled{background:#eef0f3;color:#53606b;opacity:1}
+.special-page .finance-disclaimer{margin-top:12px}
+
+
+/* =========================================================
+   v0.5.5 Increment 1.1.1 — Special-work table action polish
+   Scoped to the supervisor's page; unrelated tables unaffected.
+   ========================================================= */
+
+/* Give long dispatch details and the action column reliable breathing room.
+   Use the existing scrollable wrapper instead of crushing the buttons. */
+.special-page #work-rows { vertical-align: top; }
+.special-page #work-rows tr > td { vertical-align: top; line-height: 1.55; }
+.special-page #work-rows tr > td:first-child { min-width: 230px; }
+.special-page #work-rows tr > td:nth-child(2) { min-width: 130px; }
+.special-page #work-rows tr > td:nth-child(6) { min-width: 170px; }
+.special-page #work-rows tr > td:nth-child(7) { min-width: 185px; }
+.special-page #work-rows tr > td.special-work-actions-cell {
+    min-width: 292px;
+    width: 292px;
+    padding: 16px 18px;
+}
+.special-page #work-rows > tr > td { overflow-wrap: break-word; }
+
+/* Actions are a 2-column group INSIDE a normal table cell, not a flexed TD. */
+.special-page .special-work-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    width: 100%;
+    align-content: start;
+}
+.special-page .special-work-actions .finance-small-btn,
+.special-page .special-review-actions .finance-small-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 38px;
+    margin: 0;
+    padding: 9px 12px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.35;
+    text-align: center;
+    white-space: normal;
+    word-break: keep-all;
+}
+.special-page .special-work-actions .special-work-fix,
+.special-page .special-work-actions .special-work-finalize,
+.special-page .special-work-actions .special-work-alert,
+.special-page .special-work-actions .special-work-note {
+    grid-column: 1 / -1;
+}
+.special-page .special-work-actions .special-work-alert,
+.special-page .special-work-actions .special-work-note {
+    display: block;
+    margin: 0;
+    min-width: 0;
+    padding: 11px 12px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+.special-page .special-work-actions .special-work-alert {
+    background: #fff3f1;
+    border: 1px solid #f2d1cc;
+    color: #a63832;
+}
+.special-page .special-work-actions .special-work-note {
+    background: #eef8f4;
+    border: 1px solid #cce7db;
+    color: #296450;
+}
+.special-page .special-work-actions .special-work-fix,
+.special-page .special-work-actions .special-work-finalize {
+    min-height: 42px;
+}
+.special-page .special-work-actions .special-work-confirm {
+    background: var(--primary);
+    color: var(--primary-contrast);
+}
+.special-page .special-work-actions .special-work-reject,
+.special-page .special-review-actions button:last-child {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+.special-page .special-work-actions .special-work-reject:hover,
+.special-page .special-review-actions button:last-child:hover {
+    background: #f7f8fa;
+    border-color: var(--border-strong);
+}
+.special-page .special-work-actions button:disabled {
+    opacity: 1;
+    background: #f1f3f5;
+    color: #929aa5;
+    border-color: #e5e9ee;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+.special-page .special-review-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    min-width: 152px;
+}
+.special-page #standby-rows td:last-child { min-width: 188px; }
+
+/* Below desktop widths, scroll the table, never compress the action group. */
+@media (max-width: 1250px) {
+    .special-page #work-rows tr > td.special-work-actions-cell { min-width: 276px; }
+}
+@media (max-width: 600px) {
+    .special-page #work-rows tr > td.special-work-actions-cell { min-width: 268px; padding: 13px 14px; }
+    .special-page .special-work-actions { gap: 8px; }
+}

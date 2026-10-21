@@ -1,0 +1,28 @@
+// Non-production regression guard. Run: node tests/check_increment_141.js
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const js=read('js/production-attendance.js');
+const sql=read('sql/141_01_attendance_column_counts.sql');
+const html=read('ui-attendance.html');
+const css=read('css/attendance-slots-141.css');
+assert(js.includes("{name:'日配',prefix:'日',base:2}"));
+assert(js.includes("{name:'OC',prefix:'OC',base:3}"));
+assert(js.includes("{name:'鮮二',prefix:'鮮二',base:3}"));
+assert(js.includes("{name:'冷凍',prefix:'冷凍',base:4}"));
+assert(js.includes("{name:'低鮮',prefix:'低鮮',base:4}"));
+assert(js.includes('dashboard_set_attendance_slot_counts'));
+assert(js.includes('其他路線'));
+assert(js.includes('attendance_category,attendance_slot_index'));
+assert(js.includes('if(!slotReady)'));
+assert(!js.includes('attendance_category:route.temperature_zone'));
+assert(html.includes('attendance-slots-141.css'));
+assert(css.includes('attendance-slot-steps'));
+assert(sql.includes('dashboard_guard_attendance_slot_count'));
+assert(sql.includes('dashboard_guard_attendance_slot_assignment'));
+assert(sql.includes('dashboard_attendance_unique_driver_slot') || sql.includes('runs_attendance_unique_driver_slot'));
+assert(sql.includes('pg_advisory_xact_lock'));
+assert(sql.includes("review_status='confirmed'"));
+assert(sql.includes('daily_attendance_closeouts'));
+assert(sql.includes('ENABLE ROW LEVEL SECURITY'));
+assert(!/\b(TRUNCATE|DROP TABLE|DELETE FROM public\.runs|UPDATE public\.runs SET)\b/i.test(sql));
+console.log('PASS: Increment 1.4.1 slot defaults/mapping, guards, RPC, CSS and non-destructive migration');

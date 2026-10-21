@@ -1,0 +1,21 @@
+{
+  "name": "brian-logistics-operations",
+  "version": "1.4.15",
+  "private": true,
+  "description": "Logistics attendance, dispatch, fleet and payroll reconciliation",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node tests/increment_1415/database.mjs && node tests/increment_1415/monthly-integration.cjs && node tests/increment_1415/vehicles.cjs && node tests/increment_1415/exports.cjs",
+    "test:demo": "python3 tests/increment_1415/build_demo.py && node tests/increment_1415/demo.cjs",
+    "schema:generate": "node scripts/schema.mjs",
+    "test:schema": "node scripts/test-schema.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "exceljs": "4.4.0"
+  }
+}

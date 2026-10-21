@@ -1,0 +1,48 @@
+import {PGlite} from '@electric-sql/pglite';
+import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';import assert from 'node:assert/strict';import {createRequire} from 'node:module';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..'),pg=new PGlite(),require=createRequire(import.meta.url);let checks=0;
+const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+const scalar=async(sql,args)=>(Object.values((await pg.query(sql,args)).rows[0]))[0];
+const actor=async n=>pg.exec(`RESET ROLE;SELECT set_config('request.jwt.claim.sub','${id(n)}',false);SET ROLE authenticated;`);
+const ok=(name,v=true)=>{assert.ok(v,name);checks++;console.log('PASS:',name)};
+const denied=async(name,sql,args,pattern=/Brian|底薪|月份|原因|司機|permission|row-level|constraint|已變更/)=>{await assert.rejects(()=>pg.query(sql,args),pattern);ok(name)};
+const get=async(month='2026-10-01')=>scalar('select dashboard_get_calculated_payroll($1)',[month]);
+const latest=async driver=>Number(await scalar('select coalesce(max(id),0) from driver_base_salaries where driver_id=$1',[id(driver)]));
+const set=async(driver,amount,month='2026-10-01',revision=null)=>scalar('select dashboard_save_driver_base_salary($1,$2,$3,$4,$5)',[id(driver),amount,month,'isolated test',revision??await latest(driver)]);
+try{
+ await pg.exec(fs.readFileSync(root+'/tests/increment_146/baseline_fixture.sql','utf8'));
+ for(const inc of ['146','147','148','149','1491','1410','1411','14111','1412','1413','1414'])await pg.exec(fs.readFileSync(root+'/supabase/migrations/'+fs.readdirSync(root+'/supabase/migrations').find(f=>f.includes('increment_'+inc+'_')),'utf8'));
+ await actor(1);let b=await get();ok('new schema does not invent base salaries',b.base_salaries.length===0&&b.calculation.summaries.every(x=>x.baseSalary===null&&x.salary===null&&x.issues.some(i=>i.code==='base_salary_missing')));
+ const a=await set(3,30000),other=await set(4,35000);b=await get();ok('each driver has an independent monthly base',b.calculation.summaries.find(x=>x.driverId===id(3)).salary===30000&&b.calculation.summaries.find(x=>x.driverId===id(4)).salary===35000);
+ await set(3,33000,'2026-11-01');await set(3,28000,'2026-09-01');b=await get();ok('later entry with earlier effective month does not supersede October',b.calculation.summaries.find(x=>x.driverId===id(3)).baseSalary===30000);
+ ok('future raise applies only from its effective month',(await get('2026-11-01')).calculation.summaries.find(x=>x.driverId===id(3)).salary===33000);
+ ok('base before first effective month remains missing',(await get('2026-08-01')).calculation.summaries.find(x=>x.driverId===id(3)).baseSalary===null);
+ const before=await latest(3);await set(3,32000);b=await get();ok('same-month correction uses latest version and retains history',b.calculation.summaries.find(x=>x.driverId===id(3)).baseSalary===32000&&Number(await scalar('select count(*) from driver_base_salaries where driver_id=$1',[id(3)]))===4);
+ await denied('stale editor cannot overwrite a new base','select dashboard_save_driver_base_salary($1,100,$2,$3,$4)',[id(3),'2026-10-01','stale',before]);
+ await set(4,0);ok('explicit zero is configured and payable',(await get()).calculation.summaries.find(x=>x.driverId===id(4)).salary===0);
+ await actor(2);await pg.exec("INSERT INTO delivery_temperature_zones(name) VALUES('常溫');INSERT INTO delivery_regions(id,name) VALUES(1,'Test');INSERT INTO vehicles(id,plate_number) VALUES(1,'TEST');INSERT INTO routes(id,route_code,temperature_zone,delivery_region_id,default_start_time,default_end_time) VALUES(1,'01','常溫',1,'06:00','07:00');INSERT INTO delivery_region_zone_rates(region_id,zone_name,delivery_fee) VALUES(1,'常溫',150);");
+ await pg.exec(`INSERT INTO runs(id,service_date,route_id,driver_id,vehicle_id,attendance_category,attendance_slot_index) VALUES(20,'2026-10-15',1,'${id(3)}',1,'日配',2);`);
+ const empty={kind:'empty',id:null,revision:0,observation_revision:0};
+ for(const [kind,cat,slot] of [['follow_along','日配',1],['learning','OC',1],['learning','OC',2]])await scalar('select dashboard_save_attendance_duty($1,$2,$3,$4,$5,$6)',['2026-10-15',id(3),cat,slot,empty,{kind,note:''}]);
+ await scalar('select dashboard_save_attendance_standby($1,$2,$3,1,$4,$5)',['2026-10-15',id(3),'鮮二',empty,{kind:'standby',note:''}]);
+ await scalar("select dashboard_close_attendance_through('2026-10-15','isolated close')");
+ await actor(1);await scalar("select dashboard_save_duty_supplements('2026-10-01',200,100,50,25,'isolated',0)");
+ await pg.exec(`INSERT INTO payroll_adjustments(driver_id,service_date,amount,category,reason) VALUES('${id(3)}','2026-10-15',100,'allowance','test'),('${id(3)}','2026-10-15',-50,'deduction','test');`);
+ b=await get();let sum=b.calculation.summaries.find(x=>x.driverId===id(3));ok('seven-component formula includes base once and deducts rental',sum.salary===32400&&sum.baseSalary===32000&&sum.variable===150&&sum.standbyPay===200&&sum.followAlongPay===50&&sum.learningPay===50&&sum.rentalDeduction===-100&&sum.adjustment===50);
+ ok('monthly base has a single line without a closeout dependency',b.calculation.lines.filter(x=>x.driverId===id(3)&&x.kind==='base').length===1&&b.calculation.lines.find(x=>x.driverId===id(3)&&x.kind==='base').closeEventId===null);
+ globalThis.PayrollReconciliation1491=require('../../js/payroll-reconciliation-1491.js');const adapter=require('../../js/payroll-server-1412.js');adapter.read(b,'2026-10');ok('server report passes actual browser decoder');
+ const ref=PayrollReconciliation1491.build({...b,month:'2026-10',drivers:[{id:id(3),display_name:'One'},{id:id(4),display_name:'Two'}]});ok('isolated reference calculator agrees with server',ref.summaries.find(x=>x.driverId===id(3)).salary===32400);
+ const snapshotHash=await scalar("select md5(string_agg(snapshot::text,'|' order by id)) from attendance_closeout_events");await set(3,32100);await get();ok('salary setting never rewrites attendance closeouts',snapshotHash===await scalar("select md5(string_agg(snapshot::text,'|' order by id)) from attendance_closeout_events"));
+ await scalar("select dashboard_reopen_attendance_date('2026-10-15','isolated reopen')");sum=(await get()).calculation.summaries.find(x=>x.driverId===id(3));ok('reopening excludes attendance but keeps monthly base and adjustments',sum.salary===32150&&sum.count===0);
+ await scalar("select dashboard_close_attendance_through('2026-10-15','isolated reclose')");ok('reclosing adds attendance exactly once',(await get()).calculation.summaries.find(x=>x.driverId===id(3)).salary===32500);
+ for(const amount of [null,-1,1.5,10000001,'NaN','Infinity'])await denied('invalid base '+amount,'select dashboard_save_driver_base_salary($1,$2,$3,$4,$5)',[id(3),amount,'2026-10-01','invalid',await latest(3)]);
+ for(const month of [null,'2026-10-02','1899-12-01'])await denied('invalid effective month '+month,'select dashboard_save_driver_base_salary($1,100,$2,$3,$4)',[id(3),month,'invalid',await latest(3)]);
+ await denied('blank reason rejected','select dashboard_save_driver_base_salary($1,100,$2,$3,$4)',[id(3),'2026-10-01','  ',await latest(3)]);
+ await denied('dispatcher cannot be a salary recipient','select dashboard_save_driver_base_salary($1,100,$2,$3,0)',[id(2),'2026-10-01','invalid']);
+ await denied('history cannot be updated','update driver_base_salaries set amount=1 where id=$1',[a.id]);await denied('history cannot be deleted','delete from driver_base_salaries where id=$1',[a.id]);
+ ok('base changes create finance audit rows',Number(await scalar("select count(*) from finance_audit_logs where source_table='driver_base_salaries'"))===Number(await scalar('select count(*) from driver_base_salaries')));
+ for(const role of [2,3]){await actor(role);ok('non-finance role '+role+' cannot read salary history',Number(await scalar('select count(*) from driver_base_salaries'))===0);await denied('non-finance role '+role+' cannot set base','select dashboard_save_driver_base_salary($1,100,$2,$3,0)',[id(3),'2026-10-01','forbidden']);await denied('non-finance role '+role+' cannot insert directly','insert into driver_base_salaries(driver_id,amount,effective_month,reason) values($1,100,$2,$3)',[id(3),'2026-10-01','forbidden']);await denied('non-finance payroll denied','select dashboard_get_calculated_payroll($1)',['2026-10-01']);}
+ await pg.exec('RESET ROLE;SET ROLE anon;');await denied('anonymous cannot read base','select * from driver_base_salaries');await denied('anonymous cannot write base','select dashboard_save_driver_base_salary($1,100,$2,$3,0)',[id(3),'2026-10-01','forbidden']);
+ await pg.exec('RESET ROLE');ok('new salary RPC remains invoker',await scalar("select not prosecdef from pg_proc where proname='dashboard_save_driver_base_salary'"));ok('new table RLS enabled',await scalar("select relrowsecurity from pg_class where oid='public.driver_base_salaries'::regclass"));
+ console.log(`RESULT: ${checks} focused database checks passed`);
+}finally{await pg.close();}

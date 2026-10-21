@@ -1,0 +1,235 @@
+/* === One-day driver schedule template and selected-date batch apply (Supabase integration from approved P5) === */
+.plan-open{background:#393830;border-color:#70612b;color:#ffe27a}
+.plan-open:hover{background:#46402b;border-color:#ffda36}
+.plan-backdrop{display:none;position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.7)}
+.plan-backdrop.show{display:block}
+.plan-panel{display:none;position:absolute;inset:16px 18px;z-index:21;background:#292c30;border:1px solid #51545a;border-radius:18px;box-shadow:0 22px 75px #000b;flex-direction:column;overflow:hidden;min-width:0}
+.plan-panel.show{display:flex}
+.plan-header{padding:17px 22px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #43464b}
+.plan-heading{min-width:0}.plan-heading h2{margin:0;font-size:19px;line-height:1.4;letter-spacing:-.025em}.plan-heading p{font-size:11px;color:#a9acb1;margin:4px 0 0}
+.plan-x{background:#3d4045;border:1px solid #51545a;color:#eee;border-radius:9px;width:34px;height:34px;flex:none;font-size:22px;line-height:1}
+.plan-topbar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;padding:13px 22px 11px;background:#26292d}
+.plan-topbar label{color:#aeb1b5;font-size:11px}
+.plan-topbar select{background:#1f2226;border:1px solid #50535a;color:#f7f7f5;border-radius:9px;padding:9px 31px 9px 11px;max-width:180px;font-size:12px}
+.plan-topbar .plan-ref{color:#92969b;font-size:10px;margin-left:auto}
+.plan-tabs{display:flex;gap:5px;padding:9px 22px 0;border-bottom:1px solid #44474d;overflow-x:auto;flex:none}
+.plan-tabs button{background:transparent;border:0;color:#afb2b8;padding:10px 14px;white-space:nowrap;font-size:12px;font-weight:700;border-bottom:3px solid transparent}
+.plan-tabs button.active{color:#ffda36;border-bottom-color:#ffda36}
+.plan-scroll{padding:18px 22px 22px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;scrollbar-color:#666 #292c30}
+.plan-section-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap;margin:0 0 13px}
+.plan-section-head h3{margin:0;font-size:15px;font-weight:730}.plan-section-head p{font-size:11px;color:#a8abb0;margin:5px 0 0;line-height:1.6}
+.plan-info{border:1px solid #494b50;border-radius:10px;padding:10px 12px;margin:0 0 15px;color:#b7bac0;background:#24272b;font-size:11px;line-height:1.65}
+.plan-info b{color:#f2f2ef}.plan-weekdays label{display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid #55585d;background:#22252a;color:#f0f0ee;padding:9px 10px;border-radius:9px;cursor:pointer;min-width:57px;font-size:12px}
+.plan-fieldlabel{display:block;color:#dadbdd;font-size:12px;font-weight:700;margin:12px 0 8px}
+.plan-rowlist{display:flex;flex-direction:column;gap:9px}
+.plan-route-row{display:grid;grid-template-columns:minmax(100px,1.15fr) minmax(90px,.85fr) minmax(120px,1fr) minmax(110px,1fr) 34px;align-items:end;gap:8px;background:#23262a;border:1px solid #414449;border-radius:11px;padding:12px}
+.plan-route-row label{font-size:10px;color:#9da1a8;display:flex;flex-direction:column;gap:6px;min-width:0}
+.plan-route-row input,.plan-route-row select{width:100%;min-width:0;background:#191c20;border:1px solid #4d5057;border-radius:8px;padding:9px 8px;color:#f5f5f3;font-size:12px}
+.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid #ffda36}
+.plan-tiny-remove{height:35px;background:#35383d;border:1px solid #56595f;border-radius:8px;color:#f4d3d3;font-size:20px}
+.plan-foot-actions{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:15px;flex-wrap:wrap}
+.plan-btn{background:#3a3d42;color:#f5f5f4;border:1px solid #55585e;border-radius:9px;font-size:12px;font-weight:700;padding:10px 13px;cursor:pointer}
+.plan-btn:hover{border-color:#f7d23a}
+.plan-btn.primary{background:#ffda36;border-color:#ffda36;color:#18191b}
+.plan-btn.danger{border-color:#815453;color:#f3b8b8}
+.plan-error{font-size:11px;color:#ffe274;margin:8px 0;min-height:13px}
+.plan-success{display:inline-flex;color:#a9d0ab;font-size:11px}
+.plan-apply-grid{display:grid;grid-template-columns:minmax(170px,220px) 1fr;gap:14px;margin-bottom:12px}
+.plan-minicard{background:#23262a;border:1px solid #45484e;border-radius:12px;padding:16px;min-width:0}
+.plan-minicard h4{margin:0 0 9px;font-size:13px}.plan-minicard p{font-size:11px;color:#aeb1b6;line-height:1.65;margin:7px 0}
+.plan-month-picker{background:#191c20;border:1px solid #555960;border-radius:9px;padding:10px 9px;color:#f7f7f5;color-scheme:dark;width:100%;font-size:13px;max-width:210px}
+.plan-reapply{display:flex;align-items:flex-start;gap:8px;color:#b7b9be;font-size:11px;line-height:1.5;margin:14px 0}
+.plan-reapply input{accent-color:#ffda36;margin-top:2px}
+.plan-apply-preview{max-height:152px;overflow:auto;border-top:1px solid #45484e;margin-top:10px;padding-top:8px;font-size:11px;color:#abb0b5;line-height:1.85}
+.plan-empty{padding:14px;background:#22252a;border:1px dashed #555960;border-radius:9px;color:#aeb2b8;line-height:1.6;font-size:12px}
+/* One route/vehicle/note editor; no pre-schedule/actual tabs. */
+.attendance-edit-help{font-size:11px;line-height:1.6;color:#acafb5;margin-top:11px}
+.plan-month-badge{margin-left:5px;font-size:9px;color:#ffe079;font-weight:550;white-space:nowrap}
+@media(max-width:920px){.plan-route-row{grid-template-columns:repeat(2,minmax(0,1fr)) 34px}.plan-route-row label:nth-child(3){grid-column:1}.plan-route-row label:nth-child(4){grid-column:2}.plan-route-row .plan-tiny-remove{grid-column:3;grid-row:2}}@media(max-width:767px){
+.plan-panel{inset:0;border:0;border-radius:0;max-height:100%}}@media(max-width:767px){
+.plan-header{padding:15px 16px 10px}}@media(max-width:767px){
+.plan-topbar{padding:10px 16px}}@media(max-width:767px){
+.plan-topbar .plan-ref{width:100%;margin-left:0}}@media(max-width:767px){
+.plan-tabs{padding:7px 12px 0}}@media(max-width:767px){
+.plan-tabs button{padding:10px 11px}}@media(max-width:767px){
+.plan-scroll{padding:15px 14px 27px}}@media(max-width:767px){
+.plan-apply-grid{grid-template-columns:1fr}}
+@media(max-width:510px){.main-tools .plan-open{padding:9px 11px}}
+
+
+/* Per-date selection is explicit; weekday shortcuts only select, never create recurring rules. */
+.plan-datebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.plan-datebar .plan-month-picker{flex:1;max-width:190px;min-width:125px}
+.plan-datebar .plan-btn{padding:9px 12px}
+.plan-calendar{background:#202327;border:1px solid #44474d;border-radius:12px;padding:11px;margin-top:12px}
+.plan-calendar-head,.plan-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.plan-calendar-head{margin-bottom:7px}.plan-calendar-head span{text-align:center;color:#8f939a;font-size:10px;padding:5px 0}
+.plan-calendar-grid>span{min-height:38px}
+.plan-calendar-day{min-width:0;min-height:38px;border:1px solid #42464b;border-radius:8px;color:#e8e8e5;background:#303338;font-size:12px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.plan-calendar-day:hover:not(:disabled){border-color:#ffda36}
+.plan-calendar-day.selected{background:#ffda36;color:#18191b;border-color:#ffda36;font-weight:800}
+.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#ffda36}
+.plan-calendar-day:disabled{background:#26292d;color:#777b81;text-decoration:line-through;border-color:#33363b;cursor:not-allowed}
+.plan-pick-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 3px}
+.plan-pick-actions .plan-btn{font-size:11px;padding:8px 10px}
+.plan-date-summary{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 0}
+.plan-summary-pill{padding:6px 10px;background:#3c3e42;border:1px solid #55585d;border-radius:16px;color:#e9e9e7;font-size:11px}
+.plan-summary-note{font-size:10px;color:#a9adb3;line-height:1.6;margin-top:9px}
+.plan-apply-grid{grid-template-columns:minmax(240px,1.15fr) minmax(220px,1fr)}@media(max-width:767px){
+.plan-calendar{padding:8px}}@media(max-width:767px){.plan-calendar-grid{gap:4px}}@media(max-width:767px){
+.plan-calendar-day{min-height:36px}}@media(max-width:767px){.plan-datebar .plan-month-picker{min-width:110px}}
+@media(max-width:920px){.plan-apply-grid{grid-template-columns:1fr}}
+
+/* P4: editable, date-specific leave; preserve the original matrix dimensions. */
+.matrix td .leave-toggle.empty{border:1px dashed #484c51;color:#8d9299}
+.matrix td .leave-toggle.empty:hover{border-color:#ffda36;color:#f5f5f3}
+.matrix td .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:-2px}
+.matrix td button.cell:disabled,.matrix td button.cell:disabled:hover{cursor:not-allowed;border-color:transparent;background:transparent;color:#54575b}
+.matrix td button.cell:not(.empty):disabled{background:#32353a;color:#b3b7bd}
+.dialog.leave-dialog{max-height:calc(100% - 28px);overflow-y:auto;scrollbar-color:#676b70 #292c30}
+.leave-status-options{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.dialog label.leave-option{display:flex;align-items:center;gap:11px;margin:0;padding:13px 12px;border:1px solid #464a50;border-radius:12px;background:#22252a;cursor:pointer}
+.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:#ffda36}
+.leave-option strong{display:block;font-size:13px;font-weight:700;color:#f5f5f3}
+.leave-option small{display:block;margin-top:4px;font-size:11px;color:#a5a9b0;line-height:1.5}
+.dialog .leave-option:has(input:checked){border-color:#ffda36}
+.dialog .leave-option:has(input:focus-visible){outline:2px solid #ffda36;outline-offset:2px}
+.dialog .leave-option:has(input:disabled){opacity:.5;cursor:not-allowed}
+.dialog .leave-help{font-size:11px;color:#afb3ba;line-height:1.65;margin:12px 0 0}
+.dialog .leave-help.is-blocked{color:#ffe174}
+.plan-calendar-day.is-off:disabled{text-decoration:none;border-style:dashed;flex-direction:column;gap:1px}
+.plan-calendar-day.is-off small{font-size:9px;line-height:1;color:#aaadb3}
+.toast{max-width:calc(100% - 28px);white-space:normal;width:max-content;line-height:1.6;text-align:center}@media(max-width:767px){
+
+/* P5 — mobile-only layout correction for the single-day template editor.
+   All form behavior, templates, dates, permissions and desktop styling stay P4. */
+.plan-route-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+  align-items: stretch;
+  gap: 12px 10px;
+  padding: 14px;
+  min-width: 0;
+}}@media(max-width:767px){
+.plan-route-row > label:nth-child(1) { grid-column: 1; grid-row: 1; }}@media(max-width:767px){
+.plan-route-row > label:nth-child(2) { grid-column: 2; grid-row: 1; }}@media(max-width:767px){
+.plan-route-row > label:nth-child(3) { grid-column: 1; grid-row: 2; }}@media(max-width:767px){
+.plan-route-row > label:nth-child(4) { grid-column: 2; grid-row: 2; }}@media(max-width:767px){
+.plan-route-row > label {
+  min-width: 0;
+  gap: 7px;
+  font-size: 11px;
+  line-height: 1.3;
+}}@media(max-width:767px){
+.plan-route-row input,
+.plan-route-row select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 14px;
+  padding: 10px 9px;
+}}@media(max-width:767px){
+.plan-route-row .plan-tiny-remove {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  min-width: 104px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 19px;
+  line-height: 1;
+}}@media(max-width:767px){
+.plan-route-row .plan-tiny-remove::before {
+  content: '移除此趟';
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5c9c9;
+}}@media(max-width:767px){
+.plan-panel { min-width: 0; width: 100%; }}@media(max-width:767px){
+.plan-heading h2 { font-size: 18px; line-height: 1.35; }}@media(max-width:767px){
+.plan-heading p { font-size: 11px; line-height: 1.55; }}@media(max-width:767px){
+.plan-topbar { gap: 8px 10px; }}@media(max-width:767px){
+.plan-topbar select { min-height: 42px; max-width: 100%; }}@media(max-width:767px){
+.plan-tabs { gap: 0; }}@media(max-width:767px){
+.plan-tabs button {
+  flex: 1 1 50%;
+  min-width: 0;
+  padding: 11px 4px;
+  text-align: center;
+  font-size: 11px;
+}}@media(max-width:767px){
+.plan-scroll {
+  min-width: 0;
+  padding: 16px 14px 25px;
+}}@media(max-width:767px){
+.plan-rowlist { gap: 11px; }}@media(max-width:767px){
+.plan-info { padding: 11px 12px; }}@media(max-width:767px){
+.plan-foot-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 9px;
+}}@media(max-width:767px){
+.plan-foot-actions > .plan-btn {
+  min-width: 0;
+  min-height: 45px;
+  padding: 10px 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: normal;
+}}@media(max-width:767px){
+.plan-foot-actions > .plan-btn.primary {
+  grid-column: 1 / -1;
+  min-height: 46px;
+  font-size: 13px;
+}}
+@media(max-width:360px) {@media(max-width:767px){
+  .plan-header { padding: 13px 12px 10px; }}@media(max-width:767px){
+  .plan-heading h2 { font-size: 16px; }}@media(max-width:767px){
+  .plan-scroll { padding: 14px 11px 22px; }}@media(max-width:767px){
+  .plan-route-row { padding: 11px; gap: 10px 8px; }}@media(max-width:767px){
+  .plan-tabs button { font-size: 10px; }}
+}
+
+/* Production shell integration — does not change any other Dashboard. */
+.plan-backdrop{position:fixed;z-index:220;inset:0}
+.plan-panel{position:fixed;z-index:221;inset:auto;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% - 48px);max-width:1050px;height:min(840px,calc(100dvh - 48px));max-height:calc(100dvh - 48px)}
+.plan-panel button:disabled{opacity:.5;cursor:not-allowed}
+.plan-header,.plan-topbar{flex-shrink:0}
+.plan-panel select{color-scheme:dark;text-overflow:ellipsis}
+.plan-panel input,.plan-panel select,.plan-panel button{font-family:inherit}
+.plan-scroll{overscroll-behavior:contain}
+.plan-route-row .plan-run-meta{grid-column:1/-1;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:#a8abb0;font-size:11px;border-top:1px solid #3b3e43;padding-top:10px}
+.plan-run-meta label{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:11px}
+.plan-run-meta select{width:auto;min-width:110px;font-size:12px}
+.plan-route-row .plan-tiny-remove{grid-column:5;grid-row:1}
+.plan-status{font-size:12px;color:#c4c7cd;line-height:1.6;overflow-wrap:anywhere}
+.plan-error,.plan-summary-pill{overflow-wrap:anywhere}
+.plan-panel [aria-selected=true]{color:#ffda36;border-bottom-color:#ffda36}
+.attendance-matrix .attendance-leave{width:53px;min-width:53px;padding:0 5px}
+.attendance-matrix .leave-toggle{width:100%;min-height:35px;border:1px dashed #484c51;border-radius:7px;background:transparent;color:#b5b9c0;font:inherit;cursor:pointer}
+.attendance-matrix .leave-toggle.is-leave{background:#ffda36;color:#1c1c1e;font-weight:750;border-color:#ffda36}
+.attendance-matrix .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:2px}
+.attendance-edit-modes{margin-bottom:15px}.attendance-edit-modes button:disabled{opacity:.4;cursor:not-allowed}
+.dialog .leave-option input{min-height:0;height:17px;width:17px}
+.dialog .leave-option{line-height:1.5}.dialog .leave-status-options{margin:12px 0}
+#modal .dialog .original{color:#a9aeb6;font-size:12px;line-height:1.6;margin-top:12px}
+#modal .dialog .mode-clear{margin-top:12px}
+.plan-loading{padding:25px 0;color:#afb2b8}
+@media(max-width:767px){
+ .plan-panel{inset:0;left:0;top:0;transform:none;width:100%;height:100dvh;max-width:none;max-height:100dvh;border-radius:0;border:0}
+ .plan-scroll{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+ .plan-header{padding-top:calc(15px + env(safe-area-inset-top))}
+ .plan-route-row .plan-tiny-remove{grid-column:1/-1;grid-row:3}
+ .plan-route-row .plan-run-meta{grid-row:4;align-items:flex-start}
+ .plan-run-meta label{width:100%;display:flex;flex-direction:row;align-items:center;justify-content:space-between}
+ .plan-run-meta select{min-height:44px;width:140px}
+ .plan-datebar .plan-month-picker{max-width:none;width:0;min-width:110px}
+ .plan-header .plan-x{min-width:44px;width:44px;height:44px}
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+js/config.js
+config/local.json
+*.log
+.DS_Store
+**/_screenshots/
+**/__pycache__/
+.openai/local/

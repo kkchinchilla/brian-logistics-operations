@@ -1,0 +1,31 @@
+PASS: all three duty choices in 日配
+PASS: all three duty choices in OC
+PASS: all three duty choices in 鮮二
+PASS: all three duty choices in 冷凍
+PASS: all three duty choices in 低鮮
+PASS: learning hides vehicle and has no run selector or hours
+PASS: learning saves only type and note
+PASS: follow_along hides vehicle and has no run selector or hours
+PASS: follow_along saves only type and note
+PASS: standby hides vehicle and has no run selector or hours
+PASS: standby saves only type and note
+PASS: returning to delivery restores selectable vehicle
+PASS: historical follow opens with only duty type and note
+PASS: follow-to-learning uses source revision
+PASS: duty deletion includes mandatory reason
+PASS: driver form requests approval
+PASS: driver add does not optimistically alter attendance
+PASS: approval shows before-after duty and per-entry unit
+PASS: duty approval escapes notes
+PASS: driver sees pending request instead of second form
+PASS: board renders follow separately from deliveries
+PASS: duty keyword search works
+PASS: closed duties become read-only
+PASS: closed duty editor cannot open
+PASS: canonical duty records load from new endpoint
+PASS: duty read failure disables all attendance editing
+PASS: settings renamed and both per-entry fields visible
+PASS: settings distinguish explicit zero from blank and send both rates
+PASS: negative duty pay rejected by form
+PASS: non-Brian cannot open duty settings
+RESULT: 30 Increment 1.4.11.1 UI VM checks passed (not browser/visual QA)

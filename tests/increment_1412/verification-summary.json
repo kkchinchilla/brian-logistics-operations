@@ -1,0 +1,24 @@
+{
+  "increment": "1.4.12",
+  "localChecks": 119,
+  "databaseChecks": 72,
+  "monthlyVmChecks": 21,
+  "demoChecks": 26,
+  "javascriptSyntaxFiles": 36,
+  "liveReadonlyChecks": 7,
+  "iframeWidths": [
+    320,
+    375,
+    390,
+    768,
+    1024,
+    1366,
+    1920
+  ],
+  "existingTables": 40,
+  "existingRows": 142,
+  "existingDataUnchanged": true,
+  "migration": "20261021080008_increment_1412_server_payroll_calculation",
+  "frontendDeployed": false,
+  "fullPayrollFinalized": false
+}

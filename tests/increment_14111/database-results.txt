@@ -1,0 +1,49 @@
+PASS: migration preserves existing entries and closing events
+PASS: multiple standalone follow and learning entries need no vehicle or run
+PASS: notes remain optional on new entries
+PASS: multiple untimed standby records store null hours
+PASS: untimed records do not create unbounded overlaps
+PASS: timed legacy callers coexist with untimed records
+PASS: one-sided optional time is invalid
+PASS: old follow target cannot silently reintroduce dependency
+PASS: standalone duties do not infer driver time conflicts
+PASS: driver edit queues without changing note
+PASS: retry returns same request
+PASS: competing driver request blocked
+PASS: driver cannot self-approve
+PASS: driver cannot add another driver duty
+PASS: approval applies exact notes-only edit
+PASS: review retry does not duplicate edit
+PASS: driver deletion retains canonical record pending approval
+PASS: rejection preserves record
+PASS: approved deletion retains voided history
+PASS: driver standalone follow add does not apply early
+PASS: driver standalone follow is created after approval
+PASS: stale type conversion cannot overwrite canonical note
+PASS: driver untimed standby edit is pending
+PASS: approved untimed standby remains untimed
+PASS: raw driver writes remain forbidden
+PASS: blank deletion reason rejected
+PASS: duty occupancy prevents leave
+PASS: duty occupancy prevents slot shrink
+PASS: standby converts atomically to notes-only learning
+PASS: learning converts into untimed standby
+PASS: old run link retained only as historical data
+PASS: historical follow metadata no longer blocks parent cancellation
+PASS: notes-only edit preserves recorded historical hours
+PASS: closing expires unapplied duty request
+PASS: closed simple duty edit rejected
+PASS: closed untimed standby edit rejected
+PASS: two same-day standalone follows each paid
+PASS: two same-day learning entries each paid
+PASS: two untimed standby entries each receive existing allowance
+PASS: duties add no delivery or rental count
+PASS: unclosed date not priced
+PASS: full payroll stays pending
+PASS: reopening removes duty and standby from calculation
+PASS: reclosing contributes current entries once
+PASS: untimed standby does not falsely overlap legacy support on another date
+PASS: non-Brian payroll access denied
+PASS: anonymous duty read denied
+PASS: anonymous duty write denied
+RESULT: 48 Increment 1.4.11.1 database/payroll checks passed

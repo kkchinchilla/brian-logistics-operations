@@ -1,0 +1,95 @@
+
+> dispatch-increment-1414-verification@1.4.14 test
+> node database.mjs && node monthly-integration.cjs && node vehicles.cjs
+
+PASS: new schema does not invent base salaries
+PASS: each driver has an independent monthly base
+PASS: later entry with earlier effective month does not supersede October
+PASS: future raise applies only from its effective month
+PASS: base before first effective month remains missing
+PASS: same-month correction uses latest version and retains history
+PASS: stale editor cannot overwrite a new base
+PASS: explicit zero is configured and payable
+PASS: seven-component formula includes base once and deducts rental
+PASS: monthly base has a single line without a closeout dependency
+PASS: server report passes actual browser decoder
+PASS: isolated reference calculator agrees with server
+PASS: salary setting never rewrites attendance closeouts
+PASS: reopening excludes attendance but keeps monthly base and adjustments
+PASS: reclosing adds attendance exactly once
+PASS: invalid base null
+PASS: invalid base -1
+PASS: invalid base 1.5
+PASS: invalid base 10000001
+PASS: invalid base NaN
+PASS: invalid base Infinity
+PASS: invalid effective month null
+PASS: invalid effective month 2026-10-02
+PASS: invalid effective month 1899-12-01
+PASS: blank reason rejected
+PASS: dispatcher cannot be a salary recipient
+PASS: history cannot be updated
+PASS: history cannot be deleted
+PASS: base changes create finance audit rows
+PASS: non-finance role 2 cannot read salary history
+PASS: non-finance role 2 cannot set base
+PASS: non-finance role 2 cannot insert directly
+PASS: non-finance payroll denied
+PASS: non-finance role 3 cannot read salary history
+PASS: non-finance role 3 cannot set base
+PASS: non-finance role 3 cannot insert directly
+PASS: non-finance payroll denied
+PASS: anonymous cannot read base
+PASS: anonymous cannot write base
+PASS: new salary RPC remains invoker
+PASS: new table RLS enabled
+RESULT: 41 focused database checks passed
+PASS: monthly page uses the calculated payroll RPC
+PASS: server result is displayed without browser payroll recalculation
+PASS: follow and learning columns appear beside standby
+PASS: summary displays one follow and two learning entries
+PASS: salary is shown as 30,340 and removed regional placeholder stays absent
+PASS: duty entries do not increase delivery count
+PASS: driver names remain escaped
+PASS: pay details retain each duty amount and calculation explanation
+PASS: attendance CSV includes separate duty counts
+PASS: reconciliation CSV keeps one line per entry and amount
+PASS: both CSVs carry numeric salary and separate costs
+PASS: exports refetch server authority
+PASS: reopening clears attendance while monthly base remains
+PASS: network failure prevents stale payroll exports
+PASS: missing server calculation never falls back to browser pricing
+PASS: inconsistent duty count is rejected
+PASS: inconsistent subtotal is rejected
+PASS: incorrect salary cannot be displayed or exported
+PASS: inconsistent salary readiness is rejected
+PASS: duplicate driver results are rejected
+PASS: duplicate pay source lines are rejected
+PASS: missing rate still blocks salary and displays reason
+PASS: unresolved legacy record shows pending instead of incomplete salary
+PASS: late response cannot replace current month
+PASS: non-finance user has no payroll fetch or settings
+PASS: invalid month fails before API
+PASS: no duplicate pricing tab or completion step added
+PASS: temperature count does not add dashboard columns
+PASS: missing base is distinct from zero
+PASS: mismatched base amount rejected
+PASS: missing base source rejected
+RESULT: 31 Increment 1.4.14 monthly UI integration checks passed
+PASS: driver roster shows monthly base and effective month
+PASS: future setting does not replace current displayed salary
+PASS: unset is displayed without inventing zero
+PASS: driver names are escaped
+PASS: editor provides amount effective month and retained history
+PASS: blank is not submitted as zero
+PASS: negative base rejected before RPC
+PASS: invalid month rejected
+PASS: reason required
+PASS: save targets one driver with exact revision
+PASS: successful save reloads displayed salary
+PASS: other driver remains unset
+PASS: zero is saved explicitly
+PASS: stale conflict is surfaced without pretending success
+PASS: non-finance users do not fetch salary rows
+PASS: salary columns and editor hidden from other dispatchers
+RESULT: 16 vehicle salary UI checks passed

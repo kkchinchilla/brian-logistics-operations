@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>配送路線管理｜配送趟次管理系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page finance-page">
+  <header class="topbar">
+    <div><h1>配送路線管理</h1><p>路線溫層與固定配送時段由主管設定 · <strong id="routes-user">確認身分中...</strong></p></div>
+    <div class="finance-header-actions"><a class="finance-back" href="dispatcher.html">返回派車看板</a><button id="routes-logout" type="button">登出</button></div>
+  </header>
+  <main class="dashboard" id="routes-main" hidden>
+    <section class="panel">
+      <h2 id="routes-form-title">新增配送路線</h2>
+      <p>每條路線有固定的溫層與配送時段。修改路線後，既有趟次仍保留建立派車時的資料；新派車才使用更新後設定。</p>
+      <form id="route-management-form">
+        <div class="form-grid finance-form-grid">
+          <div><label for="route-code-input">路線編號</label><input id="route-code-input" maxlength="50" required placeholder="例如 FM-01"></div>
+          <div><label for="route-name-input">路線名稱（選填）</label><input id="route-name-input" maxlength="120"></div>
+          <div><label for="route-zone-input">固定溫層名稱</label><input id="route-zone-input" maxlength="80" list="known-zones" required placeholder="例如 冷藏"><datalist id="known-zones"></datalist></div>
+          <div><label for="route-start-input">固定開始時間</label><input id="route-start-input" type="time" required></div>
+          <div><label for="route-end-input">固定結束時間</label><input id="route-end-input" type="time" required></div>
+        </div>
+        <div class="form-actions"><button id="route-save" type="submit">新增路線</button><button id="route-cancel-edit" type="button" hidden>取消編輯</button></div>
+        <p id="route-form-feedback" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>現有配送路線</h2>
+      <div class="table-wrapper"><table><thead><tr><th>路線編號</th><th>路線名稱</th><th>溫層</th><th>固定開始</th><th>固定結束</th><th>狀態</th><th>操作</th></tr></thead><tbody id="routes-body"></tbody></table></div>
+      <p class="finance-disclaimer">跨日路線可以設定結束時間早於開始時間。路線停用後不影響既有派車歷史。已完成的出勤資料只採計主管確認的實際趟次。</p>
+    </section>
+  </main>
+  <div id="routes-denied" class="finance-blocked" hidden>此帳號沒有路線管理權限。</div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script><script src="js/routes.js"></script>
+</body>
+</html>

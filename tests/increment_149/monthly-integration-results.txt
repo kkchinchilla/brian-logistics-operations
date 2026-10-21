@@ -1,0 +1,21 @@
+PASS: monthly page requests one coherent server bundle
+PASS: pricing controls render existing saved basis and rate
+PASS: untrusted driver names escaped in pricing and summary
+PASS: basic subtotal available while full salary remains pending
+PASS: details retain saved route label rather than current master
+PASS: reconciliation export refetches authority first
+PASS: reconciliation CSV contains basic subtotal and unresolved policy
+PASS: fresh export reflects dispatcher reopening
+PASS: failed export clears current state and creates no stale CSV
+PASS: failure removes editable pricing controls
+PASS: late month response cannot replace selected month
+PASS: wrong database version blocks controls and exports
+PASS: non-finance user does not fetch payroll or render controls
+PASS: blank month input fails closed without RPC
+PASS: new-rate button opens live editor without sample amount
+PASS: blank rate rejected before database write
+PASS: empty evidence cannot be saved
+PASS: explicit zero and exact selected scope sent to secured RPC
+PASS: server save failure is surfaced to modal
+PASS: render error cannot re-enable stale exports
+RESULT: 20 Node VM monthly integration checks passed (no browser/visual QA)

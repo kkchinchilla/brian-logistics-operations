@@ -1,0 +1,20 @@
+/* UI parity pass 1: route page — remove preview framing and align shell with production theme. */
+body[data-dashboard="routes"] .prototype{padding:0;min-height:0}
+body[data-dashboard="routes"] .stage{max-width:none;width:100%}
+body[data-dashboard="routes"] .app{border-radius:0;border-left:0;border-right:0;box-shadow:none;min-height:calc(100dvh - 61px);height:calc(100dvh - 61px)}
+body[data-dashboard="routes"] .nav{width:196px;flex-basis:196px}
+body[data-dashboard="routes"] .page-header{padding:29px clamp(18px,2.2vw,33px) 20px}
+body[data-dashboard="routes"] .workspace{padding-inline:clamp(18px,2.2vw,33px)}
+body[data-dashboard="routes"] .summary{gap:11px}
+body[data-dashboard="routes"] .stat{min-height:90px}
+body[data-dashboard="routes"] .section-shell{border-radius:16px}
+body[data-dashboard="routes"] .route-view{min-width:0}
+@media(max-width:1150px){body[data-dashboard="routes"] .nav{width:158px;flex-basis:158px}}
+@media(max-width:900px){
+ body[data-dashboard="routes"] .app{min-height:calc(100dvh - 110px);height:calc(100dvh - 110px);border-radius:0}
+ body[data-dashboard="routes"] .page-header{padding:23px 17px 17px}
+ body[data-dashboard="routes"] .workspace{padding:0 13px 18px}
+ body[data-dashboard="routes"] .summary{gap:8px}
+ body[data-dashboard="routes"] .stat{min-height:82px}
+}
+@media(max-width:360px){body[data-dashboard="routes"] .page-header{padding-inline:12px}body[data-dashboard="routes"] .workspace{padding-inline:10px}}

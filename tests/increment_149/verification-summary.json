@@ -1,0 +1,31 @@
+{
+  "functional_checks": 204,
+  "application_syntax_files": 33,
+  "result_files": {
+    "demo-results.txt": [
+      "RESULT: 13 isolated demo data checks passed (no browser/visual QA)"
+    ],
+    "regression-148-results.txt": [
+      "RESULT: 30 new database scenarios passed"
+    ],
+    "database-results.txt": [
+      "RESULT: 38 Increment 1.4.9 database checks passed"
+    ],
+    "regression-147-results.txt": [
+      "RESULT: 29 integration scenarios passed",
+      "RESULT: 21 Increment 1.4.7 scenarios passed plus 29 Increment 1.4.6 regressions"
+    ],
+    "reconciliation-results.txt": [
+      "RESULT: 43 reconciliation checks passed"
+    ],
+    "monthly-integration-results.txt": [
+      "RESULT: 20 Node VM monthly integration checks passed (no browser/visual QA)"
+    ],
+    "export-results.txt": [
+      "RESULT: 10 export and aggregation assertions passed"
+    ]
+  },
+  "visual_browser_verified": false,
+  "accepted_baseline": "1.4.8",
+  "user_acceptance_149": "pending"
+}

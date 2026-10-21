@@ -1,0 +1,24 @@
+PASS: four-board fixture has seven closed and seven open deliveries
+PASS: five cold-chain trips appear for same driver on same date
+PASS: monthly records reference the same routes, vehicles and drivers
+PASS: fixture includes rental, special work, standby and both adjustment signs
+PASS: fictional basic subtotal calculated but salary pending
+PASS: demo rental cost deducted for two rental trips
+PASS: demo standby allowance added
+PASS: closed attendance and monthly show the same standby period
+PASS: open standby is visible but not yet included in monthly
+PASS: standby demo has no vehicle or temperature fields
+PASS: operational demonstration mutations blocked
+PASS: operational RPC simulation cannot mutate canonical demo
+PASS: Karen demo denied monthly data
+PASS: driver demo denied monthly data
+PASS: open duties displayed separately from closed monthly duties
+PASS: per-entry demo pays two learning entries and one follow
+PASS: operational duty writes blocked
+PASS: duty settings can be tried in page memory
+PASS: non-Brian demo cannot save new duty rates
+PASS: ui-attendance.html has no external script/config and blocks network
+PASS: ui-routes.html has no external script/config and blocks network
+PASS: ui-vehicles.html has no external script/config and blocks network
+PASS: ui-monthly.html has no external script/config and blocks network
+RESULT: 23 isolated demo data checks passed (no browser/visual QA)

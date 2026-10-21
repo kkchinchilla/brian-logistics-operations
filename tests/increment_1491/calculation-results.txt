@@ -1,0 +1,33 @@
+PASS: route plus standby minus rental plus adjustment
+PASS: rental line is negative
+PASS: rental does not create another physical delivery
+PASS: full salary still pending unsupported policies
+PASS: legacy pricing cannot override or double-count route pay
+PASS: converted standby not paid twice
+PASS: own vehicle has no deduction
+PASS: unknown rental is not silently zero
+PASS: missing rates remain unknown
+PASS: explicit zero is valid
+PASS: new rate includes its effective date
+PASS: future rate does not alter earlier dates
+PASS: same-day correction chooses latest version once
+PASS: no applicable rate before first effective date
+PASS: invalid/missing route amount unknown null
+PASS: invalid/missing route amount unknown 
+PASS: invalid/missing route amount unknown -1
+PASS: invalid/missing route amount unknown NaN
+PASS: zero route rate allowed
+PASS: missing route never guessed from route code
+PASS: duplicate route rates rejected
+PASS: changed current zone does not silently reprice closed temperature
+PASS: missing region remains unknown
+PASS: replacement preserves one physical delivery and both payee questions
+PASS: follow-along adds no trip or rental charge
+PASS: expense not silently added to salary
+PASS: unclosed record rejected
+PASS: stale reopened record rejected
+PASS: duplicate closed record rejected
+PASS: CSV preserves negative rental as numeric amount
+PASS: CSV carries formula and route-rate identity
+PASS: untrusted string formula escaped
+RESULT: 32 Increment 1.4.9.1 calculation checks passed

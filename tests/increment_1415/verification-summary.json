@@ -1,0 +1,24 @@
+{
+  "assertions": 113,
+  "database": 36,
+  "monthly_ui": 33,
+  "vehicles_ui": 10,
+  "exports": 8,
+  "demo": 26,
+  "syntax_files": 36,
+  "live_version": 1415,
+  "live_driver_count": 3,
+  "live_ready_totals": 3,
+  "unchanged_public_tables": 41,
+  "security_finding_identities_unchanged": true,
+  "frontend_deployed": false,
+  "browser_viewport_widths": [
+    320,
+    375,
+    390,
+    768,
+    1024,
+    1366,
+    1920
+  ]
+}

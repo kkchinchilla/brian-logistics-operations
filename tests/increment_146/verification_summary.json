@@ -1,0 +1,568 @@
+{
+  "migration": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"migrations\":[{\"version\":\"20261019145438\",\"name\":\"increment_143_single_day_templates_and_leave\"},{\"version\":\"20261020005912\",\"name\":\"increment_144_auto_rental_and_multi_driver_bindings\"},{\"version\":\"20261020014545\",\"name\":\"increment_145_unified_direct_run_edits\"},{\"version\":\"20261020044533\",\"name\":\"increment_146_approvals_cumulative_close_finance\"}]}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "database_integration_scenarios": 29,
+  "browser_assertions": 70,
+  "syntax_files": 30,
+  "existing_check_scripts_passed": 7,
+  "existing_check_scripts_known_baseline_failures": 4,
+  "post_checks": [
+    {
+      "check_name": "profiles",
+      "result": [
+        {
+          "name": "王小明",
+          "role": "driver",
+          "finance": false
+        },
+        {
+          "name": "陳小華",
+          "role": "driver",
+          "finance": false
+        },
+        {
+          "name": "Brian",
+          "role": "dispatcher",
+          "finance": true
+        },
+        {
+          "name": "林小美",
+          "role": "driver",
+          "finance": false
+        },
+        {
+          "name": "Karen",
+          "role": "dispatcher",
+          "finance": false
+        }
+      ]
+    },
+    {
+      "check_name": "test_records_remaining",
+      "result": {
+        "events": 0,
+        "requests": 0,
+        "closeouts": 0
+      }
+    },
+    {
+      "check_name": "146_guards",
+      "result": {
+        "enabled": 10
+      }
+    }
+  ],
+  "table_fingerprints_before": [
+    {
+      "table_name": "attendance_driver_days",
+      "rows": 3,
+      "hash": "f8acb294d2ff7ca2a1926fcbd9f7eff0"
+    },
+    {
+      "table_name": "attendance_records",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "attendance_schedule_audit",
+      "rows": 10,
+      "hash": "48dc3cd72f8d66e4ebe71393120da160"
+    },
+    {
+      "table_name": "attendance_template_batches",
+      "rows": 9,
+      "hash": "c693e16a52c9cc00475832a527b20314"
+    },
+    {
+      "table_name": "daily_attendance_change_log",
+      "rows": 2,
+      "hash": "082add9001935bfd8b92db4f59d68d38"
+    },
+    {
+      "table_name": "daily_attendance_closeouts",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "daily_attendance_extra_trips",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "daily_attendance_slot_counts",
+      "rows": 5,
+      "hash": "922f46e7e14d083ebd7f21931d920149"
+    },
+    {
+      "table_name": "daily_run_observations",
+      "rows": 2,
+      "hash": "92ab5939741bf5def25075d640d5a78f"
+    },
+    {
+      "table_name": "delivery_region_zone_rate_audit",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "delivery_region_zone_rates",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "delivery_regions",
+      "rows": 6,
+      "hash": "1f585454db403ae7ce43deebe8515a1c"
+    },
+    {
+      "table_name": "delivery_temperature_zones",
+      "rows": 2,
+      "hash": "e227af363c40db389a5ea20c7c7ca878"
+    },
+    {
+      "table_name": "driver_day_templates",
+      "rows": 1,
+      "hash": "7e6f22101768a259e16c361279b71c64"
+    },
+    {
+      "table_name": "execution_review_history",
+      "rows": 1,
+      "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+    },
+    {
+      "table_name": "expense_records",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "finance_audit_logs",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "monthly_settlements",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_adjustments",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_configs",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_rules",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "profiles",
+      "rows": 5,
+      "hash": "9cb44f64f2583e4708df5e51b1f54704"
+    },
+    {
+      "table_name": "report_driver_mappings",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "report_route_mappings",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "route_change_history",
+      "rows": 5,
+      "hash": "ff5663fe3fd78330a714df03cac00db4"
+    },
+    {
+      "table_name": "routes",
+      "rows": 3,
+      "hash": "e1dbe40f78012bbc7789fbd0a02dda53"
+    },
+    {
+      "table_name": "runs",
+      "rows": 7,
+      "hash": "b1cb2435f2f0cb91d1e96d7201561917"
+    },
+    {
+      "table_name": "trip_executions",
+      "rows": 1,
+      "hash": "781b56e1d7da545aedda72a32e32c415"
+    },
+    {
+      "table_name": "v05512_execution_attribution_corrections",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_driver_stages",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_driver_work_completions",
+      "rows": 1,
+      "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+    },
+    {
+      "table_name": "v055_run_work",
+      "rows": 1,
+      "hash": "124da54b8992640e395620100c63bc9a"
+    },
+    {
+      "table_name": "v055_standby_shifts",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_work_audit",
+      "rows": 2,
+      "hash": "14491ad4bff5ebdce3ec0ead4cc1f2c1"
+    },
+    {
+      "table_name": "vehicle_owner_bindings",
+      "rows": 4,
+      "hash": "1d5085e6135e2c62101b14f44a32ff1b"
+    },
+    {
+      "table_name": "vehicles",
+      "rows": 4,
+      "hash": "c123ec1fdade7b09afebcbe7cbed2096"
+    }
+  ],
+  "table_fingerprints_after": [
+    {
+      "table_name": "attendance_driver_days",
+      "rows": 3,
+      "hash": "f8acb294d2ff7ca2a1926fcbd9f7eff0"
+    },
+    {
+      "table_name": "attendance_records",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "attendance_schedule_audit",
+      "rows": 10,
+      "hash": "48dc3cd72f8d66e4ebe71393120da160"
+    },
+    {
+      "table_name": "attendance_template_batches",
+      "rows": 9,
+      "hash": "c693e16a52c9cc00475832a527b20314"
+    },
+    {
+      "table_name": "daily_attendance_change_log",
+      "rows": 2,
+      "hash": "082add9001935bfd8b92db4f59d68d38"
+    },
+    {
+      "table_name": "daily_attendance_closeouts",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "daily_attendance_extra_trips",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "daily_attendance_slot_counts",
+      "rows": 5,
+      "hash": "922f46e7e14d083ebd7f21931d920149"
+    },
+    {
+      "table_name": "daily_run_observations",
+      "rows": 2,
+      "hash": "92ab5939741bf5def25075d640d5a78f"
+    },
+    {
+      "table_name": "delivery_region_zone_rate_audit",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "delivery_region_zone_rates",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "delivery_regions",
+      "rows": 6,
+      "hash": "1f585454db403ae7ce43deebe8515a1c"
+    },
+    {
+      "table_name": "delivery_temperature_zones",
+      "rows": 2,
+      "hash": "e227af363c40db389a5ea20c7c7ca878"
+    },
+    {
+      "table_name": "driver_day_templates",
+      "rows": 1,
+      "hash": "7e6f22101768a259e16c361279b71c64"
+    },
+    {
+      "table_name": "execution_review_history",
+      "rows": 1,
+      "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+    },
+    {
+      "table_name": "expense_records",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "finance_audit_logs",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "monthly_settlements",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_adjustments",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_configs",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "payroll_rules",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "profiles",
+      "rows": 5,
+      "hash": "8c79428b3a23ff2c54876b7aef4d26e7"
+    },
+    {
+      "table_name": "report_driver_mappings",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "report_route_mappings",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "route_change_history",
+      "rows": 5,
+      "hash": "ff5663fe3fd78330a714df03cac00db4"
+    },
+    {
+      "table_name": "routes",
+      "rows": 3,
+      "hash": "e1dbe40f78012bbc7789fbd0a02dda53"
+    },
+    {
+      "table_name": "runs",
+      "rows": 7,
+      "hash": "b1cb2435f2f0cb91d1e96d7201561917"
+    },
+    {
+      "table_name": "trip_executions",
+      "rows": 1,
+      "hash": "781b56e1d7da545aedda72a32e32c415"
+    },
+    {
+      "table_name": "v05512_execution_attribution_corrections",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_driver_stages",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_driver_work_completions",
+      "rows": 1,
+      "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+    },
+    {
+      "table_name": "v055_run_work",
+      "rows": 1,
+      "hash": "124da54b8992640e395620100c63bc9a"
+    },
+    {
+      "table_name": "v055_standby_shifts",
+      "rows": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table_name": "v055_work_audit",
+      "rows": 2,
+      "hash": "14491ad4bff5ebdce3ec0ead4cc1f2c1"
+    },
+    {
+      "table_name": "vehicle_owner_bindings",
+      "rows": 4,
+      "hash": "1d5085e6135e2c62101b14f44a32ff1b"
+    },
+    {
+      "table_name": "vehicles",
+      "rows": 4,
+      "hash": "c123ec1fdade7b09afebcbe7cbed2096"
+    }
+  ],
+  "advisors": [
+    {
+      "type": "security",
+      "findings": [
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 4,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable",
+          "new_table_findings": []
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 21,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "new_table_findings": []
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "level": "WARN",
+          "count": 1,
+          "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+          "new_table_findings": []
+        }
+      ]
+    },
+    {
+      "type": "performance",
+      "findings": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "count": 64,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "new_table_findings": [
+            {
+              "detail": "Table \\`public.attendance_change_requests\\` has a foreign key \\`attendance_change_requests_proposed_route_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "attendance_change_requests",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "attendance_change_requests_proposed_route_id_fkey",
+                "fkey_columns": [
+                  10
+                ]
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            },
+            {
+              "detail": "Table \\`public.attendance_change_requests\\` has a foreign key \\`attendance_change_requests_proposed_vehicle_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "attendance_change_requests",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "attendance_change_requests_proposed_vehicle_id_fkey",
+                "fkey_columns": [
+                  11
+                ]
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            },
+            {
+              "detail": "Table \\`public.attendance_change_requests\\` has a foreign key \\`attendance_change_requests_requested_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "attendance_change_requests",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "attendance_change_requests_requested_by_fkey",
+                "fkey_columns": [
+                  16
+                ]
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            },
+            {
+              "detail": "Table \\`public.attendance_change_requests\\` has a foreign key \\`attendance_change_requests_reviewed_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "attendance_change_requests",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "attendance_change_requests_reviewed_by_fkey",
+                "fkey_columns": [
+                  18
+                ]
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            },
+            {
+              "detail": "Table \\`public.attendance_closeout_events\\` has a foreign key \\`attendance_closeout_events_actor_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "attendance_closeout_events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "attendance_closeout_events_actor_id_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "count": 3,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan",
+          "new_table_findings": []
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "count": 6,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "new_table_findings": [
+            {
+              "detail": "Index \\`attendance_change_driver\\` on table \\`public.attendance_change_requests\\` has not been used",
+              "metadata": {
+                "name": "attendance_change_requests",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-20T04:47:07.432Z"
+            }
+          ]
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "level": "WARN",
+          "count": 8,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0006_multiple_permissive_policies",
+          "new_table_findings": []
+        }
+      ]
+    }
+  ],
+  "post_rollback_fingerprint_check": {
+    "tables_checked": 36,
+    "changed_tables": []
+  }
+}

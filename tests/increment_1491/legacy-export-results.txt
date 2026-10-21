@@ -1,0 +1,7 @@
+PASS: legacy monthly uses same route pay and rental deduction
+PASS: Excel labels rental as deduction
+PASS: Excel stores rental deduction as a negative number
+PASS: Excel subtotal equals current monthly calculation
+PASS: Excel full salary remains pending
+PASS: legacy duplicate price forms removed
+RESULT: 6 legacy monthly and Excel consistency checks passed

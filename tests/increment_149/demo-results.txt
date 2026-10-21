@@ -1,0 +1,14 @@
+PASS: four-board fixture has seven closed and seven open deliveries
+PASS: five cold-chain trips appear for same driver on same date
+PASS: monthly records reference the same routes, vehicles and drivers
+PASS: fixture includes rental, special work, standby and both adjustment signs
+PASS: fictional basic subtotal calculated but salary pending
+PASS: operational demonstration mutations blocked
+PASS: operational RPC simulation cannot mutate canonical demo
+PASS: Karen demo denied monthly data
+PASS: driver demo denied monthly data
+PASS: ui-attendance.html has no external script/config and blocks network
+PASS: ui-routes.html has no external script/config and blocks network
+PASS: ui-vehicles.html has no external script/config and blocks network
+PASS: ui-monthly.html has no external script/config and blocks network
+RESULT: 13 isolated demo data checks passed (no browser/visual QA)

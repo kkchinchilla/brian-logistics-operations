@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>路線管理 · 調度系統</title>
+<style>
+:root{color-scheme:dark;--page:#17191b;--rail:#1b1d20;--canvas:#202226;--surface:#26292d;--surface2:#2d3035;--surface3:#36393d;--line:#393c40;--strong-line:#4a4d51;--text:#f5f5f2;--soft:#c9cbce;--muted:#9a9da3;--yellow:#ffdc42;--yellowDark:#201d11;--warn:#f1c967;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;font-synthesis:none}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--page);color:var(--text)}body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.hide{display:none!important}
+.prototype{min-height:100vh;padding:18px 20px 30px}.demo-top{max-width:1500px;margin:0 auto 15px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.demo-caption{color:#a4a6ab;font-size:11px;letter-spacing:.12em;text-transform:uppercase}.switcher{display:flex;gap:3px;background:#282b2f;border:1px solid var(--line);border-radius:12px;padding:4px}.switcher button{border:0;border-radius:9px;background:none;color:#aeb0b4;padding:9px 17px;font-size:12px}.switcher button.active{background:var(--yellow);color:#202124;font-weight:760}
+.stage{max-width:1500px;margin:0 auto;display:flex;justify-content:center;min-width:0}.app{width:100%;height:812px;display:flex;overflow:hidden;position:relative;border:1px solid #45484e;background:var(--canvas);border-radius:24px;box-shadow:0 20px 50px #0005;min-width:0}.stage.mobile .app{max-width:394px;height:796px;border-radius:27px}.nav{background:var(--rail);border-right:1px solid var(--line);width:196px;flex:0 0 196px;display:flex;flex-direction:column;padding:23px 12px 18px;gap:21px}.brand{display:flex;gap:11px;align-items:center;font-size:15px;font-weight:780;padding:1px 10px;letter-spacing:.01em}.brand-icon{background:var(--yellow);color:#1a1b1d;display:grid;place-items:center;width:34px;height:34px;border-radius:10px}.brand-icon svg{width:21px;height:21px;stroke-width:2.1}.brand small{display:block;color:#94979c;font-size:10px;font-weight:450;letter-spacing:.045em;margin-top:4px}.nav-list{display:flex;flex-direction:column;gap:5px}.nav-item{border:0;background:none;border-radius:10px;color:#adafb4;padding:13px 13px;text-align:left;display:flex;align-items:center;gap:12px;font-size:12px}.nav-item.active{background:var(--yellow);color:#1b1c1d;font-weight:750}.nav-item svg{width:18px;height:18px}.nav-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:13px;color:#9e9fa4;font-size:11px;padding-left:13px}
+.main{min-width:0;flex:1;display:flex;flex-direction:column;overflow:hidden}.page-header{padding:31px 31px 21px;display:flex;align-items:center;justify-content:space-between;gap:15px}.eyebrow{color:#9ea1a6;font-size:11px;letter-spacing:.035em;margin-bottom:8px}.page-header h1{font-size:28px;letter-spacing:-.045em;line-height:1.14;margin:0;font-weight:775}.page-header p{color:#8e9298;font-size:12px;margin:9px 0 0}.header-actions{display:flex;align-items:center;gap:9px}.primary{border:none;background:var(--yellow);color:#1a1b1d;border-radius:10px;font-weight:790;padding:12px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}.primary:hover{background:#ffe776}.primary svg{width:16px;height:16px;stroke-width:2}.quiet-btn{border:1px solid var(--strong-line);background:var(--surface2);border-radius:10px;color:var(--soft);padding:11px 12px;display:inline-flex;justify-content:center;align-items:center;gap:7px}.quiet-btn:hover{background:var(--surface3)}.workspace{padding:0 31px 26px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#4b4e52 transparent}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:19px}.stat{border:1px solid #393c40;background:#292c30;border-radius:14px;padding:16px 17px;min-height:94px;display:flex;flex-direction:column;justify-content:space-between}.stat-label{color:#a1a4aa;font-size:11px}.stat-value{font-weight:770;font-size:25px;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}.stat-value.yellow{color:var(--yellow)}.section-shell{background:#25282c;border:1px solid var(--line);border-radius:17px;overflow:hidden;min-width:0}.section-header{padding:20px 21px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.section-title{font-size:16px;font-weight:720;letter-spacing:-.02em}.section-sub{color:#8e9298;font-size:11px;margin-top:4px}.tab-row{display:flex;gap:5px;padding:4px;background:#1d2023;border-radius:10px}.tab{border:0;background:transparent;color:#aeb0b4;font-size:12px;border-radius:8px;padding:9px 13px}.tab.active{color:#191a1b;background:#e7e7e5;font-weight:720}.toolbar{display:flex;gap:10px;padding:0 21px 17px;align-items:center;flex-wrap:wrap}.search{flex:1;min-width:175px;max-width:340px;display:flex;align-items:center;gap:9px;height:42px;border-radius:10px;border:1px solid #414449;background:#2e3135;color:#aeb1b6;padding:0 12px}.search input{min-width:0;width:100%;background:transparent;border:0;color:#eee;outline:none;font-size:12px}.search input::placeholder{color:#8b8e93}.search svg{width:17px;height:17px}.filter{background:#2e3135;border:1px solid #414449;border-radius:10px;color:#dddfe1;padding:10px 13px;min-height:42px;min-width:124px;font-size:12px}.table-scroll{overflow:auto;max-height:405px;scrollbar-width:thin;scrollbar-color:#5b5d62 #24272b;overscroll-behavior-x:contain}.routes-table{border-collapse:separate;border-spacing:0;width:100%;min-width:770px;font-size:12px}.routes-table th,.routes-table td{padding:0 17px;border-bottom:1px solid #36393d;text-align:left;height:55px;white-space:nowrap}.routes-table thead th{position:sticky;top:0;z-index:2;background:#32353a;font-size:11px;font-weight:580;color:#b8babf;height:42px}.routes-table thead th:first-child{left:0;z-index:4}.routes-table tbody tr{cursor:pointer}.routes-table tbody tr:nth-child(even) td{background:#292c30}.routes-table tbody tr:hover td{background:#35383c}.routes-table tbody tr:focus-visible{outline:2px solid var(--yellow);outline-offset:-2px}.routes-table tbody tr.selected td{background:#37362f}.routes-table tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--yellow)}.routes-table td:first-child{position:sticky;left:0;z-index:1;background:#25282c;font-weight:760;color:#fafafa;min-width:185px;max-width:185px}.routes-table tbody tr:nth-child(even) td:first-child{background:#292c30}.routes-table tbody tr:hover td:first-child{background:#35383c}.routes-table tbody tr.selected td:first-child{background:#37362f}.routes-table td .route-code{display:block;color:#8d9197;font-size:10px;font-weight:480;margin-top:4px;letter-spacing:.02em}.routes-table td .region{color:#d4d5d7}.zone{border-radius:6px;color:#e7e8e9;background:#383b40;padding:6px 9px;font-size:11px;white-space:nowrap}.zone.冷凍{background:#33363e}.cost{font-weight:780;font-size:13px;font-variant-numeric:tabular-nums;color:#ffdc42}.dim{color:#a3a6aa}.row-arrow{color:#777b82;font-size:20px}.table-footer{padding:13px 20px;background:#282b2f;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:#9c9ea3}.table-footer button{border:0;background:transparent;color:#d6d7d9;font-size:11px}.table-note{color:#8a8d93;font-size:11px;padding:12px 3px 0;line-height:1.7}
+.tariff-panel{padding:4px 21px 20px}.tariff-intro{font-size:12px;color:#b6b8bc;line-height:1.7;margin:0 0 16px}.tariff-scroller{overflow:auto;border:1px solid #404349;border-radius:12px}.tariff-table{border-collapse:collapse;width:100%;min-width:510px;font-size:12px}.tariff-table th,.tariff-table td{height:55px;text-align:center;border-bottom:1px solid #3d4044;padding:6px 12px}.tariff-table th{background:#32353a;color:#babcbe;font-weight:590}.tariff-table tbody td{background:#292c30;color:#e6e7e8}.tariff-table td:first-child,.tariff-table th:first-child{text-align:left;padding-left:18px;font-weight:670}.tariff-table button{border:0;background:#35383c;border-radius:8px;color:#f2f2f2;padding:9px 12px;font-variant-numeric:tabular-nums;min-width:75px}.tariff-table button:hover{outline:1px solid var(--yellow);color:var(--yellow)}.tariff-hint{font-size:11px;color:#999ca2;margin:13px 0 0;line-height:1.6}
+.overlay{display:none;position:absolute;inset:0;background:#0009;z-index:20}.overlay.open{display:block}.drawer{position:absolute;right:0;top:0;bottom:0;width:400px;max-width:100%;background:#2a2d31;box-shadow:-22px 0 50px #0006;border-left:1px solid #505257;z-index:21;transform:translateX(102%);transition:transform .22s ease;display:flex;flex-direction:column}.drawer.open{transform:translateX(0)}.drawer-top{padding:25px 25px 19px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #42454a}.drawer-kicker{font-size:11px;color:#9c9fa3;margin-bottom:8px}.drawer-top h2{margin:0;font-size:21px;letter-spacing:-.035em}.icon-btn{border:0;background:#383b40;color:#dadbdd;border-radius:9px;height:35px;width:35px;display:grid;place-items:center}.drawer-form{padding:23px 25px 35px;display:flex;flex-direction:column;gap:21px;overflow:auto;flex:1}.field{display:flex;flex-direction:column;gap:8px}.field label{font-size:12px;color:#e4e5e6;font-weight:580}.field input,.field select{width:100%;height:46px;border-radius:10px;border:1px solid #54565c;background:#222529;color:#f5f5f5;padding:0 13px;outline:none}.field input:focus,.field select:focus{border-color:var(--yellow)}.field input:disabled{opacity:1;color:#a3a5ab;border-color:#404348}.field-tip{font-size:10px;color:#95989f;line-height:1.55}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.preview-cost{border:1px solid #545049;background:#343128;border-radius:13px;padding:17px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}.preview-cost .small{display:block;color:#b7b1a4;font-size:11px;margin-bottom:6px}.preview-cost strong{font-size:26px;letter-spacing:-.04em;color:var(--yellow);font-variant-numeric:tabular-nums}.preview-cost .cost-meta{color:#c7c1ae;font-size:11px;text-align:right;line-height:1.6}.divider{height:1px;background:#44474b}.drawer-note{font-size:11px;color:#a2a4a9;line-height:1.7}.drawer-actions{margin-top:auto;display:flex;gap:10px}.drawer-actions button{flex:1}.ghost{background:#3a3d42;border:0;border-radius:10px;color:#f1f1f1;font-weight:660;padding:13px 15px}.link-danger{background:transparent;border:0;color:#aaaeb3;font-size:12px;text-decoration:underline;text-underline-offset:3px;padding:4px 0;text-align:left;align-self:flex-start}.link-danger:hover{color:#fff}.error{font-size:12px;color:#ffcf69;min-height:14px}.rate-modal{position:absolute;z-index:23;top:50%;left:50%;transform:translate(-50%,-50%) scale(.98);width:340px;max-width:calc(100% - 32px);background:#2a2d31;border:1px solid #56585d;border-radius:16px;padding:22px;box-shadow:0 20px 50px #0008;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .16s ease,transform .16s ease}.rate-modal.open{visibility:visible;opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}.rate-modal h3{font-size:19px;letter-spacing:-.03em;margin:0 0 7px}.rate-modal p{margin:0 0 20px;color:#aeb0b5;font-size:12px;line-height:1.6}.rate-modal label{display:block;margin-bottom:9px;color:#e3e4e4;font-size:12px}.rate-modal input{border:1px solid #5a5c61;background:#212428;color:#fff;width:100%;height:45px;padding:0 13px;border-radius:9px;outline:none}.rate-modal input:focus{border-color:var(--yellow)}.rate-modal .drawer-actions{margin-top:22px}.stage.mobile .rate-modal{width:calc(100% - 32px)}
+.toast{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);padding:12px 17px;background:var(--yellow);color:#1b1c1d;font-size:12px;font-weight:740;border-radius:10px;box-shadow:0 8px 25px #0006;z-index:40;display:none;white-space:nowrap}.toast.show{display:block}.mobile-navbar{display:none}
+.stage.mobile .nav{display:none}.stage.mobile .app{flex-direction:column}.stage.mobile .page-header{padding:28px 19px 17px;align-items:flex-end}.stage.mobile .page-header h1{font-size:24px}.stage.mobile .page-header p{display:none}.stage.mobile .page-header .quiet-btn{display:none}.stage.mobile .page-header .primary{padding:11px 12px;font-size:12px}.stage.mobile .workspace{padding:0 13px 18px}.stage.mobile .summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:15px}.stage.mobile .stat{padding:13px;min-height:74px;border-radius:12px}.stage.mobile .stat-value{font-size:23px}.stage.mobile .section-header{padding:17px 12px 14px;align-items:flex-start}.stage.mobile .section-title{font-size:15px}.stage.mobile .tab{padding:8px 9px;font-size:11px}.stage.mobile .toolbar{padding:0 12px 13px;gap:8px}.stage.mobile .search{width:100%;max-width:none;flex:1 1 100%;height:39px}.stage.mobile .filter{width:calc(50% - 4px);min-width:0;padding:9px;height:38px;min-height:38px}.stage.mobile .routes-table{min-width:770px}.stage.mobile .routes-table td:first-child{min-width:150px;max-width:150px}.stage.mobile .routes-table th,.stage.mobile .routes-table td{padding:0 11px;height:54px}.stage.mobile .routes-table thead th{height:41px}.stage.mobile .table-scroll{max-height:402px}.stage.mobile .table-footer{padding:12px;font-size:10px}.stage.mobile .drawer{top:auto;left:0;right:0;bottom:0;width:100%;max-height:84%;border:1px solid #4e5056;border-bottom:0;border-radius:22px 22px 0 0;transform:translateY(102%);box-shadow:0 -16px 45px #0006}.stage.mobile .drawer.open{transform:translateY(0)}.stage.mobile .drawer-top{padding:24px 20px 15px}.stage.mobile .drawer-top:before{content:'';position:absolute;width:40px;height:4px;background:#717378;top:8px;left:calc(50% - 20px);border-radius:10px}.stage.mobile .drawer-form{padding:19px 20px 28px;gap:17px}.stage.mobile .mobile-navbar{display:flex;min-height:61px;border-top:1px solid var(--line);background:#1d2023;align-items:center;justify-content:space-around;padding:8px 0 10px}.stage.mobile .mobile-navbar span{display:flex;flex-direction:column;align-items:center;gap:4px;color:#868990;font-size:10px}.stage.mobile .mobile-navbar span.active{color:var(--yellow)}.stage.mobile .mobile-navbar svg{width:19px;height:19px}.stage.mobile .table-note{font-size:10px}
+@media(max-width:700px){.prototype{padding:11px 7px 20px}.demo-top{gap:9px}.switcher button{padding:8px 11px}.stage:not(.desktop) .app{max-width:394px}}
+@media(prefers-reduced-motion:reduce){.drawer,.app{transition:none}}
+
+/* Custom delivery regions and temperature zones */
+.tab-row{flex-wrap:wrap}.tariff-actions{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 15px}.tariff-actions .quiet-btn{padding:9px 12px;font-size:12px}.tariff-actions svg,.add-catalog svg{width:15px;height:15px}
+.catalog-intro{color:#aaadb2;font-size:12px;line-height:1.75;padding:2px 21px 15px}.catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 21px 23px}.catalog-card{background:#2b2e32;border:1px solid #44474b;border-radius:14px;min-width:0;overflow:hidden}.catalog-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px;border-bottom:1px solid #404348}.catalog-top h3{font-size:15px;margin:0 0 6px;font-weight:740}.catalog-top p{font-size:11px;color:#999ca2;margin:0}.add-catalog{padding:9px 11px;flex-shrink:0;font-size:11px}.catalog-list{padding:4px 14px 12px;max-height:330px;overflow:auto}.catalog-item{min-height:55px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #3b3e42}.catalog-item:last-child{border-bottom:0}.catalog-name{flex:1;min-width:0;font-size:13px;font-weight:660;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.catalog-meta{font-size:11px;color:#9ca0a6;white-space:nowrap}.catalog-control{flex:none;border:1px solid #494b50;background:#373a3e;color:#d4d6d8;font-size:11px;border-radius:8px;padding:7px 9px}.catalog-control:hover{color:var(--yellow);border-color:#b3a251}.catalog-control.delete{color:#9c9fa4}.field-head{display:flex;align-items:center;justify-content:space-between}.field-add{background:none;border:0;color:var(--yellow);font-size:11px;padding:0 1px 2px;font-weight:680}.field-add:hover{text-decoration:underline}.entity-modal{z-index:25}.tariff-table td:first-child{white-space:nowrap}.tariff-table button.unset{color:#ffdc42;border:1px dashed #716846;background:#30302d}.catalog-item:focus-within{background:#303338}
+.stage.mobile .catalog-intro{padding:3px 13px 14px;font-size:11px}.stage.mobile .catalog-grid{grid-template-columns:1fr;gap:11px;padding:0 12px 20px}.stage.mobile .catalog-top{padding:15px}.stage.mobile .catalog-list{max-height:195px}.stage.mobile .catalog-item{min-height:50px}.stage.mobile .catalog-control{padding:6px 8px}.stage.mobile .tariff-actions{margin-bottom:12px}.stage.mobile .tariff-actions .quiet-btn{flex:1}.stage.mobile .tab-row{width:100%;justify-content:space-between}.stage.mobile .tab{font-size:10.5px;padding:9px 8px}.stage.mobile .section-header{gap:9px}.stage.mobile .tariff-table{min-width:540px}
+@media(max-width:820px){.catalog-grid{grid-template-columns:1fr}.catalog-list{max-height:250px}}
+</style>
+<style>/* Increment 1.2 UI integration: responsive, flat charcoal / gray / white / yellow.
+   Loaded AFTER the original approved page stylesheet. No gradients, no avatars. */
+:root { --inc-bg:#17191c; --inc-surface:#202226; --inc-line:#393c40; --inc-yellow:#ffda36; }
+html { min-width:0; }
+body { min-width:0; max-width:100%; overflow-x:hidden; }
+.inc-bar,.inc-demo { font-family: Inter,"Noto Sans TC","PingFang TC",system-ui,sans-serif; box-sizing:border-box; }
+.inc-bar *,.inc-demo *{box-sizing:border-box}
+.inc-bar { position:relative; z-index:2; width:100%; background:#1b1d20; color:#f5f5f3; border-bottom:1px solid #383b41; }
+.inc-bar-inner { max-width:1640px; padding:10px 18px; margin:auto; display:flex; align-items:center; gap:20px; min-width:0; }
+.inc-product{white-space:nowrap;font-size:13px;line-height:1.3;font-weight:760;color:#f7f7f2}
+.inc-product span{font-weight:480;color:#8f9298;margin-left:5px;font-size:10px}
+.inc-nav { display:flex;flex:1;align-items:center;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none; }
+.inc-nav::-webkit-scrollbar{display:none}
+.inc-nav a,.inc-old { color:#bcbec2;flex:none;white-space:nowrap;padding:9px 13px;font-size:12px;border-radius:9px;text-decoration:none; }
+.inc-nav a:hover,.inc-old:hover{background:#33363b;color:#fff}
+.inc-nav a[aria-current=page]{background:#ffda36;color:#191a1c;font-weight:750}
+.inc-old{border:1px solid #4a4d52;margin-left:auto}
+.inc-demo{padding:8px 18px;text-align:center;background:#26292d;color:#aeb1b5;font-size:11px;line-height:1.5;border-bottom:1px solid #393c40;}
+/* Prototype-only device selectors are no longer necessary; actual viewport is authoritative. */
+body[data-dashboard="routes"] .demo-top,
+body[data-dashboard="vehicles"] .preview-toolbar,
+body[data-dashboard="monthly"] .demo-top {display:none!important;}
+body[data-dashboard="attendance"] .demo-controls {justify-content:flex-end; margin-bottom:9px;}
+body[data-dashboard="attendance"] .demo-controls .control-cluster:first-child{display:none!important}
+body[data-dashboard="attendance"] .demo-note {max-width:1600px;}
+/* Editable anchors blend with approved side navigation (no extra visual clutter). */
+.rail a.rail-item,.sidebar a.nav,.nav-list a.nav-item,.sidebar .nav a.nav-item{display:flex;align-items:center;gap:11px;text-decoration:none;cursor:pointer;}
+.rail a.rail-item{display:block;text-decoration:none;}
+/* The page height adapts to the actual browser rather than a 390px preview canvas. */
+body[data-dashboard="attendance"] .prototype {padding-top:13px}
+body[data-dashboard="attendance"] .app {height:clamp(580px,calc(100dvh - 160px),1180px)}
+body[data-dashboard="routes"] .app,
+body[data-dashboard="vehicles"] .app {height:clamp(600px,calc(100dvh - 150px),1180px)}
+body[data-dashboard="monthly"] .stage {min-height:clamp(600px,calc(100dvh - 150px),1180px)}
+/* Width and table scrolling are independent; never squeeze the large matrix to viewport. */
+.stage,.preview-stage,.app,.workspace,.main,.panel,.section,.table-surface,.section-shell{min-width:0}
+.table-scroll,.table-scroller,.scroll-x,.rate-scroll,.tariff-scroller{max-width:100%;overscroll-behavior-x:contain}
+/* Tablet and phone render the same native mobile layout, not a scaled-down desktop frame. */
+@media(max-width:900px){
+  .inc-bar-inner{padding:8px 12px;gap:7px;flex-wrap:wrap}
+  .inc-product{width:100%;font-size:12px;}
+  .inc-nav{order:2;width:100%;flex-basis:100%;}
+  .inc-nav a{padding:10px 12px;font-size:12px;min-height:39px}
+  .inc-old{position:absolute;top:6px;right:10px;font-size:10px;padding:7px 8px}
+  .inc-demo{padding:6px 12px;font-size:10px}
+  body[data-dashboard="attendance"] .prototype,
+  body[data-dashboard="routes"] .prototype,
+  body[data-dashboard="vehicles"] .prototype,
+  body[data-dashboard="monthly"] .layout {padding:8px 0 20px;max-width:none;width:100%;}
+  body[data-dashboard="attendance"] .preview-stage,
+  body[data-dashboard="routes"] .stage,
+  body[data-dashboard="vehicles"] .stage,
+  body[data-dashboard="monthly"] .stage {max-width:none;width:100%;margin:0}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .app,
+  body[data-dashboard="routes"] .stage.mobile .app,
+  body[data-dashboard="vehicles"] .stage.mobile .app,
+  body[data-dashboard="monthly"] .stage.mobile {width:100%;max-width:none;border-radius:0;border-left:0;border-right:0;}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .app,
+  body[data-dashboard="routes"] .stage.mobile .app,
+  body[data-dashboard="vehicles"] .stage.mobile .app {height:clamp(520px,calc(100dvh - 148px),1250px);}
+  body[data-dashboard="monthly"] .stage.mobile {height:clamp(560px,calc(100dvh - 142px),1250px);min-height:0}
+  body[data-dashboard="attendance"] .demo-controls {padding:0 12px;}
+  body[data-dashboard="attendance"] .preview-stage.is-mobile .main,
+  body[data-dashboard="routes"] .stage.mobile .main,
+  body[data-dashboard="vehicles"] .stage.mobile .main,
+  body[data-dashboard="monthly"] .stage.mobile .main {min-width:0;}
+  body[data-dashboard="routes"] .stage.mobile .workspace,
+  body[data-dashboard="vehicles"] .stage.mobile .workspace {max-width:100%;}
+  /* Large editing dialogs use available viewport height and scroll internally. */
+  .dialog.show,.drawer.open,.rate-modal.open {max-height:min(90dvh,780px);}
+  .drawer.open,.drawer-form,.drawer-body,.dialog{overscroll-behavior:contain;}
+}
+@media(max-width:390px){
+ .inc-nav a{font-size:11px;padding:9px 10px}
+ .inc-product span{font-size:9px}
+ body[data-dashboard="attendance"] .preview-stage.is-mobile .head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
+ body[data-dashboard="attendance"] .preview-stage.is-mobile .head-actions{width:100%;justify-content:space-between;}
+ body[data-dashboard="monthly"] .stage.mobile .head{gap:8px;}
+ body[data-dashboard="monthly"] .stage.mobile .actions{width:100%;justify-content:flex-start;}
+ body[data-dashboard="routes"] .stage.mobile .page-header,
+ body[data-dashboard="vehicles"] .stage.mobile .header{flex-wrap:wrap;gap:8px;}
+ body[data-dashboard="routes"] .stage.mobile .header-actions,
+ body[data-dashboard="vehicles"] .stage.mobile .header-actions{width:100%;justify-content:flex-end;}
+}
+@media(prefers-reduced-motion:reduce){.app,.drawer,.dialog,.rate-modal{transition:none!important;scroll-behavior:auto!important}}
+</style>
+<style>/* UI parity pass 1: route page — remove preview framing and align shell with production theme. */
+body[data-dashboard="routes"] .prototype{padding:0;min-height:0}
+body[data-dashboard="routes"] .stage{max-width:none;width:100%}
+body[data-dashboard="routes"] .app{border-radius:0;border-left:0;border-right:0;box-shadow:none;min-height:calc(100dvh - 61px);height:calc(100dvh - 61px)}
+body[data-dashboard="routes"] .nav{width:196px;flex-basis:196px}
+body[data-dashboard="routes"] .page-header{padding:29px clamp(18px,2.2vw,33px) 20px}
+body[data-dashboard="routes"] .workspace{padding-inline:clamp(18px,2.2vw,33px)}
+body[data-dashboard="routes"] .summary{gap:11px}
+body[data-dashboard="routes"] .stat{min-height:90px}
+body[data-dashboard="routes"] .section-shell{border-radius:16px}
+body[data-dashboard="routes"] .route-view{min-width:0}
+@media(max-width:1150px){body[data-dashboard="routes"] .nav{width:158px;flex-basis:158px}}
+@media(max-width:900px){
+ body[data-dashboard="routes"] .app{min-height:calc(100dvh - 110px);height:calc(100dvh - 110px);border-radius:0}
+ body[data-dashboard="routes"] .page-header{padding:23px 17px 17px}
+ body[data-dashboard="routes"] .workspace{padding:0 13px 18px}
+ body[data-dashboard="routes"] .summary{gap:8px}
+ body[data-dashboard="routes"] .stat{min-height:82px}
+}
+@media(max-width:360px){body[data-dashboard="routes"] .page-header{padding-inline:12px}body[data-dashboard="routes"] .workspace{padding-inline:10px}}
+</style><style>/* UI/UX 對版 v2 — based on four finalized standalone prototypes.
+  Presentation only; formal dashboard JS retains Supabase queries and policies. */
+:root{--yellow:#ffda36;--fg:#f5f5f3}
+body[data-dashboard="attendance"],body[data-dashboard="vehicles"],body[data-dashboard="monthly"]{background:#1b1d20}
+body[data-dashboard="attendance"] .side .brand::before,
+body[data-dashboard="vehicles"] .side .brand::before,
+body[data-dashboard="monthly"] .side .brand::before{display:none}
+.side .brand{padding-bottom:23px;letter-spacing:-.02em}
+.side .brand-icon{flex:none;width:36px;height:36px;font-weight:850;display:grid;place-items:center;background:var(--yellow);border-radius:9px;color:#1b1c1e;font-size:19px}
+.side .brand small{display:block;font-size:9px;color:#91959c;letter-spacing:.08em;font-weight:480;white-space:nowrap;margin-top:4px}
+.side .sidelinks{display:flex;flex-direction:column;gap:5px}
+.side .sidelinks a{padding:12px 13px;font-size:12px;font-weight:540;border-radius:9px;color:#afb3b9;min-height:42px}
+.side .sidelinks a.active{color:#1b1c1d;font-weight:790;background:var(--yellow)}
+.side .side-bottom{margin-top:auto}
+.main{background:#202226;overflow:hidden}
+.head{align-items:center;gap:15px;margin-bottom:21px}
+.head .eyebrow{font-size:11px;font-weight:640;color:#9b9fa7;letter-spacing:.06em;margin-bottom:8px}
+.head p{display:block!important;color:#92979f;font-size:12px;margin-top:8px}
+.head-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:9px;margin-left:auto}
+.head .account{order:4;color:#a9adb3;font-size:11px;background:transparent;border:0;padding:7px 0 7px 8px}
+.date-navigation{display:flex;align-items:center;gap:5px;padding:4px;background:#292c30;border:1px solid #45494e;border-radius:12px}
+.date-navigation .icon-nav{width:34px;min-width:34px;height:34px;min-height:34px;display:grid;place-items:center;border:0;background:transparent;padding:2px;font-size:23px;line-height:1}
+.date-navigation .field{border:0;background:none;min-height:34px;height:34px;padding:5px 2px;max-width:153px;color:#f3f3f1}
+.date-navigation .field:focus{outline:1px solid var(--yellow)}
+.board-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px!important}
+.board-tools .search{margin-left:auto;order:0!important}
+.board-legend{font-size:11px;color:#b3b6bb;display:flex;align-items:center;gap:8px}
+.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:#ffda36;border-radius:3px}
+.attendance-panel .scroll{border-radius:0}
+.attendance-panel .footer{display:flex;justify-content:space-between;gap:10px}
+body[data-dashboard="attendance"] .kpis{display:none}
+body[data-dashboard="attendance"] .attendance-matrix thead .subheading th{font-size:11px}
+body[data-dashboard="attendance"] .attendance-matrix tbody tr.mine td:not(.changed){background:#302e25}
+body[data-dashboard="vehicles"] .head{margin-bottom:25px}
+body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:19px}
+body[data-dashboard="vehicles"] .kpi{min-height:105px}
+body[data-dashboard="vehicles"] .subtabs{margin-top:3px;margin-bottom:0}
+body[data-dashboard="vehicles"] .fleet-section{margin-top:15px}
+body[data-dashboard="vehicles"] .fleet-filter{gap:9px;padding-bottom:12px!important}
+body[data-dashboard="vehicles"] .fleet-filter .btn{min-height:40px}
+.status-pill{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:680;background:#343b37;border:1px solid #486650;color:#c9efd1}
+.status-pill.off{background:#373233;border-color:#584648;color:#cab9bb}
+body[data-dashboard="monthly"] .head{margin-bottom:18px}
+body[data-dashboard="monthly"] .subtabs{margin:0 0 15px}
+body[data-dashboard="monthly"] .report-panel{margin-top:0}
+.report-panel .panel-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px 16px}
+.report-panel .panel-heading h2{font-size:16px;font-weight:770;letter-spacing:-.025em;margin:0 0 7px}
+.report-panel .panel-heading p{margin:0;font-size:11px;color:#a5a8ad;line-height:1.5}
+.report-filters{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.report-filters label{color:#a7abb1;font-size:11px;white-space:nowrap}
+.report-filters select{min-width:145px}
+.report-filters .search{min-width:110px;max-width:180px}
+.report-panel .gridtable{min-width:max(980px,100%)}
+.report-panel .gridtable tbody tr td:last-child{color:#aaadb2;font-weight:540}
+.report-panel .note{padding:0 16px 14px}
+.rule-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rule-card{margin:0;padding:23px;line-height:1.8}
+.rule-card h3{font-size:16px;margin:0 0 10px}
+.rule-card p{color:#c1c4c9;font-size:12px;margin:0 0 14px}
+.rule-card strong{font-size:20px;color:var(--yellow)}
+.rule-card:last-child{grid-column:1/-1}
+.drawer-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.drawer-stat-grid .kpi{min-height:76px;padding:13px}
+.drawer-stat-grid .kpi strong{margin-top:7px;font-size:22px}
+.monthly-detail .drawer-tabs{margin-bottom:17px}
+.monthly-detail-body section[hidden],#month-panel[hidden],#rule-panel[hidden]{display:none!important}
+.monthly-detail .panel-title{font-size:14px}
+.monthly-detail .gridtable{min-width:420px}
+body[data-dashboard="routes"] .inc-bar{display:none!important}
+body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}
+body[data-dashboard="routes"] .prototype{padding:0}
+body[data-dashboard="routes"] #reset-btn{display:none!important}
+body[data-dashboard="routes"] .nav-bottom{margin-top:auto}
+body[data-dashboard="routes"] .nav{border-right:1px solid #36393d}
+body[data-dashboard="routes"] .mobile-navbar a{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;text-decoration:none;color:#9ea2aa;font-size:10px}
+body[data-dashboard="routes"] .mobile-navbar a.active{color:var(--yellow)}
+body[data-dashboard="routes"] .mobile-navbar svg{width:19px;height:19px}
+@media(max-width:1100px){.head-actions .account{display:none}.head p{font-size:11px}.report-panel .panel-heading{align-items:flex-start;flex-direction:column}.report-filters{justify-content:flex-start}}
+@media(max-width:800px){.head{align-items:flex-start}.head-actions{justify-content:flex-start;width:100%;margin-left:0}.date-navigation{max-width:100%}.board-tools .search{max-width:none;flex:1 1 170px;order:0}.board-legend{white-space:nowrap}.attendance-panel .footer{font-size:10px}.report-filters{width:100%}.report-filters .search{max-width:none;flex:1 1 100%}.rule-info-grid{grid-template-columns:1fr}.rule-card:last-child{grid-column:auto}.head .eyebrow{font-size:10px}.head p{display:block!important}}
+@media(max-width:900px){body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}body[data-dashboard="routes"] .mobile-navbar{padding-bottom:max(11px,env(safe-area-inset-bottom));gap:4px}body[data-dashboard="routes"] .mobile-navbar a{min-width:0}}
+@media(max-width:480px){.head .head-actions{gap:6px}.head-actions>.btn{min-height:39px}.date-navigation{padding:2px}.date-navigation .field{max-width:129px}.date-navigation .icon-nav{width:27px;min-width:27px}.board-legend{font-size:10px}.report-panel .panel-heading{padding:15px 13px}.rule-card{padding:17px}.drawer-stat-grid .kpi strong{font-size:19px}}
+@media(max-width:360px){.head-actions{gap:5px}.date-navigation .field{max-width:122px}.head-actions .btn:not(.icon-nav){padding:8px 9px}.board-tools .search{min-width:155px}}
+
+body[data-dashboard="routes"] .route-status{font-size:11px;color:#a9adb3;margin-bottom:5px;min-height:0}
+body[data-dashboard="routes"] .stage.mobile .app{max-width:100%;width:100%;border-radius:0}
+body[data-dashboard="routes"] .stage.mobile{width:100%;max-width:none}
+body[data-dashboard="routes"] .stage.mobile .mobile-navbar{display:flex}
+</style>
+<style>/* Route Management: sidebar spacing parity with the three other Dashboards.
+   Route-only stylesheet; no HTML, JavaScript, data, or auth changes.
+   Desktop reference: css/production.css + css/production-parity.css + css/ui-parity-pass2.css.
+*/
+
+/* The old prototype leaves 1px top/bottom borders. Production dashboards do not. */
+body[data-dashboard="routes"] .app {
+  border-top: 0;
+  border-bottom: 0;
+}
+
+/* Shared desktop shell: 196px rail / 23px vertical padding / 5px row gap. */
+body[data-dashboard="routes"] .route-side {
+  width: 196px;
+  flex: 0 0 196px;
+  min-width: 0;
+  padding: 23px 12px 18px;
+  gap: 5px;
+  line-height: 1.45;
+  background: #1b1d20;
+  border-right: 1px solid #383b40;
+}
+
+body[data-dashboard="routes"] .route-side .brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 3px 10px 23px;
+  font-size: 15px;
+  font-weight: 780;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+body[data-dashboard="routes"] .route-side .brand-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--yellow);
+  color: #1b1c1e;
+  font-weight: 850;
+  font-size: 19px;
+  line-height: 1;
+}
+body[data-dashboard="routes"] .route-side .brand small {
+  display: block;
+  margin-top: 4px;
+  color: #91959c;
+  font-size: 9px;
+  font-weight: 480;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+body[data-dashboard="routes"] .route-side .sidelinks {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 42px;
+  padding: 12px 13px;
+  border-radius: 9px;
+  color: #afb3b9;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 540;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a:hover {
+  background: #303338;
+  color: #f5f5f3;
+}
+body[data-dashboard="routes"] .route-side .sidelinks a.active,
+body[data-dashboard="routes"] .route-side .sidelinks a[aria-current="page"] {
+  background: var(--yellow);
+  color: #1b1c1d;
+  font-weight: 790;
+}
+
+/* Footer lines/button now occupy exactly the shared production sidebar slots. */
+body[data-dashboard="routes"] .route-side .side-bottom {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  min-height: 41px;
+  border-top: 1px solid #383b40;
+  padding: 12px 13px;
+  color: #a1a4a9;
+  font-size: 11px;
+  text-decoration: none;
+}
+body[data-dashboard="routes"] .route-side .side-bottom:hover {color: #fff;}
+body[data-dashboard="routes"] .route-side .route-side-logout {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #4b4e53;
+  border-radius: 10px;
+  background: #303338;
+  color: #f5f5f2;
+  font-size: 12px;
+  font-weight: 640;
+  text-align: center;
+  white-space: nowrap;
+}
+body[data-dashboard="routes"] .route-side .route-side-logout:hover {
+  background: #3a3e42;
+}
+
+/* At <=1150px the other three Dashboards use a 158px sidebar; keep the same
+   top/vertical spacing and logo size rather than shrinking them independently. */
+@media (max-width: 1150px) and (min-width: 801px) {
+  body[data-dashboard="routes"] .route-side {
+    width: 158px;
+    flex-basis: 158px;
+    padding: 23px 9px 18px;
+  }
+}
+
+/* The route page uses a different class name for the same mobile bottom bar. */
+@media (max-width: 800px) {
+  body[data-dashboard="routes"] .route-side {display: none !important;}
+  body[data-dashboard="routes"] .stage.mobile .app {flex-direction: column;}
+  body[data-dashboard="routes"] .stage.mobile .workspace {padding-bottom: 100px;}
+  body[data-dashboard="routes"] .mobile-navbar,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    align-items: center;
+    justify-content: space-around;
+    gap: 4px;
+    min-height: 58px;
+    padding: 11px 8px calc(11px + env(safe-area-inset-bottom));
+    border-top: 1px solid #45484d;
+    background: #1b1d20;
+  }
+  body[data-dashboard="routes"] .mobile-navbar a,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a {
+    display: block;
+    min-width: 0;
+    flex: 1;
+    padding: 10px 5px;
+    border-radius: 8px;
+    color: #a3a5aa;
+    text-align: center;
+    text-decoration: none;
+    font-size: 11px;
+    line-height: 1.45;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  body[data-dashboard="routes"] .mobile-navbar a.active,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a.active {
+    color: var(--yellow);
+    font-weight: 780;
+  }
+}
+
+/* The production mobile bar reduces link line-height below 760px. */
+@media (max-width: 760px) {
+  body[data-dashboard="routes"] .mobile-navbar a,
+  body[data-dashboard="routes"] .stage.mobile .mobile-navbar a {line-height: 1.3;}
+}
+</style>
+<style>body:not([data-finance-access="allowed"]) a[href="ui-monthly.html"],
+body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!important}
+body[data-finance-access="denied"] .mobilebar,
+body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
+body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+</style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head>
+<body data-dashboard="routes"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2"/><path d="M9 19h8a4 4 0 0 0 0-8H7a4 4 0 0 1 0-8h8"/><path d="m13 1 3 2-3 2"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 5h12v12H2zM14 9h4l4 4v4h-8z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 21V10M10 21V4M16 21v-8M22 21V7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></symbol>
+<symbol id="i-money" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></symbol>
+</defs></svg>
+<div class="prototype">
+  <div class="demo-top"><div class="demo-caption">ROUTE MANAGEMENT</div><div class="switcher" aria-label="預覽裝置"><button id="device-desktop" class="active" type="button">Desktop preview</button><button id="device-mobile" type="button">Mobile preview</button></div></div>
+  <div class="stage desktop" id="stage"><div class="app" id="app">
+    <aside class="nav route-side" aria-label="主選單"><div class="brand"><span class="brand-icon" aria-hidden="true">↗</span><span>物流調度<small>DISPATCH / 管理後台</small></span></div>
+      <nav class="sidelinks" aria-label="Dashboard 導覽"><a href="ui-attendance.html">每日出勤</a><a href="ui-routes.html" class="active" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="route-side-logout" id="route-logout" type="button">登出</button>
+    </aside>
+    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><h1>路線管理</h1><p>編輯路線資訊，依配送地區與溫層自動計算路線費用。</p></div><div class="header-actions"><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
+      <div class="workspace"><div id="route-status" class="route-status" role="status" aria-live="polite"></div><section class="summary" aria-label="路線統計"><div class="stat"><span class="stat-label">啟用路線</span><strong class="stat-value" id="stat-routes">—</strong></div><div class="stat"><span class="stat-label">配送地區</span><strong class="stat-value" id="stat-regions">—</strong></div><div class="stat"><span class="stat-label">配送溫層</span><strong class="stat-value" id="stat-zones">—</strong></div><div class="stat"><span class="stat-label">平均每趟費用</span><strong class="stat-value yellow" id="stat-avg">—</strong></div></section>
+      <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">所有路線的地區、溫層與費用一目了然</div></div><div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab">費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div></div>
+      <div id="route-view"><div class="toolbar"><label class="search"><svg><use href="#i-search"></use></svg><input id="route-search" placeholder="搜尋路線名稱、編號…" autocomplete="off" aria-label="搜尋路線"></label><select class="filter" id="filter-region" aria-label="篩選地區"></select><select class="filter" id="filter-zone" aria-label="篩選溫層"></select></div><div class="table-scroll" id="table-scroll"><table class="routes-table"><thead><tr><th>路線名稱 / 編號</th><th>配送地區</th><th>溫層</th><th>路線費用／趟</th><th>固定時段</th><th>　</th></tr></thead><tbody id="routes-body"></tbody></table></div><div class="table-footer"><span id="result-count">—</span><span>點選路線進行編輯</span></div></div>
+      <div id="rate-view" class="hide"><div class="tariff-panel"><p class="tariff-intro">依「配送地區 × 溫層」決定每趟配送費用；月度報表使用此費率計算已結案趟次的司機計酬。</p><div class="tariff-actions"><button type="button" class="quiet-btn" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增地區</button><button type="button" class="quiet-btn" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增溫層</button></div><div class="tariff-scroller"><table class="tariff-table"><thead id="rates-head"></thead><tbody id="rates-body"></tbody></table></div><p class="tariff-hint">費率同時作為月報趟次計酬來源；新增地區或溫層後，新組合顯示「待設定」。</p></div></div>
+      <div id="manage-view" class="hide"><div class="catalog-intro">自由新增配送地區與溫層。新增的名稱會立即出現在路線編輯與費率表中；新組合的費率需另外設定。</div><div class="catalog-grid"><section class="catalog-card"><div class="catalog-top"><div><h3>配送地區</h3><p id="region-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="region-list" class="catalog-list"></div></section><section class="catalog-card"><div class="catalog-top"><div><h3>配送溫層</h3><p id="zone-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="zone-list" class="catalog-list"></div></section></div></div>
+      </section><div class="table-note">費用由地區與溫層組合帶入，不是每條路線各自輸入。正式開發時，原有路線固定時段及歷史派車紀錄保留。</div>
+      </div>
+    </main>
+    <nav class="mobile-navbar" aria-label="行動版導覽"><a href="ui-attendance.html">每日出勤</a><a class="active" href="ui-routes.html" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav>
+    <div class="overlay" id="overlay"></div><aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true"><div class="drawer-top"><div><div class="drawer-kicker" id="drawer-kicker">路線資料</div><h2 id="drawer-title">編輯路線</h2></div><button class="icon-btn" id="dismiss" title="關閉" aria-label="關閉"><svg><use href="#i-x"></use></svg></button></div>
+      <form class="drawer-form" id="route-form"><div class="field"><label for="f-code">路線編號</label><input id="f-code" maxlength="50" disabled><div class="field-tip">編號用於識別路線，編輯時不可修改。</div></div><div class="field"><label for="f-name">路線名稱</label><input id="f-name" maxlength="60" placeholder="例如 全家台北早班 A 線" required></div><div class="field-grid"><div class="field"><div class="field-head"><label for="f-region">配送地區</label><button class="field-add" data-create-kind="region" data-origin="route" type="button">＋新增</button></div><select id="f-region" required></select></div><div class="field"><div class="field-head"><label for="f-zone">配送溫層</label><button class="field-add" data-create-kind="zone" data-origin="route" type="button">＋新增</button></div><select id="f-zone" required></select></div></div><div class="preview-cost"><div><span class="small">配送費用／趟</span><strong id="fee-preview">NT$ —</strong></div><div class="cost-meta" id="fee-caption">依地區 × 溫層<br>自動帶入</div></div><div class="field-grid" id="fixed-time-field"><div class="field"><label for="f-start">固定開始時間</label><input id="f-start" type="time" required></div><div class="field"><label for="f-end">固定結束時間</label><input id="f-end" type="time" required></div></div><div class="divider"></div><div class="drawer-note">更改地區或溫層會更新這條路線的配送費用。當期費率與歷史派車資料分開保存；既有派車快照不會由此畫面改寫。</div><div class="error" id="form-error" role="alert"></div><div class="drawer-actions"><button class="ghost" id="cancel-form" type="button">取消</button><button class="primary" id="save-form" type="submit">儲存變更</button></div><button id="toggle-active" class="link-danger" type="button">停用此路線</button></form>
+    </aside><section class="rate-modal" id="rate-modal" role="dialog" aria-modal="true" aria-labelledby="rate-modal-title" aria-hidden="true"><h3 id="rate-modal-title">修改配送費率</h3><p id="rate-modal-desc"></p><form id="rate-form"><label for="rate-amount">路線費用／趟 (NT$)</label><input id="rate-amount" type="number" inputmode="numeric" min="0" max="10000000" step="1" required><div class="error" id="rate-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="rate-cancel">取消</button><button class="primary" type="submit">儲存費率</button></div></form></section><section class="rate-modal entity-modal" id="entity-modal" role="dialog" aria-modal="true" aria-labelledby="entity-modal-title" aria-hidden="true"><h3 id="entity-modal-title">新增配送地區</h3><p id="entity-modal-desc">新增後可在路線與費率表中使用。</p><form id="entity-form"><label for="entity-name" id="entity-label">配送地區名稱</label><input id="entity-name" type="text" maxlength="30" autocomplete="off" placeholder="請輸入名稱" required><div class="error" id="entity-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="entity-cancel">取消</button><button class="primary" type="submit" id="entity-submit">新增</button></div></form></section><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div></div>
+</div>
+<script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
+(()=>{
+const D='11111111-1111-4111-8111-111111111111',E='22222222-2222-4222-8222-222222222222',F='33333333-3333-4333-8333-333333333333',M='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const copy=x=>JSON.parse(JSON.stringify(x));
+window.mock143={role:'dispatcher',fail:null,calls:[],tables:{
+ profiles:[{id:M,display_name:'測試主管',role:'dispatcher',active:true,can_manage_finance:true},{id:D,display_name:'測試司機 A',role:'driver',active:true},{id:E,display_name:'測試司機 B',role:'driver',active:true},{id:F,display_name:'測試司機 C',role:'driver',active:true}],
+ vehicles:[{id:1,plate_number:'1001',active:true},{id:2,plate_number:'1002',active:true}],
+ routes:[{id:1,route_code:'01',route_name:'測試日配一',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'},
+ {id:2,route_code:'02',route_name:'測試日配二',temperature_zone:'冷藏',active:true,default_start_time:'09:00:00',default_end_time:'11:00:00'},
+ {id:3,route_code:'03',route_name:'測試替代路線',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'}],
+ runs:[{id:1,service_date:'2026-10-15',route_id:1,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'01',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:1,dashboard_schedule_revision:1},
+ {id:2,service_date:'2026-10-15',route_id:2,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'02',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:2,dashboard_schedule_revision:1}],
+ vehicle_owner_bindings:[{id:1,driver_id:D,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:E,vehicle_id:1,effective_from:'2026-10-01',effective_to:null},{id:3,driver_id:D,vehicle_id:2,effective_from:'2026-10-10',effective_to:null}],
+ daily_attendance_slot_counts:[],daily_run_observations:[],daily_attendance_extra_trips:[],daily_attendance_closeouts:[],driver_day_templates:[],attendance_driver_days:[{service_date:'2026-10-15',driver_id:F,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}],trip_executions:[]}};
+const t=mock143.tables;
+function day(date,id){let d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===id);if(!d){d={service_date:date,driver_id:id,is_leave:false,revision:0,has_plan_exception:false,applied_rows:null};t.attendance_driver_days.push(d);}return d;}
+function hasRuns(date,id){return t.runs.some(x=>x.service_date===date&&x.driver_id===id&&x.status!=='cancelled')||t.daily_attendance_extra_trips.some(x=>x.service_date===date&&x.driver_id===id&&x.status==='active');}
+class Q{
+ constructor(table){this.table=table;this.filters=[];this.bounds=null;this.op='read';}
+ select(){return this;}eq(k,v){this.filters.push(x=>x[k]===v);return this;}in(k,v){this.filters.push(x=>v.includes(x[k]));return this;}
+ gte(k,v){this.filters.push(x=>x[k]>=v);return this;}lte(k,v){this.filters.push(x=>x[k]<=v);return this;}
+ order(){return this;}range(a,b){this.bounds=[a,b];return this;}single(){this.one=true;return this;}maybeSingle(){this.one=true;return this;}
+ insert(x){this.op='insert';this.payload=x;return this;}update(x){this.op='update';this.payload=x;return this;}upsert(x){this.op='upsert';this.payload=x;return this;}
+ match(x){for(const [k,v]of Object.entries(x))this.eq(k,v);return this;}
+ then(resolve,reject){return Promise.resolve().then(()=>{
+  if(mock143.fail===this.table)return {error:{message:'測試：資料表尚未安裝'}};
+  let data=t[this.table]||[];
+  if(this.op==='insert'){const x={id:100+data.length,...this.payload};data.push(x);}
+  if(this.op==='upsert'){const old=data.find(x=>x.service_date===this.payload.service_date);if(old)Object.assign(old,this.payload);else data.push(copy(this.payload));}
+  data=data.filter(x=>this.filters.every(f=>f(x)));
+  if(this.op==='update')data.forEach(x=>Object.assign(x,this.payload));
+  if(this.bounds)data=data.slice(this.bounds[0],this.bounds[1]+1);
+  return {data:copy(this.one?data[0]||null:data),error:null};
+ }).then(resolve,reject);}
+}
+async function rpc(fn,p){
+ mock143.calls.push({fn,args:copy(p)});
+ if(mock143.fail===fn){mock143.fail=null;return {data:null,error:{message:'測試：資料已被其他人更新'}};}
+ if(mock143.role!=='dispatcher'&&['dashboard_save_day_template','dashboard_apply_day_template','dashboard_set_driver_leave','dashboard_save_day_plan'].includes(fn))return {error:{message:'只有主管可執行'}};
+ try{
+ let data;
+ if(fn==='dashboard_save_day_template'){
+  let old=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);if((old?.revision||0)!==p.p_expected_revision)throw Error('範本已被更新');
+  data={driver_id:p.p_driver_id,rows:copy(p.p_rows),revision:(old?.revision||0)+1,updated_at:new Date().toISOString()};if(old)Object.assign(old,data);else t.driver_day_templates.push(data);
+ }else if(fn==='dashboard_get_schedule_month'){
+  const month=p.p_month.slice(0,7),n=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
+  data=Array.from({length:n},(_,i)=>{const date=month+'-'+String(i+1).padStart(2,'0'),d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===p.p_driver_id);
+   return {date,revision:d?.revision||0,is_leave:!!d?.is_leave,closed:!!t.daily_attendance_closeouts.find(x=>x.service_date===date)?.closed_at,has_runs:hasRuns(date,p.p_driver_id),has_plan_exception:!!d?.has_plan_exception,template_revision:d?.template_revision};});
+ }else if(fn==='dashboard_set_driver_leave'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.revision!==p.p_expected_revision)throw Error('此日出勤已被更新');
+  if(p.p_is_leave&&hasRuns(p.p_service_date,p.p_driver_id))throw Error('此日已有趟次');d.is_leave=p.p_is_leave;d.revision++;data=d;
+ }else if(fn==='dashboard_apply_day_template'){
+  const template=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);data={applied_dates:[],skipped:[]};
+  for(const date of p.p_dates){const d=day(date,p.p_driver_id);if(d.is_leave){data.skipped.push({date,reason:'休假'});continue;}if(d.has_plan_exception&&!p.p_overwrite){data.skipped.push({date,reason:'保留單日調整'});continue;}
+   d.applied_rows=copy(template.rows);d.template_revision=template.revision;d.has_plan_exception=false;d.revision++;
+   for(const x of template.rows){let r=t.runs.find(r=>r.service_date===date&&r.driver_id===p.p_driver_id&&r.attendance_category===x.category&&r.attendance_slot_index===x.slot_index);const vals={service_date:date,driver_id:p.p_driver_id,route_id:x.route_id,vehicle_id:x.vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(x.vehicle_id)&&b.effective_from<=date&&(!b.effective_to||b.effective_to>=date))),status:'assigned',attendance_category:x.category,attendance_slot_index:x.slot_index,dashboard_schedule_revision:1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});}
+   data.applied_dates.push(date);
+  }
+ }else if(fn==='dashboard_save_day_plan'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.is_leave)throw Error('已休假');if(d.revision!==p.p_expected_day_revision)throw Error('此日出勤已被更新');
+  let r=p.p_run_id?t.runs.find(x=>x.id===p.p_run_id):null;
+  if(d.applied_rows===null)d.applied_rows=t.runs.filter(x=>x.service_date===p.p_service_date&&x.driver_id===p.p_driver_id).map(x=>({category:x.attendance_category,slot_index:x.attendance_slot_index,route_id:x.route_id,vehicle_id:x.vehicle_id}));
+  const vals={service_date:p.p_service_date,driver_id:p.p_driver_id,route_id:p.p_route_id,vehicle_id:p.p_vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(p.p_vehicle_id)&&b.effective_from<=p.p_service_date&&(!b.effective_to||b.effective_to>=p.p_service_date))),dispatcher_notes:p.p_note,status:p.p_route_id?'assigned':'cancelled',attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,dashboard_schedule_revision:(r?.dashboard_schedule_revision||0)+1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});d.revision++;d.has_plan_exception=true;data={};
+ }else if(fn==='dashboard_set_attendance_slot_counts'){
+  for(const[category,slot_count]of Object.entries(p.p_counts)){const old=t.daily_attendance_slot_counts.find(x=>x.service_date===p.p_service_date&&x.category===category);if(old)old.slot_count=slot_count;else t.daily_attendance_slot_counts.push({service_date:p.p_service_date,category,slot_count});}data=null;
+ }else if(fn==='dashboard_edit_run_direct'){
+  const r=t.runs.find(x=>x.id===p.p_run_id);if(!r)throw Error('找不到趟次');
+  if(mock143.role!=='dispatcher'&&r.driver_id!==D)throw Error('沒有編輯權限');
+  if(!['assigned','in_progress'].includes(r.status)||t.trip_executions.some(x=>x.run_id===r.id))throw Error('已確認的趟次不可直接修改');
+  if(r.dashboard_schedule_revision!==p.p_expected_run_revision)throw Error('趟次已被其他人更新');
+  const obs=t.daily_run_observations.find(x=>x.run_id===r.id);
+  if((obs?.revision||0)!==p.p_expected_observation_revision)throw Error('配送資料已被其他人更新');
+  if(p.p_cancel&&mock143.role!=='dispatcher')throw Error('只有主管可以取消趟次');
+  const d=day(r.service_date,r.driver_id);if(d.is_leave)throw Error('休假不可排車');
+  if(t.daily_attendance_closeouts.some(x=>x.service_date===r.service_date&&x.closed_at))throw Error('已結案');
+  if(obs){const i=t.daily_run_observations.indexOf(obs);t.daily_run_observations.splice(i,1);}
+  if(p.p_cancel){r.status='cancelled';}
+  else {r.route_id=p.p_route_id;r.vehicle_id=p.p_vehicle_id;
+    r.is_rental=!t.vehicle_owner_bindings.some(b=>b.driver_id===r.driver_id&&String(b.vehicle_id)===String(r.vehicle_id)&&b.effective_from<=r.service_date&&(!b.effective_to||b.effective_to>=r.service_date));
+    r.route_code_snapshot=t.routes.find(x=>x.id===r.route_id)?.route_code||'';}
+  r.dispatcher_notes=p.p_note;r.dashboard_schedule_revision++;d.revision++;d.has_plan_exception=true;
+  data={run_id:r.id,revision:r.dashboard_schedule_revision,cancelled:!!p.p_cancel};
+ }else if(fn==='dashboard_save_actual_observation'){
+  const r=t.runs.find(x=>x.id===p.p_run_id),old=t.daily_run_observations.find(x=>x.run_id===r.id);const next={id:old?.id||1,driver_id:r.driver_id,run_id:r.id,actual_route_id:p.p_actual_route_id,actual_vehicle_id:p.p_actual_vehicle_id,actual_note:p.p_note,revision:(old?.revision||0)+1};if(old)Object.assign(old,next);else t.daily_run_observations.push(next);data=next.revision;
+ }else if(fn==='dashboard_save_extra_actual_trip'){
+  data=1;
+ }else throw Error('未模擬 RPC '+fn);
+ return {data:copy(data),error:null};
+ }catch(e){return {data:null,error:{message:e.message}};}
+}
+window._testDB143={auth:{async getUser(){return {data:{user:{id:mock143.role==='dispatcher'?M:D}},error:null};},async signOut(){return {error:null};}},from:table=>new Q(table),rpc};
+})();
+
+/* UI-only fixture layered on mock_supabase_143.js. Never loaded in production. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;mock143.financeAllowed=false;t.attendance_change_requests=[];let cutoff=null,reopened=new Set();
+ const isClosed=d=>!!cutoff&&d<=cutoff&&!reopened.has(d);
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_capabilities','dashboard_get_attendance_day_state','dashboard_request_attendance_change','dashboard_review_attendance_change','dashboard_close_attendance_through','dashboard_reopen_attendance_date'].includes(fn))return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：資料載入失敗'}};
+  let data;
+  if(fn==='dashboard_get_capabilities')data={increment:'1.4.6',can_manage_finance:mock143.financeAllowed};
+  if(fn==='dashboard_get_attendance_day_state')data={service_date:p.p_date,closed:isClosed(p.p_date),closed_at:isClosed(p.p_date)?'2026-10-20T00:00:00Z':null};
+  if(fn==='dashboard_request_attendance_change'){
+   const r=t.runs.find(r=>r.id===p.p_run_id),x=t.daily_attendance_extra_trips.find(x=>x.id===p.p_extra_trip_id);
+   data={id:1+t.attendance_change_requests.length,run_id:r?.id||null,extra_trip_id:x?.id||null,service_date:(r||x).service_date,driver_id:(r||x).driver_id,base_record:{route_id:r?.route_id||x?.actual_route_id,vehicle_id:r?.vehicle_id||x?.actual_vehicle_id,note:r?.dispatcher_notes||x?.actual_note},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:p.p_void,revision:1,status:'pending'};
+   t.attendance_change_requests.push(data);
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   data=t.attendance_change_requests.find(q=>q.id===p.p_request_id);data.status=p.p_approve?'approved':'rejected';data.review_reason=p.p_reason;data.revision++;
+   if(p.p_approve){const r=t.runs.find(r=>r.id===data.run_id);if(r){r.route_id=data.proposed_route_id;r.vehicle_id=data.proposed_vehicle_id;r.dispatcher_notes=data.proposed_note;r.dashboard_schedule_revision++;}}
+  }
+  if(fn==='dashboard_close_attendance_through'){
+   cutoff=cutoff&&cutoff>p.p_through_date?cutoff:p.p_through_date;reopened=new Set([...reopened].filter(d=>d>p.p_through_date));
+   for(const q of t.attendance_change_requests)if(q.status==='pending'&&q.service_date<=p.p_through_date){q.status='stale';q.revision++;}data={through_date:p.p_through_date,closed_dates:[],expired_requests:0};
+  }
+  if(fn==='dashboard_reopen_attendance_date'){reopened.add(p.p_date);data={reopened:true};}
+  return {data:structuredClone(data),error:null};
+ };
+})();
+
+/* Browser-only finalized-report fixture. Never load in production. */
+(()=>{
+ const base=_testDB143.rpc,from=_testDB143.from;
+ mock143.reads=[];_testDB143.from=(name)=>{mock143.reads.push(name);return from(name);};
+ const driver=mock143.tables.profiles[1].id,other=mock143.tables.profiles[2].id;
+ const row=(id,date,who,rental,zone)=>({id,source_type:id.split(':')[0],run_id:id.startsWith('run:')?Number(id.slice(4)):null,extra_trip_id:id.startsWith('extra:')?Number(id.slice(6)):null,service_date:date,driver_id:who,route_id:1,vehicle_id:1,route_code_snapshot:'FROZEN-01',route_temperature_zone:zone,plate_snapshot:'FROZEN-CAR',is_rental:rental,status:'assigned',finalized:true,close_event_id:10,closed_at:'2026-10-20T00:00:00Z'});
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:[row('run:1','2026-10-15',driver,false,'常溫'),row('run:2','2026-10-19',driver,true,'冷藏'),row('extra:1','2026-10-19',other,null,null)],standby:[{id:1,service_date:'2026-10-15',driver_id:driver,finalized:true,converted_to_support:false,review_status:'pending'},{id:2,service_date:'2026-10-19',driver_id:other,finalized:true,converted_to_support:true,review_status:'pending'}],special_work:[],attendance_records:[],original_runs:[],dates:[{service_date:'2026-10-15',status:'finalized'},{service_date:'2026-10-19',status:'finalized'},{service_date:'2026-10-20',status:'reopened'}]};
+ mock143.tables.trip_executions=[{id:999,service_date:'2026-10-20',driver_id:driver,review_status:'confirmed',route_id:1,is_rental:true}];
+ mock143.tables.payroll_adjustments=[{id:1,service_date:'2026-10-15',driver_id:driver,category:'allowance',amount:100,reason:'approved adjustment'}];
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn!=='dashboard_get_finalized_monthly')return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：結案月報無法讀取'}};
+  if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可查看月度報表'}};
+  const result=structuredClone(mock143.finalized);
+  if(p.p_month!==result.month){result.month=p.p_month;for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])result[k]=[];}
+  if(mock143.reportDelay)await new Promise(resolve=>setTimeout(resolve,mock143.reportDelay));
+  return {data:result,error:null};
+ };
+})();
+
+/* Test-only request queue; no production data or connection. */
+(()=>{
+ const base=_testDB143.rpc,t=mock143.tables;
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_request_attendance_add'){
+   mock143.calls.push({fn,args:structuredClone(p)});
+   if(mock143.fail===fn)return {data:null,error:{message:'測試：新增申請未送出'}};
+   const driver=t.profiles.find(x=>x.role==='driver').id;
+   let q=t.attendance_change_requests.find(q=>q.request_kind==='add'&&q.status==='pending'&&q.driver_id===driver&&q.service_date===p.p_service_date&&q.attendance_category===p.p_category&&q.attendance_slot_index===p.p_slot_index);
+   if(!q){q={id:t.attendance_change_requests.length+1,request_kind:'add',service_date:p.p_service_date,driver_id:driver,attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,source_revision:p.p_expected_revision,base_record:{status:'empty'},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:false,status:'pending',revision:1};t.attendance_change_requests.push(q);}
+   return {data:structuredClone(q),error:null};
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   const q=t.attendance_change_requests.find(q=>q.id===p.p_request_id);
+   if(q?.request_kind==='add'){
+    mock143.calls.push({fn,args:structuredClone(p)});
+    if(mock143.fail===fn)return {data:null,error:{message:'測試：審核失敗'}};
+    if(q.status!=='pending')return {data:{status:q.status,already_reviewed:true},error:null};
+    if(p.p_approve){
+     let x=t.daily_attendance_extra_trips.find(x=>x.driver_id===q.driver_id&&x.service_date===q.service_date&&x.attendance_category===q.attendance_category&&x.attendance_slot_index===q.attendance_slot_index);
+     const values={service_date:q.service_date,driver_id:q.driver_id,attendance_category:q.attendance_category,attendance_slot_index:q.attendance_slot_index,actual_route_id:q.proposed_route_id,actual_vehicle_id:q.proposed_vehicle_id,actual_note:q.proposed_note,is_rental:false,status:'active',revision:(x?.revision||0)+1};
+     if(x)Object.assign(x,values);else {x={id:100+t.daily_attendance_extra_trips.length,...values};t.daily_attendance_extra_trips.push(x);}q.result_extra_trip_id=x.id;
+    }
+    q.status=p.p_approve?'approved':'rejected';q.review_reason=p.p_reason;q.revision++;return {data:structuredClone(q),error:null};
+   }
+   const result=await base(fn,p);
+   if(!result.error&&p.p_approve&&q?.proposed_void){
+    if(q.run_id)t.runs.find(r=>r.id===q.run_id).status='cancelled';
+    else {const x=t.daily_attendance_extra_trips.find(x=>x.id===q.extra_trip_id);x.status='void';x.revision++;}
+   }
+   return result;
+  }
+  return base(fn,p);
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. All names, rates and records are fictional. */
+(()=>{
+ const t=mock143.tables,copy=x=>structuredClone(x),base=_testDB143.rpc,originalFrom=_testDB143.from;
+ const [manager,a,b,c]=t.profiles;manager.display_name='演示 Brian';mock143.financeAllowed=true;
+ t.delivery_regions=[{id:1,name:'示範北區'},{id:2,name:'示範南區'}];t.delivery_temperature_zones=[{name:'冷藏'},{name:'常溫'}];
+ t.delivery_region_zone_rates=[{region_id:1,zone_name:'冷藏',delivery_fee:900},{region_id:1,zone_name:'常溫',delivery_fee:800},{region_id:2,zone_name:'冷藏',delivery_fee:1100},{region_id:2,zone_name:'常溫',delivery_fee:1000}];
+ t.routes=Array.from({length:6},(_,i)=>({id:i+1,route_code:'DEMO-'+String(i+1).padStart(2,'0'),route_name:'示範路線 '+(i+1),temperature_zone:i===5?'常溫':'冷藏',delivery_region_id:i===5?2:1,active:true,default_start_time:String(5+i).padStart(2,'0')+':00:00',default_end_time:String(6+i).padStart(2,'0')+':00:00'}));
+ t.vehicle_owner_bindings=[{id:1,driver_id:a.id,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:b.id,vehicle_id:2,effective_from:'2026-09-01',effective_to:null}];
+ t.vehicles[0].label='示範自有車';t.vehicles[1].label='示範共用車';
+ t.runs=[];for(const date of ['2026-10-15','2026-10-20'])for(let i=0;i<7;i++){
+  const route=t.routes[i<5?i:i-4],driver=i<5?a:b;
+  t.runs.push({id:t.runs.length+1,service_date:date,route_id:route.id,driver_id:driver.id,vehicle_id:1,status:'assigned',is_rental:driver===b,dispatcher_notes:'隔離示範資料',route_code_snapshot:route.route_code,temperature_zone_snapshot:route.temperature_zone,attendance_category:'日配',attendance_slot_index:i<5?i+1:i-4,dashboard_schedule_revision:1});
+ }
+ t.daily_attendance_slot_counts=['2026-10-15','2026-10-20'].map(service_date=>({service_date,category:'日配',slot_count:5}));
+ t.attendance_driver_days=[{service_date:'2026-10-20',driver_id:c.id,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}];
+ t.daily_attendance_closeouts=[{service_date:'2026-10-15',closed_at:'2026-10-16T00:00:00Z'}];
+ t.payroll_configs=[];t.payroll_rules=[];t.payroll_supplement_rates=[{id:1,component:'standby',amount:400,effective_from:'2026-10-01',reason:'虛構示範值班津貼'},{id:2,component:'rental',amount:80,effective_from:'2026-10-01',reason:'虛構示範租車扣款'}];
+ t.payroll_adjustments=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'allowance',amount:500,reason:'示範加給'},{id:2,driver_id:a.id,service_date:'2026-10-15',category:'deduction',amount:-100,reason:'示範懲處'}];
+ t.expense_records=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'parking',amount:50,description:'示範獨立停車費'}];
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:t.runs.filter(r=>r.service_date==='2026-10-15').map(r=>({...r,id:'run:'+r.id,run_id:r.id,original_driver_id:r.driver_id,source_type:'run',route_temperature_zone:r.temperature_zone_snapshot,plate_snapshot:t.vehicles[0].plate_number,finalized:true,close_event_id:10,closed_at:'2026-10-16T00:00:00Z'})),standby:[{id:1,driver_id:c.id,service_date:'2026-10-15',converted_to_support:false,finalized:true,close_event_id:10}],special_work:[{id:1,kind:'follow_along',driver_id:b.id,run_id:1,service_date:'2026-10-15',follow_stage_snapshot:'trainee',finalized:true,close_event_id:10}],attendance_records:[],original_runs:copy(t.runs.filter(r=>r.service_date==='2026-10-15')),dates:Array.from({length:31},(_,i)=>({service_date:'2026-10-'+String(i+1).padStart(2,'0'),status:i===14?'finalized':'open'}))};
+ // Seed the existing fixture's close-state before disabling operational mutations.
+ base('dashboard_close_attendance_through',{p_through_date:'2026-10-15'});
+ const actor=typeof location!=='undefined'?new URLSearchParams(location.search).get('actor'):null;
+ if(actor==='driver'){mock143.role='driver';mock143.financeAllowed=false;}
+ if(actor==='karen'){mock143.financeAllowed=false;manager.display_name='演示 Karen';manager.can_manage_finance=false;}
+ _testDB143.from=name=>{const q=originalFrom(name),then=q.then.bind(q);for(const op of ['insert','update','upsert','delete'])q[op]=()=>{q.demoBlocked=true;return q;};q.then=(resolve,reject)=>q.demoBlocked?Promise.resolve({data:null,error:{message:'營運示範僅供瀏覽；值班／租車設定可在記憶體試填。'}}).then(resolve,reject):then(resolve,reject);return q;};
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_route_payroll','dashboard_save_payroll_supplements'].includes(fn)){
+   if(fn.startsWith('dashboard_get_'))return base(fn,p);
+   return {data:null,error:{message:'營運示範僅供瀏覽；不連接 Supabase。'}};
+  }
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可使用月度計薪對帳');let data;
+   if(fn==='dashboard_get_route_payroll'){
+    const finalized=copy(mock143.finalized);finalized.month=p.p_month;
+    if(p.p_month!=='2026-10-01')for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])finalized[k]=[];
+    const route_rates=t.routes.map(r=>{const fee=t.delivery_region_zone_rates.find(f=>f.region_id===r.delivery_region_id&&f.zone_name===r.temperature_zone);return {route_id:r.id,region_id:r.delivery_region_id,zone_name:r.temperature_zone,amount:fee?.delivery_fee??null};});
+    data={version:1491,month:p.p_month,finalized,route_rates,supplements:t.payroll_supplement_rates,adjustments:t.payroll_adjustments.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7))),expenses:t.expense_records.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7)))};
+   }else{
+    let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+    if(p.p_expected_revision!==revision)throw Error('設定已變更');
+    if(!p.p_reason?.trim())throw Error('請填原因');
+    const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount]].filter(x=>x[1]!==null);
+    if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+    for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+    data={revision};
+   }
+   return {data:copy(data),error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. Never loaded by a production page. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;
+ t.v055_standby_shifts=[
+  {id:1,driver_id:t.profiles[3].id,service_date:'2026-10-15',attendance_category:'OC',attendance_slot_index:1,start_time:'12:00:00',end_time:'16:00:00',note:'虛構已結案值班',revision:1},
+  {id:2,driver_id:t.profiles[2].id,service_date:'2026-10-20',attendance_category:'冷凍',attendance_slot_index:1,start_time:'14:00:00',end_time:'18:00:00',note:'虛構未結案值班，不指定車輛、不限溫層',revision:1}
+ ];
+ Object.assign(mock143.finalized.standby[0],structuredClone(t.v055_standby_shifts[0]));
+ _testDB143.rpc=async(fn,p={})=>fn==='dashboard_get_attendance_standby'
+  ?{data:structuredClone(t.v055_standby_shifts.filter(s=>s.service_date===p.p_date)),error:null}
+  :fn==='dashboard_save_attendance_standby'
+   ?{data:null,error:{message:'隔離展示可試填值班時段；儲存及審核請在開發系統驗收。示範資料保持不變。'}}
+   :base(fn,p);
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional duties and amounts, no network writes. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc,copy=x=>structuredClone(x),driver=t.profiles[2].id;
+ t.attendance_duty_entries=[];
+ for(const [i,date] of ['2026-10-15','2026-10-20'].entries()){
+  const main=t.runs.find(r=>r.service_date===date&&r.attendance_slot_index===1&&r.driver_id===t.profiles[1].id);
+  for(let n=1;n<=3;n++)t.attendance_duty_entries.push({id:i*3+n,service_date:date,driver_id:driver,attendance_category:'OC',attendance_slot_index:n,
+   kind:n===1?'follow_along':'learning',linked_run_id:n===1?main.id:null,
+   linked_run:n===1?{id:main.id,service_date:date,driver_id:main.driver_id,vehicle_id:main.vehicle_id,route_id:main.route_id,revision:1,observation_revision:0}:null,
+   revision:1,note:n===1?'虛構跟車，共用主線車輛':'虛構學習，每筆各計一次'});
+ }
+ t.payroll_supplement_rates.push({id:3,component:'follow_along',amount:120,effective_from:'2026-10-01',reason:'虛構跟車費，每筆'},
+  {id:4,component:'learning',amount:60,effective_from:'2026-10-01',reason:'虛構學習費，每筆'});
+ mock143.finalized.special_work=t.attendance_duty_entries.filter(x=>x.service_date==='2026-10-15').map(x=>({...copy(x),id:'duty:'+x.id,source_type:'attendance_duty',run_id:x.linked_run_id,plate_snapshot:x.linked_run?t.vehicles.find(v=>v.id===x.linked_run.vehicle_id)?.plate_number:null,pay_basis:'per_entry',finalized:true,close_event_id:10}));
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_get_attendance_duties')return {data:copy(t.attendance_duty_entries.filter(x=>x.service_date===p.p_date)),error:null};
+  if(fn==='dashboard_save_attendance_duty')return {data:null,error:{message:'隔離展示可試填勤務；儲存及審核請在開發系統驗收。'}};
+  if(fn!=='dashboard_save_duty_supplements')return base(fn,p);
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可設定勤務／租車');
+   let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+   if(revision!==p.p_expected_revision)throw Error('設定已變更');
+   if(!p.p_reason?.trim()||!/^\d{4}-\d{2}-\d{2}$/.test(p.p_effective_from))throw Error('請填寫生效日及原因');
+   const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount],['follow_along',p.p_follow_along_amount],['learning',p.p_learning_amount]].filter(x=>x[1]!==null&&x[1]!==undefined);
+   if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+   for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+   return {data:{revision},error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional notes-only duties. */
+(()=>{
+ const t=mock143.tables;
+ for(const d of t.attendance_duty_entries){delete d.linked_run_id;delete d.linked_run;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of t.v055_standby_shifts){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+ for(const d of mock143.finalized.special_work){delete d.linked_run_id;delete d.linked_run;d.run_id=null;d.vehicle_id=null;d.plate_snapshot=null;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of mock143.finalized.standby){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+})();
+
+/* OFFLINE MOCK ONLY: production uses the database calculation; this demo has no network. */
+(()=>{
+ const base=_testDB143.rpc;
+ mock143.tables.payroll_supplement_rates=mock143.tables.payroll_supplement_rates.filter(x=>x.component==='rental');
+ _testDB143.rpc=async(fn,p={})=>{
+  if(['dashboard_save_driver_base_salary','dashboard_save_duty_supplements','dashboard_save_payroll_supplements'].includes(fn))return {data:null,error:{message:'此設定已停用'}};
+  if(fn==='dashboard_save_rental_rate'){
+   if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可設定租車費用'}};
+   const table=mock143.tables.payroll_supplement_rates,revision=Math.max(0,...table.map(x=>x.id));
+   if(revision!==p.p_expected_revision)return {data:null,error:{message:'設定已變更，請重新整理'}};
+   if(!Number.isInteger(p.p_amount)||p.p_amount<0||p.p_amount>10000000||!p.p_reason?.trim())return {data:null,error:{message:'金額或原因不正確'}};
+   table.push({id:revision+1,component:'rental',amount:p.p_amount,effective_from:p.p_effective_from,reason:p.p_reason});return {data:{revision:revision+1},error:null};
+  }
+  if(fn!=='dashboard_get_calculated_payroll')return base(fn,p);
+  const response=await base('dashboard_get_route_payroll',p);if(response.error)return response;
+  const b=response.data,drivers=mock143.tables.profiles.filter(x=>x.role==='driver');
+  const report=PayrollReconciliation1491.build({...b,month:p.p_month.slice(0,7),drivers});
+  for(const x of report.summaries){
+   const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);
+   Object.assign(x,{standbyCount:b.finalized.standby.filter(r=>r.driver_id===x.driverId&&!r.converted_to_support).length,
+    followAlongCount:dw.filter(r=>r.kind==='follow_along').length,learningCount:dw.filter(r=>r.kind==='learning').length,
+    rentalCount:rr.filter(r=>r.is_rental===true).length,unknownRentalCount:rr.filter(r=>r.is_rental==null).length,knownItemsReady:x.basicSubtotal!==null});
+  }
+  b.calculation={...report,version:1415,engine:'database'};return {data:b,error:null};
+ };
+})();
+</script>
+<script>const db=window._testDB143;window.db=db;</script><script>/* Server capability is authoritative. Hidden by default, including legacy links. */
+const DashboardAccess146=(()=>{
+ let pending=null,allowed=false;
+ async function load(){
+  if(!pending)pending=(async()=>{
+   try{
+    const {data,error}=await db.rpc('dashboard_get_capabilities',{});
+    allowed=!error&&data?.increment==='1.4.6'&&data.can_manage_finance===true;
+   }catch(e){allowed=false;}
+   document.body.dataset.financeAccess=allowed?'allowed':'denied';
+   return allowed;
+  })();
+  return pending;
+ }
+ document.addEventListener('DOMContentLoaded',load);
+ return {load,finance:()=>allowed};
+})();
+</script>
+<script>/* Increment 1.3.1 — actual Supabase route catalogue. Demo is served by ui-routes.js instead.
+ * Reads current route masters; stores regions, zones and tariffs in RLS-protected tables.
+ * Client-side checks are UX only; database RLS is authoritative. */
+(()=>{'use strict';
+const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const client=(typeof db!=='undefined'?db:window.db); // js/config.js uses a global lexical const db
+let regions=[],zones=[],routes=[],tariffs=[],tab='routes',editing=null,rateEditing=null,entityEditing=null,search='',filterRegion='',filterZone='',timer=null,waiting=false;
+const rt=id=>regions.find(v=>v.id===Number(id))?.name||'未設定';
+const regionId=name=>regions.find(v=>v.name===name)?.id||null;
+const isEdit=(p)=>p&&p.role==='dispatcher'&&p.active;
+const money=v=>v==null?'待設定':'NT$ '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
+const nameKey=v=>String(v??'').normalize('NFKC').trim().replace(/\s+/g,' ');
+const validName=v=>v.length>0&&v.length<=50;
+const notice=t=>{$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('toast').classList.remove('show'),3000)};
+const errorText=e=>String(e?.message||e||'未知錯誤');
+let myProfile=null;
+function busy(on){waiting=on;document.querySelectorAll('#route-form button,#rate-form button,#entity-form button,#add-route,#toggle-active').forEach(x=>x.disabled=on)}
+async function load(){
+ const [r,z,t,c]=await Promise.all([
+  client.from('delivery_regions').select('id,name').order('name'),
+  client.from('delivery_temperature_zones').select('name').order('name'),
+  client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'),
+  client.from('routes').select('id,route_code,route_name,active,temperature_zone,default_start_time,default_end_time,delivery_region_id').order('route_code')
+ ]);
+ for(const res of [r,z,t,c])if(res.error)throw res.error;
+ regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];
+ routes=(c.data||[]).map(x=>({...x,code:x.route_code,name:x.route_name||x.route_code,region:rt(x.delivery_region_id),zone:x.temperature_zone||'',start:(x.default_start_time||'').slice(0,5),end:(x.default_end_time||'').slice(0,5),time:x.default_start_time&&x.default_end_time?`${x.default_start_time.slice(0,5)}–${x.default_end_time.slice(0,5)}`:'—'}));
+ buildSelects();render();
+}
+const rate=(region,zone)=>tariffs.find(t=>t.region_id===regionId(region)&&t.zone_name===zone)?.delivery_fee??null;
+function option(value,text){return `<option value="${esc(value)}">${esc(text)}</option>`}
+function buildSelects(){
+ const fr=$('filter-region'),fz=$('filter-zone'),rr=$('f-region'),rz=$('f-zone');
+ fr.innerHTML=option('','全部地區')+regions.map(r=>option(r.name,r.name)).join('');
+ fz.innerHTML=option('','全部溫層')+zones.map(z=>option(z,z)).join('');
+ rr.innerHTML=option('','請選擇地區')+regions.map(r=>option(r.name,r.name)).join('');
+ rz.innerHTML=option('','請選擇溫層')+zones.map(z=>option(z,z)).join('');
+ fr.value=regions.some(r=>r.name===filterRegion)?filterRegion:'';
+ fz.value=zones.includes(filterZone)?filterZone:'';
+}
+function render(){
+ const visible=routes.filter(r=>([r.code,r.name,r.region,r.zone].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()))&&(!filterRegion||filterRegion===r.region)&&(!filterZone||filterZone===r.zone));
+ $('stat-routes').textContent=routes.filter(x=>x.active).length;
+ $('stat-regions').textContent=regions.length;$('stat-zones').textContent=zones.length;
+ const prices=routes.filter(x=>x.active).map(x=>rate(x.region,x.zone)).filter(x=>x!==null);
+ $('stat-avg').textContent=prices.length?money(prices.reduce((a,b)=>a+Number(b),0)/prices.length):'—';
+ $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}<span class="route-code">${esc(r.code)}${r.active?'':' · 已停用'}</span></td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td><td class="cost">${money(rate(r.region,r.zone))}</td><td class="dim">${esc(r.time)}</td><td class="row-arrow">›</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>';
+ $('result-count').textContent=`顯示 ${visible.length} / ${routes.length} 條路線`;
+ $('rates-head').innerHTML=`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`;
+ $('rates-body').innerHTML=regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join('');
+ $('rates-head').parentElement.style.minWidth=Math.max(510,137*(zones.length+1))+'px';
+ for(const [kind,names,target] of [['region',regions.map(r=>r.name),'region-list'],['zone',zones,'zone-list']]){
+  $(target).innerHTML=names.map(n=>{const used=routes.filter(r=>r[kind]===n).length;return `<div class="catalog-item"><span class="catalog-name">${esc(n)}</span><span class="catalog-meta">${used} 條路線</span><button class="catalog-control" data-kind="${kind}" data-name="${esc(n)}" data-action="rename" type="button">編輯</button><button class="catalog-control delete" data-kind="${kind}" data-name="${esc(n)}" data-action="remove" type="button">移除</button></div>`}).join('');
+ }
+ $('region-hint').textContent=`共 ${regions.length} 個地區`;$('zone-hint').textContent=`共 ${zones.length} 個溫層`;
+ ['routes','rates','manage'].forEach(t=>{$('tab-'+t).classList.toggle('active',tab===t);$(t==='routes'?'route-view':t==='rates'?'rate-view':'manage-view').classList.toggle('hide',tab!==t)});
+ $('section-title').textContent={routes:'路線列表',rates:'地區 × 溫層費率表',manage:'地區與溫層管理'}[tab];
+ $('section-sub').textContent={routes:'查看並管理實際 Supabase 路線',rates:'修改地區與溫層的配送費用',manage:'新增、編輯與移除分類'}[tab];
+}
+function openLayer(id){$('overlay').classList.add('open');$(id).classList.add('open');$(id).setAttribute('aria-hidden','false')}
+function dismiss(){editing=rateEditing=entityEditing=null;['drawer','rate-modal','entity-modal'].forEach(id=>{$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')});$('overlay').classList.remove('open')}
+function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id));if(id!==null&&!row)return;
+ editing=row||'new';$('drawer-kicker').textContent=row?'編輯配送路線':'建立新路線';$('drawer-title').textContent=row?'編輯路線':'新增路線';
+ $('f-code').disabled=!!row;$('f-code').value=row?row.code:'';$('f-code').placeholder='例如 FM-101';
+ $('f-name').value=row?row.route_name||row.name:'';
+ $('f-region').value=row&&regions.some(r=>r.name===row.region)?row.region:'';
+ $('f-zone').value=row&&zones.includes(row.zone)?row.zone:'';
+ $('f-start').value=row?.start||'';$('f-end').value=row?.end||'';
+ $('toggle-active').classList.toggle('hide',!row);$('toggle-active').textContent=row?.active?'停用此路線':'啟用此路線';
+ $('save-form').textContent=row?'儲存變更':'建立路線';$('form-error').textContent='';updateFee();openLayer('drawer');
+}
+function updateFee(){const r=$('f-region').value,z=$('f-zone').value;$('fee-preview').textContent=money(rate(r,z));$('fee-caption').textContent=`${r||'未選地區'} · ${z||'未選溫層'}`}
+async function submitRoute(e){e.preventDefault();if(waiting)return;
+ const region=$('f-region').value,zone=$('f-zone').value,code=nameKey($('f-code').value).toUpperCase(),name=nameKey($('f-name').value),start=$('f-start').value,end=$('f-end').value;
+ if(!code||!name||!regionId(region)||!zone||!start||!end||start===end){$('form-error').textContent='請填寫路線編號、名稱、地區、溫層與不同的固定起迄時間。';return}
+ const payload={route_name:name,temperature_zone:zone,delivery_region_id:regionId(region),default_start_time:start,default_end_time:end};
+ busy(true);
+ try{
+  const r=editing==='new'?await client.from('routes').insert({...payload,route_code:code,active:true}):await client.from('routes').update(payload).eq('id',editing.id);
+  if(r.error)throw r.error;dismiss();await load();notice('路線資料已儲存至 Supabase');
+ }catch(err){$('form-error').textContent=`儲存失敗：${errorText(err)}`}finally{busy(false)}
+}
+function openRate(regionIdValue,zone){const region=regions.find(r=>r.id===Number(regionIdValue));if(!region)return;
+ rateEditing={region,zone};$('rate-modal-desc').textContent=`${region.name} × ${zone} 的配送費用（非司機薪資）。`;
+ $('rate-amount').value=rate(region.name,zone)??'';$('rate-error').textContent='';openLayer('rate-modal');}
+async function submitRate(e){e.preventDefault();if(!rateEditing||waiting)return;const s=$('rate-amount').value.trim(),n=Number(s);
+ if(!s||!Number.isFinite(n)||n<0||n>10000000){$('rate-error').textContent='請輸入 0 至 10,000,000 的非負金額。';return}
+ busy(true);try{const res=await client.from('delivery_region_zone_rates').upsert({region_id:rateEditing.region.id,zone_name:rateEditing.zone,delivery_fee:n},{onConflict:'region_id,zone_name'});if(res.error)throw res.error;dismiss();await load();notice('費率已儲存')}catch(err){$('rate-error').textContent=errorText(err)}finally{busy(false)} }
+function openEntity(kind,old=null,origin='catalog'){entityEditing={kind,old,origin};$('entity-modal-title').textContent=(old?'編輯':'新增')+(kind==='region'?'配送地區':'配送溫層');$('entity-modal-desc').textContent=old?'修改分類名稱，既有路線將同步採用新名稱。':'新分類加入後，新組合費率需另行設定。';$('entity-name').value=old||'';$('entity-label').textContent=kind==='region'?'配送地區名稱':'配送溫層名稱';$('entity-error').textContent='';$('entity-submit').textContent=old?'儲存變更':'新增';openLayer('entity-modal')}
+async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)return;
+ const {kind,old,origin}=entityEditing,name=nameKey($('entity-name').value);
+ // A category can be added from an unsaved route editor. Preserve its entire form.
+ const routeDraft=origin==='route' && editing ? {
+  id:editing==='new'?null:editing.id,
+  code:$('f-code').value,name:$('f-name').value,
+  region:$('f-region').value,zone:$('f-zone').value,
+  start:$('f-start').value,end:$('f-end').value
+ }:null;
+ if(!validName(name)){$('entity-error').textContent='名稱應為 1–50 個字。';return}
+ if((kind==='region'?regions.map(r=>r.name):zones).some(n=>n.toLocaleLowerCase()===name.toLocaleLowerCase()&&n!==old)){$('entity-error').textContent='已經有同名分類。';return}
+ if(old===name){dismiss();return}
+ busy(true);try{let res;
+  if(kind==='region'){
+   res=old?await client.from('delivery_regions').update({name}).eq('id',regionId(old)):await client.from('delivery_regions').insert({name});
+  }else{
+   res=old?await client.rpc('route_catalog_rename_zone',{p_old_name:old,p_new_name:name}):await client.from('delivery_temperature_zones').insert({name});
+  }
+  if(res.error)throw res.error;
+  dismiss();await load();
+  if(routeDraft){
+    openRoute(routeDraft.id);
+    $('f-code').value=routeDraft.code;$('f-name').value=routeDraft.name;
+    $('f-start').value=routeDraft.start;$('f-end').value=routeDraft.end;
+    $('f-region').value=(kind==='region' && (old===routeDraft.region||!old))?name:routeDraft.region;
+    $('f-zone').value=(kind==='zone' && (old===routeDraft.zone||!old))?name:routeDraft.zone;
+    updateFee();
+  }
+  notice(old?'分類名稱已更新':'已新增分類');
+ }catch(err){$('entity-error').textContent=errorText(err)}finally{busy(false)} }
+async function removeEntity(kind,name){const used=routes.filter(r=>r[kind]===name).length;if(used){notice(`有 ${used} 條路線使用此分類，無法移除`);return}
+ if(!confirm(`確定移除「${name}」？相關費率也會刪除。`))return;
+ try{const res=kind==='region'?await client.from('delivery_regions').delete().eq('id',regionId(name)):await client.from('delivery_temperature_zones').delete().eq('name',name);
+  if(res.error)throw res.error;await load();notice('分類已移除');
+ }catch(err){notice(`移除失敗：${errorText(err)}`)} }
+async function toggleActive(){if(!editing||editing==='new'||waiting)return;
+ const row=editing;if(!confirm(`確定${row.active?'停用':'啟用'}路線 ${row.code}？`))return;
+ busy(true);try{const res=await client.from('routes').update({active:!row.active}).eq('id',row.id);if(res.error)throw res.error;dismiss();await load();notice('路線狀態已更新')}catch(err){$('form-error').textContent=errorText(err)}finally{busy(false)} }
+function bind(){
+ function applyDevice(){const mobile=window.matchMedia('(max-width: 800px)').matches;
+  $('stage').classList.toggle('mobile',mobile);$('stage').classList.toggle('desktop',!mobile);
+
+ }
+ applyDevice();window.addEventListener('resize',applyDevice,{passive:true});
+
+ ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>{tab=t;render()});
+ $('route-search').oninput=e=>{search=e.target.value.trim();render()};
+ $('filter-region').onchange=e=>{filterRegion=e.target.value;render()};
+ $('filter-zone').onchange=e=>{filterZone=e.target.value;render()};
+ $('add-route').onclick=()=>openRoute(null);$('route-form').onsubmit=submitRoute;
+ $('dismiss').onclick=dismiss;$('cancel-form').onclick=dismiss;$('overlay').onclick=dismiss;
+ $('rates-body').onclick=e=>{const b=e.target.closest('button[data-rate-region]');if(b)openRate(b.dataset.rateRegion,b.dataset.rateZone)};
+ $('rate-cancel').onclick=dismiss;$('rate-form').onsubmit=submitRate;
+ document.querySelectorAll('[data-create-kind]').forEach(b=>b.onclick=()=>openEntity(b.dataset.createKind,null,b.dataset.origin||'catalog'));
+ ['region-list','zone-list'].forEach(id=>$(id).onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;b.dataset.action==='rename'?openEntity(b.dataset.kind,b.dataset.name):removeEntity(b.dataset.kind,b.dataset.name)});
+ $('entity-cancel').onclick=()=>{$('entity-modal').classList.remove('open');$('entity-modal').setAttribute('aria-hidden','true');entityEditing=null;if(!$('drawer').classList.contains('open'))$('overlay').classList.remove('open')};
+ $('entity-form').onsubmit=submitEntity;
+ $('routes-body').onclick=e=>{const tr=e.target.closest('tr[data-id]');if(tr)openRoute(tr.dataset.id)};
+ $('routes-body').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr[data-id]');if(tr){e.preventDefault();openRoute(tr.dataset.id)}}};
+ $('f-region').onchange=updateFee;$('f-zone').onchange=updateFee;
+ $('toggle-active').onclick=toggleActive;
+
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')dismiss()});
+}
+async function init(){
+ if(!db)throw Error('找不到 Supabase 設定。請確認 js/config.js 已正確放置。');
+ const result=await client.auth.getUser();if(result.error||!result.data?.user){location.href='index.html';return}
+ const id=result.data.user.id,prof=await client.from('profiles').select('id,role,active,display_name').eq('id',id).single();
+ if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
+ myProfile=prof.data;bind();await load();
+ document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';
+}
+init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入正式資料：${errorText(e)}。請先執行資料庫遷移 131_01_route_catalog.sql。`});
+})();
+</script>
+<script>/* Shared viewport management for the four approved interactive prototypes.
+   Never grants application permissions; original demo interactions remain local-only. */
+(()=>{
+ const page=document.body.dataset.dashboard;
+ let mode='';
+ function applyViewport(){
+  const next=window.matchMedia('(max-width: 800px)').matches?'mobile':'desktop';
+  if(mode===next)return;
+  mode=next;
+  if(page==='attendance'){
+    const btn=document.querySelector('#device-choices [data-device="'+next+'"]');
+    if(btn)btn.click();
+  }else if(page==='routes'){
+    const btn=document.querySelector('#device-'+next);if(btn)btn.click();
+  }else if(page==='vehicles'){
+    const btn=document.querySelector('#previewSwitch [data-device="'+next+'"]');if(btn)btn.click();
+  }else if(page==='monthly'){
+    const btn=document.querySelector('#device [data-screen="'+next+'"]');if(btn)btn.click();
+  }
+ }
+ function init(){applyViewport();window.addEventListener('resize',applyViewport,{passive:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+<script>/* Route navigation: identical logout behavior to the three production dashboard pages. */
+(()=>{'use strict';
+ const button=document.getElementById('route-logout');
+ if(!button)return;
+ button.addEventListener('click',async()=>{
+   if(button.disabled)return;
+   button.disabled=true;
+   const label=button.textContent;button.textContent='登出中…';
+   try{
+     const client=(typeof db!=='undefined'?db:window.db);
+     if(!client?.auth?.signOut)throw new Error('無法取得登入服務');
+     const {error}=await client.auth.signOut();
+     if(error)throw error;
+     location.replace('index.html');
+   }catch(e){
+     button.disabled=false;button.textContent=label;
+     const status=document.getElementById('route-status');
+     if(status)status.textContent='登出失敗，請重試：'+String(e?.message||e);
+   }
+ });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+/* Increment 1.3.1 — actual Supabase route catalogue. Demo is served by ui-routes.js instead.
+ * Reads current route masters; stores regions, zones and tariffs in RLS-protected tables.
+ * Client-side checks are UX only; database RLS is authoritative. */
+(()=>{'use strict';
+const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const client=(typeof db!=='undefined'?db:window.db); // js/config.js uses a global lexical const db
+let regions=[],zones=[],routes=[],tariffs=[],tab='routes',editing=null,rateEditing=null,entityEditing=null,search='',filterRegion='',filterZone='',timer=null,waiting=false;
+const rt=id=>regions.find(v=>v.id===Number(id))?.name||'未設定';
+const regionId=name=>regions.find(v=>v.name===name)?.id||null;
+const isEdit=(p)=>p&&p.role==='dispatcher'&&p.active;
+const money=v=>v==null?'待設定':'NT$ '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
+const nameKey=v=>String(v??'').normalize('NFKC').trim().replace(/\s+/g,' ');
+const validName=v=>v.length>0&&v.length<=50;
+const notice=t=>{$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('toast').classList.remove('show'),3000)};
+const errorText=e=>String(e?.message||e||'未知錯誤');
+let myProfile=null;
+function busy(on){waiting=on;document.querySelectorAll('#route-form button,#rate-form button,#entity-form button,#add-route,#toggle-active').forEach(x=>x.disabled=on)}
+async function load(){
+ const [r,z,t,c]=await Promise.all([
+  client.from('delivery_regions').select('id,name').order('name'),
+  client.from('delivery_temperature_zones').select('name').order('name'),
+  client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'),
+  client.from('routes').select('id,route_code,route_name,active,temperature_zone,default_start_time,default_end_time,delivery_region_id').order('route_code')
+ ]);
+ for(const res of [r,z,t,c])if(res.error)throw res.error;
+ regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];
+ routes=(c.data||[]).map(x=>({...x,code:x.route_code,name:x.route_name||x.route_code,region:rt(x.delivery_region_id),zone:x.temperature_zone||'',start:(x.default_start_time||'').slice(0,5),end:(x.default_end_time||'').slice(0,5),time:x.default_start_time&&x.default_end_time?`${x.default_start_time.slice(0,5)}–${x.default_end_time.slice(0,5)}`:'—'}));
+ buildSelects();render();
+}
+const rate=(region,zone)=>tariffs.find(t=>t.region_id===regionId(region)&&t.zone_name===zone)?.delivery_fee??null;
+function option(value,text){return `<option value="${esc(value)}">${esc(text)}</option>`}
+function buildSelects(){
+ const fr=$('filter-region'),fz=$('filter-zone'),rr=$('f-region'),rz=$('f-zone');
+ fr.innerHTML=option('','全部地區')+regions.map(r=>option(r.name,r.name)).join('');
+ fz.innerHTML=option('','全部溫層')+zones.map(z=>option(z,z)).join('');
+ rr.innerHTML=option('','請選擇地區')+regions.map(r=>option(r.name,r.name)).join('');
+ rz.innerHTML=option('','請選擇溫層')+zones.map(z=>option(z,z)).join('');
+ fr.value=regions.some(r=>r.name===filterRegion)?filterRegion:'';
+ fz.value=zones.includes(filterZone)?filterZone:'';
+}
+function render(){
+ const visible=routes.filter(r=>([r.code,r.name,r.region,r.zone].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()))&&(!filterRegion||filterRegion===r.region)&&(!filterZone||filterZone===r.zone));
+ $('stat-routes').textContent=routes.filter(x=>x.active).length;
+ $('stat-regions').textContent=regions.length;$('stat-zones').textContent=zones.length;
+ const prices=routes.filter(x=>x.active).map(x=>rate(x.region,x.zone)).filter(x=>x!==null);
+ $('stat-avg').textContent=prices.length?money(prices.reduce((a,b)=>a+Number(b),0)/prices.length):'—';
+ $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}<span class="route-code">${esc(r.code)}${r.active?'':' · 已停用'}</span></td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td><td class="cost">${money(rate(r.region,r.zone))}</td><td class="dim">${esc(r.time)}</td><td class="row-arrow">›</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>';
+ $('result-count').textContent=`顯示 ${visible.length} / ${routes.length} 條路線`;
+ $('rates-head').innerHTML=`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`;
+ $('rates-body').innerHTML=regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join('');
+ $('rates-head').parentElement.style.minWidth=Math.max(510,137*(zones.length+1))+'px';
+ for(const [kind,names,target] of [['region',regions.map(r=>r.name),'region-list'],['zone',zones,'zone-list']]){
+  $(target).innerHTML=names.map(n=>{const used=routes.filter(r=>r[kind]===n).length;return `<div class="catalog-item"><span class="catalog-name">${esc(n)}</span><span class="catalog-meta">${used} 條路線</span><button class="catalog-control" data-kind="${kind}" data-name="${esc(n)}" data-action="rename" type="button">編輯</button><button class="catalog-control delete" data-kind="${kind}" data-name="${esc(n)}" data-action="remove" type="button">移除</button></div>`}).join('');
+ }
+ $('region-hint').textContent=`共 ${regions.length} 個地區`;$('zone-hint').textContent=`共 ${zones.length} 個溫層`;
+ ['routes','rates','manage'].forEach(t=>{$('tab-'+t).classList.toggle('active',tab===t);$(t==='routes'?'route-view':t==='rates'?'rate-view':'manage-view').classList.toggle('hide',tab!==t)});
+ $('section-title').textContent={routes:'路線列表',rates:'地區 × 溫層費率表',manage:'地區與溫層管理'}[tab];
+ $('section-sub').textContent={routes:'查看並管理實際 Supabase 路線',rates:'修改地區與溫層的配送費用',manage:'新增、編輯與移除分類'}[tab];
+}
+function openLayer(id){$('overlay').classList.add('open');$(id).classList.add('open');$(id).setAttribute('aria-hidden','false')}
+function dismiss(){editing=rateEditing=entityEditing=null;['drawer','rate-modal','entity-modal'].forEach(id=>{$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')});$('overlay').classList.remove('open')}
+function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id));if(id!==null&&!row)return;
+ editing=row||'new';$('drawer-kicker').textContent=row?'編輯配送路線':'建立新路線';$('drawer-title').textContent=row?'編輯路線':'新增路線';
+ $('f-code').disabled=!!row;$('f-code').value=row?row.code:'';$('f-code').placeholder='例如 FM-101';
+ $('f-name').value=row?row.route_name||row.name:'';
+ $('f-region').value=row&&regions.some(r=>r.name===row.region)?row.region:'';
+ $('f-zone').value=row&&zones.includes(row.zone)?row.zone:'';
+ $('f-start').value=row?.start||'';$('f-end').value=row?.end||'';
+ $('toggle-active').classList.toggle('hide',!row);$('toggle-active').textContent=row?.active?'停用此路線':'啟用此路線';
+ $('save-form').textContent=row?'儲存變更':'建立路線';$('form-error').textContent='';updateFee();openLayer('drawer');
+}
+function updateFee(){const r=$('f-region').value,z=$('f-zone').value;$('fee-preview').textContent=money(rate(r,z));$('fee-caption').textContent=`${r||'未選地區'} · ${z||'未選溫層'}`}
+async function submitRoute(e){e.preventDefault();if(waiting)return;
+ const region=$('f-region').value,zone=$('f-zone').value,code=nameKey($('f-code').value).toUpperCase(),name=nameKey($('f-name').value),start=$('f-start').value,end=$('f-end').value;
+ if(!code||!name||!regionId(region)||!zone||!start||!end||start===end){$('form-error').textContent='請填寫路線編號、名稱、地區、溫層與不同的固定起迄時間。';return}
+ const payload={route_name:name,temperature_zone:zone,delivery_region_id:regionId(region),default_start_time:start,default_end_time:end};
+ busy(true);
+ try{
+  const r=editing==='new'?await client.from('routes').insert({...payload,route_code:code,active:true}):await client.from('routes').update(payload).eq('id',editing.id);
+  if(r.error)throw r.error;dismiss();await load();notice('路線資料已儲存至 Supabase');
+ }catch(err){$('form-error').textContent=`儲存失敗：${errorText(err)}`}finally{busy(false)}
+}
+function openRate(regionIdValue,zone){const region=regions.find(r=>r.id===Number(regionIdValue));if(!region)return;
+ rateEditing={region,zone};$('rate-modal-desc').textContent=`${region.name} × ${zone} 的配送費用（非司機薪資）。`;
+ $('rate-amount').value=rate(region.name,zone)??'';$('rate-error').textContent='';openLayer('rate-modal');}
+async function submitRate(e){e.preventDefault();if(!rateEditing||waiting)return;const s=$('rate-amount').value.trim(),n=Number(s);
+ if(!s||!Number.isFinite(n)||n<0||n>10000000){$('rate-error').textContent='請輸入 0 至 10,000,000 的非負金額。';return}
+ busy(true);try{const res=await client.from('delivery_region_zone_rates').upsert({region_id:rateEditing.region.id,zone_name:rateEditing.zone,delivery_fee:n},{onConflict:'region_id,zone_name'});if(res.error)throw res.error;dismiss();await load();notice('費率已儲存')}catch(err){$('rate-error').textContent=errorText(err)}finally{busy(false)} }
+function openEntity(kind,old=null,origin='catalog'){entityEditing={kind,old,origin};$('entity-modal-title').textContent=(old?'編輯':'新增')+(kind==='region'?'配送地區':'配送溫層');$('entity-modal-desc').textContent=old?'修改分類名稱，既有路線將同步採用新名稱。':'新分類加入後，新組合費率需另行設定。';$('entity-name').value=old||'';$('entity-label').textContent=kind==='region'?'配送地區名稱':'配送溫層名稱';$('entity-error').textContent='';$('entity-submit').textContent=old?'儲存變更':'新增';openLayer('entity-modal')}
+async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)return;
+ const {kind,old,origin}=entityEditing,name=nameKey($('entity-name').value);
+ // A category can be added from an unsaved route editor. Preserve its entire form.
+ const routeDraft=origin==='route' && editing ? {
+  id:editing==='new'?null:editing.id,
+  code:$('f-code').value,name:$('f-name').value,
+  region:$('f-region').value,zone:$('f-zone').value,
+  start:$('f-start').value,end:$('f-end').value
+ }:null;
+ if(!validName(name)){$('entity-error').textContent='名稱應為 1–50 個字。';return}
+ if((kind==='region'?regions.map(r=>r.name):zones).some(n=>n.toLocaleLowerCase()===name.toLocaleLowerCase()&&n!==old)){$('entity-error').textContent='已經有同名分類。';return}
+ if(old===name){dismiss();return}
+ busy(true);try{let res;
+  if(kind==='region'){
+   res=old?await client.from('delivery_regions').update({name}).eq('id',regionId(old)):await client.from('delivery_regions').insert({name});
+  }else{
+   res=old?await client.rpc('route_catalog_rename_zone',{p_old_name:old,p_new_name:name}):await client.from('delivery_temperature_zones').insert({name});
+  }
+  if(res.error)throw res.error;
+  dismiss();await load();
+  if(routeDraft){
+    openRoute(routeDraft.id);
+    $('f-code').value=routeDraft.code;$('f-name').value=routeDraft.name;
+    $('f-start').value=routeDraft.start;$('f-end').value=routeDraft.end;
+    $('f-region').value=(kind==='region' && (old===routeDraft.region||!old))?name:routeDraft.region;
+    $('f-zone').value=(kind==='zone' && (old===routeDraft.zone||!old))?name:routeDraft.zone;
+    updateFee();
+  }
+  notice(old?'分類名稱已更新':'已新增分類');
+ }catch(err){$('entity-error').textContent=errorText(err)}finally{busy(false)} }
+async function removeEntity(kind,name){const used=routes.filter(r=>r[kind]===name).length;if(used){notice(`有 ${used} 條路線使用此分類，無法移除`);return}
+ if(!confirm(`確定移除「${name}」？相關費率也會刪除。`))return;
+ try{const res=kind==='region'?await client.from('delivery_regions').delete().eq('id',regionId(name)):await client.from('delivery_temperature_zones').delete().eq('name',name);
+  if(res.error)throw res.error;await load();notice('分類已移除');
+ }catch(err){notice(`移除失敗：${errorText(err)}`)} }
+async function toggleActive(){if(!editing||editing==='new'||waiting)return;
+ const row=editing;if(!confirm(`確定${row.active?'停用':'啟用'}路線 ${row.code}？`))return;
+ busy(true);try{const res=await client.from('routes').update({active:!row.active}).eq('id',row.id);if(res.error)throw res.error;dismiss();await load();notice('路線狀態已更新')}catch(err){$('form-error').textContent=errorText(err)}finally{busy(false)} }
+function bind(){
+ function applyDevice(){const mobile=window.matchMedia('(max-width: 800px)').matches;
+  $('stage').classList.toggle('mobile',mobile);$('stage').classList.toggle('desktop',!mobile);
+
+ }
+ applyDevice();window.addEventListener('resize',applyDevice,{passive:true});
+
+ ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>{tab=t;render()});
+ $('route-search').oninput=e=>{search=e.target.value.trim();render()};
+ $('filter-region').onchange=e=>{filterRegion=e.target.value;render()};
+ $('filter-zone').onchange=e=>{filterZone=e.target.value;render()};
+ $('add-route').onclick=()=>openRoute(null);$('route-form').onsubmit=submitRoute;
+ $('dismiss').onclick=dismiss;$('cancel-form').onclick=dismiss;$('overlay').onclick=dismiss;
+ $('rates-body').onclick=e=>{const b=e.target.closest('button[data-rate-region]');if(b)openRate(b.dataset.rateRegion,b.dataset.rateZone)};
+ $('rate-cancel').onclick=dismiss;$('rate-form').onsubmit=submitRate;
+ document.querySelectorAll('[data-create-kind]').forEach(b=>b.onclick=()=>openEntity(b.dataset.createKind,null,b.dataset.origin||'catalog'));
+ ['region-list','zone-list'].forEach(id=>$(id).onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;b.dataset.action==='rename'?openEntity(b.dataset.kind,b.dataset.name):removeEntity(b.dataset.kind,b.dataset.name)});
+ $('entity-cancel').onclick=()=>{$('entity-modal').classList.remove('open');$('entity-modal').setAttribute('aria-hidden','true');entityEditing=null;if(!$('drawer').classList.contains('open'))$('overlay').classList.remove('open')};
+ $('entity-form').onsubmit=submitEntity;
+ $('routes-body').onclick=e=>{const tr=e.target.closest('tr[data-id]');if(tr)openRoute(tr.dataset.id)};
+ $('routes-body').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr[data-id]');if(tr){e.preventDefault();openRoute(tr.dataset.id)}}};
+ $('f-region').onchange=updateFee;$('f-zone').onchange=updateFee;
+ $('toggle-active').onclick=toggleActive;
+
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')dismiss()});
+}
+async function init(){
+ if(!db)throw Error('找不到 Supabase 設定。請確認 js/config.js 已正確放置。');
+ const result=await client.auth.getUser();if(result.error||!result.data?.user){location.href='index.html';return}
+ const id=result.data.user.id,prof=await client.from('profiles').select('id,role,active,display_name').eq('id',id).single();
+ if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
+ myProfile=prof.data;bind();await load();
+ document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';
+}
+init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入正式資料：${errorText(e)}。請先執行資料庫遷移 131_01_route_catalog.sql。`});
+})();

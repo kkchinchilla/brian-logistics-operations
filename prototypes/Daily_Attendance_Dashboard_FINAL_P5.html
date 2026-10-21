@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>每日出勤｜單日範本 P4・休假與趟次互斥｜互動原型</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:#17191c;color:#f5f5f3}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.prototype{padding:18px 12px 26px;min-height:100vh;background:#17191c;color:#f5f5f3}
+.demo-controls{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;max-width:1260px;margin:0 auto 16px}
+.demo-controls .control-label{color:#999ca2;font-size:11px;text-transform:uppercase;letter-spacing:.13em;margin-right:7px}
+.control-cluster{display:flex;align-items:center;gap:6px}
+.segment{display:inline-flex;padding:4px;border-radius:12px;background:#272a2f;border:1px solid #393c42}
+.segment button{background:transparent;border:0;color:#a7a9ae;border-radius:9px;font-size:12px;padding:9px 15px;white-space:nowrap}
+.segment button.is-on{background:#ffda36;color:#161719;font-weight:750}
+.preview-stage{display:flex;justify-content:center;max-width:1260px;margin:0 auto;min-width:0}
+.app{position:relative;isolation:isolate;background:#1f2226;border:1px solid #383b41;border-radius:22px;box-shadow:0 20px 65px #0006;overflow:hidden;display:flex;width:100%;height:706px;min-width:0;transition:width .22s ease,height .22s ease,border-radius .22s}
+.preview-stage.is-mobile .app{width:390px;max-width:100%;height:735px;border-radius:29px}
+.rail{width:166px;flex:0 0 166px;background:#191c1f;border-right:1px solid #34363b;display:flex;flex-direction:column;padding:24px 13px;gap:26px}
+.logo{display:flex;align-items:center;gap:11px;padding:4px 7px;color:#f8f8f5;font-weight:750;font-size:15px;letter-spacing:.03em}
+.logo-mark{background:#ffda36;color:#191a1c;width:29px;height:29px;display:grid;place-items:center;border-radius:9px;font-size:19px;font-weight:950;line-height:1}
+.rail-item{padding:11px 13px;border-radius:12px;color:#bfc1c4;font-size:13px}
+.rail-item.current{background:#ffda36;color:#181a1e;font-weight:750}
+.rail-bottom{margin-top:auto;font-size:10px;color:#777b80;padding-left:10px;letter-spacing:.02em}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;padding:25px 24px 20px;gap:17px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.head .eyebrow{font-size:11px;letter-spacing:.06em;color:#95989e;margin-bottom:6px}
+h1{font-size:25px;letter-spacing:-.045em;line-height:1.24;margin:0;font-weight:740}
+.head-actions{display:flex;align-items:center;gap:7px}
+.date-control{display:flex;align-items:center;gap:2px;border-radius:11px;background:#292c31;border:1px solid #404248;height:37px;padding:3px 5px;white-space:nowrap}
+.date-control button{border:0;background:none;color:#bfc1c6;border-radius:7px;width:28px;height:27px;display:grid;place-items:center;font-size:19px;line-height:1}
+.date-control button:hover{background:#404247;color:#fff}
+.date-control span{font-size:12px;padding:0 8px;color:#f0f1f2;font-variant-numeric:tabular-nums}
+.close-day{border:none;border-radius:10px;background:#ffda36;color:#1d1e20;padding:11px 16px;font-weight:750;font-size:12px;white-space:nowrap}
+.close-day:hover{background:#ffe36a}
+.main-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.search{height:39px;max-width:360px;min-width:145px;flex:1;display:flex;gap:10px;align-items:center;border:1px solid #3c3f45;background:#282b30;border-radius:11px;color:#888d94;padding:0 13px}
+.search svg{flex:none}
+.search input{min-width:0;width:100%;border:none;outline:none;background:none;color:#fff;font-size:12px}
+.search input::placeholder{color:#858a91}
+.legend{font-size:11px;color:#8c9097;white-space:nowrap}
+.legend strong{color:#ffda36;font-weight:600}
+.table-surface{background:#22252a;border:1px solid #383b41;border-radius:14px;overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column}
+.table-scroll{width:100%;overflow:auto;flex:1;min-height:0;overscroll-behavior-x:contain;scrollbar-color:#676b70 #24272a;scrollbar-width:thin}
+.matrix{table-layout:fixed;width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;font-size:12px;font-variant-numeric:tabular-nums;color:#f1f1f1}
+.matrix th,.matrix td{white-space:nowrap;text-align:center;height:49px;min-width:69px;border-bottom:1px solid #34373b;border-right:1px solid #34373b;padding:0 5px}
+.matrix thead th{font-weight:620}
+.matrix thead .category th{height:42px;background:#383b40;color:#f7f7f6;position:sticky;top:0;z-index:4;border-bottom:1px solid #4b4e54;font-size:12px;letter-spacing:.03em}
+.matrix thead .subheading th{height:37px;background:#303338;color:#b5b8bd;position:sticky;top:42px;z-index:4;font-size:11px;font-weight:570}
+.matrix thead .category .name-header{background:#35383d;position:sticky;left:0;z-index:8;min-width:108px;width:108px;text-align:left;padding-left:18px;border-right:1px solid #505359}
+.matrix tbody th.name{font-size:12px;font-weight:680;background:#26292d;min-width:108px;width:108px;text-align:left;padding-left:15px;position:sticky;left:0;z-index:3;border-right:1px solid #505359;color:#f1f1ef}
+.matrix tbody tr:nth-child(2n) td{background:#25282c}
+.matrix tbody tr.mine td{background:#302f27}
+.matrix tbody tr.mine th.name{background:#373528;color:#ffe174;box-shadow:inset 3px 0 #ffda36}
+.matrix tbody td{min-width:69px;background:#22252a}
+.matrix .leave-col{width:53px;min-width:53px}
+.matrix .separator{border-left:2px solid #5b5d61}
+.matrix td .cell{display:flex;align-items:center;justify-content:center;min-height:35px;width:100%;margin:0 auto;border-radius:7px;font-size:12px;color:inherit;line-height:1.1}
+.matrix td .cell:not(.empty){background:#32353a;padding:8px 5px}
+.matrix td .cell.edited{background:#ffda36;color:#1c1c1e;font-weight:770}
+.matrix td button.cell{border:1px solid transparent;cursor:pointer;background:transparent}
+.matrix td button.cell:hover,.matrix td button.cell:focus-visible{outline:none;border-color:#ffda36;background:#4a4531}
+.matrix td button.cell.edited:hover{background:#ffe26c}
+.matrix td .cell.empty{min-height:35px;color:#54575b}
+.matrix td button.cell.empty:hover{background:#32353a}
+.table-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid #373a3f;font-size:11px;color:#9d9fa4}
+.table-foot strong{color:#e6e6e6;font-weight:550}
+.hint{font-size:11px;color:#7e838a}
+.preview-stage.is-mobile .rail{display:none}
+.preview-stage.is-mobile .main{padding:23px 0 15px;gap:14px}
+.preview-stage.is-mobile .head{padding:0 17px;align-items:flex-start;flex-wrap:wrap}
+.preview-stage.is-mobile h1{font-size:24px}
+.preview-stage.is-mobile .head-actions{margin-top:2px}
+.preview-stage.is-mobile .date-control{height:34px}
+.preview-stage.is-mobile .date-control span{font-size:11px;padding:0 3px}
+.preview-stage.is-mobile .date-control button{width:23px}
+.preview-stage.is-mobile .close-day{padding:10px;font-size:11px}
+.preview-stage.is-mobile .main-tools{padding:0 15px;gap:5px}
+.preview-stage.is-mobile .search{max-width:none;flex-basis:100%}
+.preview-stage.is-mobile .legend{display:none}
+.preview-stage.is-mobile .table-surface{border-left:0;border-right:0;border-radius:0}
+.preview-stage.is-mobile .matrix th,.preview-stage.is-mobile .matrix td{height:52px;min-width:65px}
+.preview-stage.is-mobile .matrix thead .category th{height:37px}
+.preview-stage.is-mobile .matrix thead .subheading th{top:37px;height:35px}
+.preview-stage.is-mobile .matrix thead .category .name-header,.preview-stage.is-mobile .matrix tbody th.name{min-width:94px;width:94px;padding-left:11px}
+.preview-stage.is-mobile .matrix{font-size:12px}
+.preview-stage.is-mobile .table-foot{padding:11px 17px}
+.preview-stage.is-mobile .hint{display:none}
+.app .scrim{position:absolute;inset:0;background:#000a;z-index:10;display:none}
+.app .scrim.show{display:block}
+.dialog{position:absolute;z-index:11;right:30px;top:50%;transform:translateY(-50%);background:#292c30;border:1px solid #484b51;box-shadow:0 24px 75px #0009;width:345px;max-width:calc(100% - 24px);border-radius:20px;padding:22px;display:none}
+.dialog.show{display:block}
+.dialog .handle{display:none}
+.dialog h2{margin:0 0 5px;font-size:19px;letter-spacing:-.02em}
+.dialog p{color:#afb2b7;font-size:12px;line-height:1.65;margin:0 0 16px}
+.dialog label{display:block;margin:12px 0 7px;color:#dadbde;font-size:12px}
+.dialog input,.dialog textarea{background:#1f2226;border:1px solid #4a4d52;border-radius:10px;padding:12px;color:#fff;outline:none;width:100%;font-size:14px}
+.dialog input:focus,.dialog textarea:focus{border-color:#ffda36}
+.dialog textarea{resize:vertical;min-height:64px}
+.dialog .original{color:#888b91;font-size:11px;margin-top:10px}
+.dialog .actions{display:flex;gap:9px;margin-top:20px}
+.dialog .actions button{flex:1;padding:12px 10px;font-size:13px;border-radius:10px;font-weight:650}
+.dialog .secondary{background:#3b3e43;border:0;color:#f1f1f1}
+.dialog .primary{background:#ffda36;border:0;color:#191a1c}
+.dialog .field-error{font-size:11px;color:#ffde5a;margin-top:8px;min-height:16px}
+.preview-stage.is-mobile .dialog{left:0;right:0;bottom:0;top:auto;transform:none;max-width:100%;width:100%;border-bottom:0;border-radius:23px 23px 0 0;padding:22px 22px 32px;box-shadow:0 -18px 48px #0008}
+.preview-stage.is-mobile .dialog .handle{display:block;width:36px;height:4px;border-radius:3px;background:#777b82;margin:-10px auto 22px}
+.toast{position:absolute;z-index:15;bottom:24px;left:50%;transform:translateX(-50%);padding:11px 18px;border-radius:10px;background:#ffda36;color:#17191b;box-shadow:0 5px 20px #0006;font-size:12px;font-weight:740;display:none;white-space:nowrap}
+.toast.show{display:block}
+.preview-stage.is-mobile .toast{bottom:18px}
+.demo-note{color:#8e9197;font-size:11px;max-width:1260px;margin:12px auto 0;line-height:1.5}
+@media(max-width:510px){.prototype{padding:9px 0 24px}.demo-controls{padding:0 12px;gap:9px}.control-label{display:none}.segment button{padding:8px 11px}.preview-stage.is-mobile .app{border-radius:0;min-height:650px;height:calc(100dvh - 130px);width:100%}.demo-note{padding:0 13px}}
+
+/* Dynamic delivery-column controls; all flat colours, no gradients. */
+[hidden]{display:none!important}
+.table-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.slot-adjust{border:1px solid #4a4d52;background:#303339;color:#eeeeec;border-radius:10px;padding:10px 14px;white-space:nowrap;font-weight:660;font-size:12px}
+.slot-adjust:hover{background:#3d4045;border-color:#73767c}
+.slot-stack{display:flex;flex-direction:column;gap:8px;margin:14px 0 8px}
+.slot-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border-radius:12px;background:#22252a;border:1px solid #3a3d42}
+.slot-item .slot-title{font-size:13px;font-weight:700}
+.slot-item .slot-desc{font-size:10px;color:#94979c;margin-top:3px}
+.slot-steps{display:flex;align-items:center;gap:8px}
+.slot-steps output{min-width:26px;text-align:center;font-variant-numeric:tabular-nums;font-size:16px;font-weight:780}
+.slot-steps button{width:37px;height:37px;display:grid;place-items:center;border:0;border-radius:9px;background:#393c41;color:#f8f8f7;font-size:23px;line-height:1;cursor:pointer}
+.slot-steps button.add{background:#ffda36;color:#1b1c1e}
+.slot-steps button:disabled{opacity:.27;cursor:default}
+.dialog .slot-help{font-size:11px;color:#aeb0b5;margin:10px 0}
+.dialog .slot-footnote{font-size:10px;color:#82858b;margin:14px 0 0}
+.dialog .actions button.primary.full{width:100%;flex:1}
+.matrix thead .category th{font-size:12px}
+.matrix td .cell.edited{background:#ffda36!important;color:#171819!important}
+.matrix td .cell.empty:not(button){background:transparent}
+.main-tools .search{min-width:135px}
+@media(max-width:510px){.main-tools .slot-adjust{padding:9px 12px}.slot-item{padding:10px}.slot-steps button{width:40px;height:40px}.preview-stage.is-mobile .main-tools{flex-wrap:wrap}}
+
+
+/* === One-day driver schedule template and selected-date batch apply (prototype-only) === */
+.plan-open{background:#393830;border-color:#70612b;color:#ffe27a}
+.plan-open:hover{background:#46402b;border-color:#ffda36}
+.plan-backdrop{display:none;position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.7)}
+.plan-backdrop.show{display:block}
+.plan-panel{display:none;position:absolute;inset:16px 18px;z-index:21;background:#292c30;border:1px solid #51545a;border-radius:18px;box-shadow:0 22px 75px #000b;flex-direction:column;overflow:hidden;min-width:0}
+.plan-panel.show{display:flex}
+.plan-header{padding:17px 22px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #43464b}
+.plan-heading{min-width:0}.plan-heading h2{margin:0;font-size:19px;line-height:1.4;letter-spacing:-.025em}.plan-heading p{font-size:11px;color:#a9acb1;margin:4px 0 0}
+.plan-x{background:#3d4045;border:1px solid #51545a;color:#eee;border-radius:9px;width:34px;height:34px;flex:none;font-size:22px;line-height:1}
+.plan-topbar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;padding:13px 22px 11px;background:#26292d}
+.plan-topbar label{color:#aeb1b5;font-size:11px}
+.plan-topbar select{background:#1f2226;border:1px solid #50535a;color:#f7f7f5;border-radius:9px;padding:9px 31px 9px 11px;max-width:180px;font-size:12px}
+.plan-topbar .plan-ref{color:#92969b;font-size:10px;margin-left:auto}
+.plan-tabs{display:flex;gap:5px;padding:9px 22px 0;border-bottom:1px solid #44474d;overflow-x:auto;flex:none}
+.plan-tabs button{background:transparent;border:0;color:#afb2b8;padding:10px 14px;white-space:nowrap;font-size:12px;font-weight:700;border-bottom:3px solid transparent}
+.plan-tabs button.active{color:#ffda36;border-bottom-color:#ffda36}
+.plan-scroll{padding:18px 22px 22px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;scrollbar-color:#666 #292c30}
+.plan-section-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap;margin:0 0 13px}
+.plan-section-head h3{margin:0;font-size:15px;font-weight:730}.plan-section-head p{font-size:11px;color:#a8abb0;margin:5px 0 0;line-height:1.6}
+.plan-info{border:1px solid #494b50;border-radius:10px;padding:10px 12px;margin:0 0 15px;color:#b7bac0;background:#24272b;font-size:11px;line-height:1.65}
+.plan-info b{color:#f2f2ef}.plan-weekdays label{display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid #55585d;background:#22252a;color:#f0f0ee;padding:9px 10px;border-radius:9px;cursor:pointer;min-width:57px;font-size:12px}
+.plan-fieldlabel{display:block;color:#dadbdd;font-size:12px;font-weight:700;margin:12px 0 8px}
+.plan-rowlist{display:flex;flex-direction:column;gap:9px}
+.plan-route-row{display:grid;grid-template-columns:minmax(100px,1.15fr) minmax(90px,.85fr) minmax(120px,1fr) minmax(110px,1fr) 34px;align-items:end;gap:8px;background:#23262a;border:1px solid #414449;border-radius:11px;padding:12px}
+.plan-route-row label{font-size:10px;color:#9da1a8;display:flex;flex-direction:column;gap:6px;min-width:0}
+.plan-route-row input,.plan-route-row select{width:100%;min-width:0;background:#191c20;border:1px solid #4d5057;border-radius:8px;padding:9px 8px;color:#f5f5f3;font-size:12px}
+.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid #ffda36}
+.plan-tiny-remove{height:35px;background:#35383d;border:1px solid #56595f;border-radius:8px;color:#f4d3d3;font-size:20px}
+.plan-foot-actions{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:15px;flex-wrap:wrap}
+.plan-btn{background:#3a3d42;color:#f5f5f4;border:1px solid #55585e;border-radius:9px;font-size:12px;font-weight:700;padding:10px 13px;cursor:pointer}
+.plan-btn:hover{border-color:#f7d23a}
+.plan-btn.primary{background:#ffda36;border-color:#ffda36;color:#18191b}
+.plan-btn.danger{border-color:#815453;color:#f3b8b8}
+.plan-error{font-size:11px;color:#ffe274;margin:8px 0;min-height:13px}
+.plan-success{display:inline-flex;color:#a9d0ab;font-size:11px}
+.plan-apply-grid{display:grid;grid-template-columns:minmax(170px,220px) 1fr;gap:14px;margin-bottom:12px}
+.plan-minicard{background:#23262a;border:1px solid #45484e;border-radius:12px;padding:16px;min-width:0}
+.plan-minicard h4{margin:0 0 9px;font-size:13px}.plan-minicard p{font-size:11px;color:#aeb1b6;line-height:1.65;margin:7px 0}
+.plan-month-picker{background:#191c20;border:1px solid #555960;border-radius:9px;padding:10px 9px;color:#f7f7f5;color-scheme:dark;width:100%;font-size:13px;max-width:210px}
+.plan-reapply{display:flex;align-items:flex-start;gap:8px;color:#b7b9be;font-size:11px;line-height:1.5;margin:14px 0}
+.plan-reapply input{accent-color:#ffda36;margin-top:2px}
+.plan-apply-preview{max-height:152px;overflow:auto;border-top:1px solid #45484e;margin-top:10px;padding-top:8px;font-size:11px;color:#abb0b5;line-height:1.85}
+.plan-empty{padding:14px;background:#22252a;border:1px dashed #555960;border-radius:9px;color:#aeb2b8;line-height:1.6;font-size:12px}
+/* Same attendance-cell dialog; explicit planned/actual editing modes. */
+.attendance-edit-modes{display:flex;gap:5px;background:#202327;border:1px solid #4b4e53;border-radius:11px;padding:4px;margin:4px 0 16px}
+.attendance-edit-modes button{flex:1;min-width:0;border:0;border-radius:8px;background:transparent;color:#babdc3;padding:10px 5px;font-size:12px;font-weight:720}
+.attendance-edit-modes button.selected{background:#ffda36;color:#1b1c1e}
+.edit-mode-hint{font-size:11px;line-height:1.6;color:#acafb5;margin-top:11px}
+.plan-month-badge{margin-left:5px;font-size:9px;color:#ffe079;font-weight:550;white-space:nowrap}
+@media(max-width:920px){.plan-route-row{grid-template-columns:repeat(2,minmax(0,1fr)) 34px}.plan-route-row label:nth-child(3){grid-column:1}.plan-route-row label:nth-child(4){grid-column:2}.plan-route-row .plan-tiny-remove{grid-column:3;grid-row:2}}
+.preview-stage.is-mobile .plan-panel{inset:0;border:0;border-radius:0;max-height:100%}
+.preview-stage.is-mobile .plan-header{padding:15px 16px 10px}
+.preview-stage.is-mobile .plan-topbar{padding:10px 16px}
+.preview-stage.is-mobile .plan-topbar .plan-ref{width:100%;margin-left:0}
+.preview-stage.is-mobile .plan-tabs{padding:7px 12px 0}
+.preview-stage.is-mobile .plan-tabs button{padding:10px 11px}
+.preview-stage.is-mobile .plan-scroll{padding:15px 14px 27px}
+.preview-stage.is-mobile .plan-apply-grid{grid-template-columns:1fr}
+@media(max-width:510px){.main-tools .plan-open{padding:9px 11px}}
+
+
+/* Per-date selection is explicit; weekday shortcuts only select, never create recurring rules. */
+.plan-datebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.plan-datebar .plan-month-picker{flex:1;max-width:190px;min-width:125px}
+.plan-datebar .plan-btn{padding:9px 12px}
+.plan-calendar{background:#202327;border:1px solid #44474d;border-radius:12px;padding:11px;margin-top:12px}
+.plan-calendar-head,.plan-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.plan-calendar-head{margin-bottom:7px}.plan-calendar-head span{text-align:center;color:#8f939a;font-size:10px;padding:5px 0}
+.plan-calendar-grid>span{min-height:38px}
+.plan-calendar-day{min-width:0;min-height:38px;border:1px solid #42464b;border-radius:8px;color:#e8e8e5;background:#303338;font-size:12px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.plan-calendar-day:hover:not(:disabled){border-color:#ffda36}
+.plan-calendar-day.selected{background:#ffda36;color:#18191b;border-color:#ffda36;font-weight:800}
+.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#ffda36}
+.plan-calendar-day:disabled{background:#26292d;color:#777b81;text-decoration:line-through;border-color:#33363b;cursor:not-allowed}
+.plan-pick-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 3px}
+.plan-pick-actions .plan-btn{font-size:11px;padding:8px 10px}
+.plan-date-summary{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 0}
+.plan-summary-pill{padding:6px 10px;background:#3c3e42;border:1px solid #55585d;border-radius:16px;color:#e9e9e7;font-size:11px}
+.plan-summary-note{font-size:10px;color:#a9adb3;line-height:1.6;margin-top:9px}
+.plan-apply-grid{grid-template-columns:minmax(240px,1.15fr) minmax(220px,1fr)}
+.preview-stage.is-mobile .plan-calendar{padding:8px}.preview-stage.is-mobile .plan-calendar-grid{gap:4px}
+.preview-stage.is-mobile .plan-calendar-day{min-height:36px}.preview-stage.is-mobile .plan-datebar .plan-month-picker{min-width:110px}
+@media(max-width:920px){.plan-apply-grid{grid-template-columns:1fr}}
+
+/* P4: editable, date-specific leave; preserve the original matrix dimensions. */
+.matrix td .leave-toggle.empty{border:1px dashed #484c51;color:#8d9299}
+.matrix td .leave-toggle.empty:hover{border-color:#ffda36;color:#f5f5f3}
+.matrix td .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:-2px}
+.matrix td button.cell:disabled,.matrix td button.cell:disabled:hover{cursor:not-allowed;border-color:transparent;background:transparent;color:#54575b}
+.matrix td button.cell:not(.empty):disabled{background:#32353a;color:#b3b7bd}
+.dialog.leave-dialog{max-height:calc(100% - 28px);overflow-y:auto;scrollbar-color:#676b70 #292c30}
+.leave-status-options{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.dialog label.leave-option{display:flex;align-items:center;gap:11px;margin:0;padding:13px 12px;border:1px solid #464a50;border-radius:12px;background:#22252a;cursor:pointer}
+.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:#ffda36}
+.leave-option strong{display:block;font-size:13px;font-weight:700;color:#f5f5f3}
+.leave-option small{display:block;margin-top:4px;font-size:11px;color:#a5a9b0;line-height:1.5}
+.dialog .leave-option:has(input:checked){border-color:#ffda36}
+.dialog .leave-option:has(input:focus-visible){outline:2px solid #ffda36;outline-offset:2px}
+.dialog .leave-option:has(input:disabled){opacity:.5;cursor:not-allowed}
+.dialog .leave-help{font-size:11px;color:#afb3ba;line-height:1.65;margin:12px 0 0}
+.dialog .leave-help.is-blocked{color:#ffe174}
+.plan-calendar-day.is-off:disabled{text-decoration:none;border-style:dashed;flex-direction:column;gap:1px}
+.plan-calendar-day.is-off small{font-size:9px;line-height:1;color:#aaadb3}
+.toast{max-width:calc(100% - 28px);white-space:normal;width:max-content;line-height:1.6;text-align:center}
+
+/* P5 — mobile-only layout correction for the single-day template editor.
+   All form behavior, templates, dates, permissions and desktop styling stay P4. */
+.preview-stage.is-mobile .plan-route-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+  align-items: stretch;
+  gap: 12px 10px;
+  padding: 14px;
+  min-width: 0;
+}
+.preview-stage.is-mobile .plan-route-row > label:nth-child(1) { grid-column: 1; grid-row: 1; }
+.preview-stage.is-mobile .plan-route-row > label:nth-child(2) { grid-column: 2; grid-row: 1; }
+.preview-stage.is-mobile .plan-route-row > label:nth-child(3) { grid-column: 1; grid-row: 2; }
+.preview-stage.is-mobile .plan-route-row > label:nth-child(4) { grid-column: 2; grid-row: 2; }
+.preview-stage.is-mobile .plan-route-row > label {
+  min-width: 0;
+  gap: 7px;
+  font-size: 11px;
+  line-height: 1.3;
+}
+.preview-stage.is-mobile .plan-route-row input,
+.preview-stage.is-mobile .plan-route-row select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 14px;
+  padding: 10px 9px;
+}
+.preview-stage.is-mobile .plan-route-row .plan-tiny-remove {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  min-width: 104px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 19px;
+  line-height: 1;
+}
+.preview-stage.is-mobile .plan-route-row .plan-tiny-remove::before {
+  content: '移除此趟';
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5c9c9;
+}
+.preview-stage.is-mobile .plan-panel { min-width: 0; width: 100%; }
+.preview-stage.is-mobile .plan-heading h2 { font-size: 18px; line-height: 1.35; }
+.preview-stage.is-mobile .plan-heading p { font-size: 11px; line-height: 1.55; }
+.preview-stage.is-mobile .plan-topbar { gap: 8px 10px; }
+.preview-stage.is-mobile .plan-topbar select { min-height: 42px; max-width: 100%; }
+.preview-stage.is-mobile .plan-tabs { gap: 0; }
+.preview-stage.is-mobile .plan-tabs button {
+  flex: 1 1 50%;
+  min-width: 0;
+  padding: 11px 4px;
+  text-align: center;
+  font-size: 11px;
+}
+.preview-stage.is-mobile .plan-scroll {
+  min-width: 0;
+  padding: 16px 14px 25px;
+}
+.preview-stage.is-mobile .plan-rowlist { gap: 11px; }
+.preview-stage.is-mobile .plan-info { padding: 11px 12px; }
+.preview-stage.is-mobile .plan-foot-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 9px;
+}
+.preview-stage.is-mobile .plan-foot-actions > .plan-btn {
+  min-width: 0;
+  min-height: 45px;
+  padding: 10px 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: normal;
+}
+.preview-stage.is-mobile .plan-foot-actions > .plan-btn.primary {
+  grid-column: 1 / -1;
+  min-height: 46px;
+  font-size: 13px;
+}
+@media(max-width:360px) {
+  .preview-stage.is-mobile .plan-header { padding: 13px 12px 10px; }
+  .preview-stage.is-mobile .plan-heading h2 { font-size: 16px; }
+  .preview-stage.is-mobile .plan-scroll { padding: 14px 11px 22px; }
+  .preview-stage.is-mobile .plan-route-row { padding: 11px; gap: 10px 8px; }
+  .preview-stage.is-mobile .plan-tabs button { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="prototype" id="prototype">
+  <div class="demo-controls">
+    <div class="control-cluster"><span class="control-label">Preview</span><div class="segment" id="device-choices"><button type="button" data-device="mobile" class="is-on">Mobile</button><button type="button" data-device="desktop">Desktop</button></div></div>
+    <div class="control-cluster"><span class="control-label">Role</span><div class="segment" id="role-choices"><button type="button" data-role="driver" class="is-on">司機</button><button type="button" data-role="dispatcher">主管</button></div></div>
+  </div>
+  <div class="preview-stage is-mobile" id="stage">
+    <div class="app" id="app">
+      <aside class="rail"><div class="logo"><span class="logo-mark">↗</span>Fleet / 出勤</div><div class="rail-item current">每日出勤</div><div class="rail-item">路線管理</div><div class="rail-item">車輛管理</div><div class="rail-item">月度報表</div><div class="rail-bottom">INTERACTIVE PROTOTYPE</div></aside>
+      <main class="main">
+        <header class="head"><div><div class="eyebrow" id="date-caption">2026.10.15 · 星期四</div><h1>每日出勤</h1></div><div class="head-actions"><div class="date-control"><button type="button" id="prev" aria-label="前一天">‹</button><span id="date-short">10 / 15</span><button type="button" id="next" aria-label="後一天">›</button></div><button type="button" class="close-day" id="day-action" hidden>結案</button></div></header>
+        <div class="main-tools"><label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="搜尋司機、路線、車號" aria-label="搜尋司機、路線、車號"/></label><div class="table-actions"><button class="slot-adjust plan-open" id="plan-open" type="button" hidden>單日範本／批次排班</button><button class="slot-adjust" id="slot-adjust" type="button" hidden>調整趟數</button><div class="legend">黃色代表已異動</div></div></div>
+        <section class="table-surface"><div class="table-scroll" id="table-scroll"><table class="matrix" aria-label="全公司每日出勤表"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="table-foot"><span id="row-count">共 0 位司機</span><strong id="footer-right">左右滑動查看更多欄位 →</strong></div></section>
+        <div class="hint">所有資料僅供 UI 測試。操作結果保存在此瀏覽器，僅供介面測試；不會連線至正式系統。</div>
+      </main>
+      <div class="scrim" id="scrim"></div>
+      <section class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title"><div class="handle"></div><h2 id="dialog-title"></h2><p id="dialog-desc"></p><div id="dialog-fields"></div><div class="field-error" id="form-error" role="alert"></div><div class="actions"><button class="secondary" type="button" id="cancel">取消</button><button class="primary" type="button" id="save">儲存</button></div></section>
+      <div class="plan-backdrop" id="plan-backdrop"></div>
+      <section class="plan-panel" id="plan-panel" role="dialog" aria-modal="true" aria-labelledby="plan-title" aria-hidden="true">
+        <header class="plan-header"><div class="plan-heading"><h2 id="plan-title">司機單日班表範本與批次排班</h2><p>設定一日固定趟次，複製到選取的日期；個別日期可在每日出勤表修改。</p></div><button type="button" class="plan-x" id="plan-x" aria-label="關閉批次排班">×</button></header>
+        <div class="plan-topbar"><label for="plan-driver">司機</label><select id="plan-driver"></select><span class="plan-ref">僅此瀏覽器的示範資料；不連線正式系統</span></div>
+        <div class="plan-tabs" role="tablist"><button type="button" data-plan-tab="template" class="active">① 編輯單日範本</button><button type="button" data-plan-tab="apply">② 套用指定日期</button></div>
+        <div class="plan-scroll" id="plan-content"></div>
+      </section>
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+  </div>
+  <p class="demo-note">P5：修正手機版「編輯單日範本」表單欄位與按鈕排版，保留 P4 休假規則。主管可點選「休假」儲存格；休假與當日趟次互斥，範本套用也會略過休假日。操作示範：切換 Mobile／Desktop 與司機／主管；橫向滑動表格、搜尋、點選有權限的儲存格編輯。主管可建立每位司機的單日班表範本、將相同排班複製到任意選取日期（可跨月份），並在每日出勤表直接調整單日預排；也可為每個日期調整各類別趟數（含第 5 趟以上）、結案或重新開啟；變更儲存在此瀏覽器，不會送出資料。</p>
+</div>
+<script>
+(() => {
+  'use strict';
+  const root=document.getElementById('prototype');
+  const $=id=>document.getElementById(id);
+  const GROUPS=[
+    {label:'日配',prefix:'日',base:2},
+    {label:'OC',prefix:'OC',base:3},
+    {label:'鮮二',prefix:'鮮二',base:3},
+    {label:'冷凍',prefix:'冷凍',base:4},
+    {label:'低鮮',prefix:'低鮮',base:4}
+  ];
+  const MAX=30;
+  const people=[['d1','林小美'],['d2','王小明'],['d3','陳小華'],['d4','楊子祥'],['d5','趙雅婷'],['d6','張柏翰'],['d7','吳佳穎'],['d8','劉志強'],['d9','黃俊豪'],['d10','鄭宜靜'],['d11','高建民'],['d12','許雅雯']];
+  const base={
+    d1:{'日1':['01','1001'],'日2':['02','1001']},
+    d2:{OC1:['EB','1003'],OC2:['HB','1003']},
+    d3:{'鮮二1':['RC','6203'],'鮮二2':['TC','6203']},
+    d4:{冷凍1:['RG','0115'],冷凍2:['爆量','0115']},
+    d5:{低鮮1:['AT','1277']},d6:{},
+    d7:{日1:['03','1608']},d8:{OC3:['ES','1007']},
+    d9:{鮮二3:['WS','2118']},d10:{冷凍4:['CT','1199']},
+    d11:{低鮮3:['LF','2281']},d12:{日2:['04','2190']}
+  };
+  const STORAGE='fleet-attendance-standalone-v2';
+  const saved=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch{return {}}})();
+  const state={device:'mobile',role:'driver',day:0,query:'',modal:null,
+    changed:saved.changed&&typeof saved.changed==='object'?saved.changed:{},
+    counts:saved.counts&&typeof saved.counts==='object'?saved.counts:{},
+    leaves:saved.leaves&&typeof saved.leaves==='object'&&!Array.isArray(saved.leaves)?saved.leaves:{},
+    closed:saved.closed&&typeof saved.closed==='object'?saved.closed:{},
+    notes:saved.notes&&typeof saved.notes==='object'?saved.notes:{},
+    audit:saved.audit&&typeof saved.audit==='object'?saved.audit:{}};
+  const start=new Date(2026,9,15,12);
+  // One-day template and explicit selected-date scheduling: standalone browser prototype only.
+  // This isolated store never writes to Supabase or any production endpoint.
+  const SCHEDULE_STORE='fleet-attendance-monthly-template-prototype-v1';
+  const oneDayDemo={
+    d1:{rows:[{group:'日配',number:1,route:'01',vehicle:'1001'},{group:'日配',number:2,route:'02',vehicle:'1001'}],savedAt:null},
+    d2:{rows:[{group:'OC',number:1,route:'EB',vehicle:'1003'},{group:'OC',number:2,route:'HB',vehicle:'1003'}],savedAt:null}
+  };
+  const loadedSchedule=(()=>{try{return JSON.parse(localStorage.getItem(SCHEDULE_STORE)||'{}')}catch{return {}}})();
+  const scheduleState={
+    templates:loadedSchedule.templates&&typeof loadedSchedule.templates==='object'?loadedSchedule.templates:JSON.parse(JSON.stringify(oneDayDemo)),
+    monthPlans:loadedSchedule.monthPlans&&typeof loadedSchedule.monthPlans==='object'?loadedSchedule.monthPlans:{}
+  };
+  const planState={open:false,tab:'template',driver:'d1',draft:null,dirty:false,selectedDates:[],month:'2026-10',overwrite:false,error:''};
+    const copyPlan=x=>JSON.parse(JSON.stringify(x));
+  const planTemplate=id=>scheduleState.templates[id]||{rows:[],savedAt:null};
+  const planSlotKey=row=>(GROUPS.find(g=>g.label===row.group)?.prefix||'')+Number(row.number);
+  const planIso=(year,month,day)=>`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const planDate=d=>{const [y,m,day]=d.split('-').map(Number);return new Date(y,m-1,day,12)};
+  const planMonthDays=month=>{const [y,m]=month.split('-').map(Number),n=new Date(y,m,0).getDate();return Array.from({length:n},(_,i)=>planIso(y,m,i+1))};
+  const persistPlan=()=>{try{localStorage.setItem(SCHEDULE_STORE,JSON.stringify(scheduleState))}catch{}};
+  const planSummary=t=>t.rows.length?`一日 ${t.rows.length} 個固定趟次`:'未建立範本';
+  function planDraftForDriver(){planState.draft=copyPlan(planTemplate(planState.driver));planState.dirty=false;planState.error=''}
+  function openPlan(){
+    if(state.role!=='dispatcher')return;
+    dismissToast();closeModal();planState.open=true;planState.month=iso().slice(0,7);
+    planState.selectedDates=[];planState.tab='template';planState.driver='d1';
+    planState.overwrite=false;planDraftForDriver();
+    $('plan-backdrop').classList.add('show');$('plan-panel').classList.add('show');$('plan-panel').setAttribute('aria-hidden','false');
+    renderPlan();$('plan-x').focus();
+  }
+  function canLeavePlan(){return !planState.dirty||confirm('尚有未儲存的範本編輯。確定放棄修改？')}
+  function closePlan(){
+    if(!planState.open)return;
+    if(!canLeavePlan())return;
+    planState.open=false;planState.dirty=false;
+    $('plan-backdrop').classList.remove('show');$('plan-panel').classList.remove('show');$('plan-panel').setAttribute('aria-hidden','true');
+  }
+  const planOptions=(selected)=>GROUPS.map(g=>`<option value="${safe(g.label)}" ${g.label===selected?'selected':''}>${safe(g.label)}</option>`).join('');
+  const planNumberOptions=n=>Array.from({length:MAX},(_,i)=>`<option value="${i+1}" ${Number(n)===i+1?'selected':''}>第 ${i+1} 趟</option>`).join('');
+  function renderPlan(){
+    if(!planState.open)return;
+    $('plan-driver').innerHTML=people.map(([id,name])=>`<option value="${id}" ${id===planState.driver?'selected':''}>${safe(name)}</option>`).join('');
+    $('plan-panel').querySelectorAll('[data-plan-tab]').forEach(b=>b.classList.toggle('active',b.dataset.planTab===planState.tab));
+    if(planState.tab==='template')renderPlanTemplate();
+    if(planState.tab==='apply')renderPlanApply();
+  }
+  function planRowHTML(row,index){
+    return `<div class="plan-route-row" data-plan-index="${index}">
+      <label>出勤類別<select data-template-field="group" data-index="${index}">${planOptions(row.group)}</select></label>
+      <label>欄位<select data-template-field="number" data-index="${index}">${planNumberOptions(row.number)}</select></label>
+      <label>路線<input maxlength="40" placeholder="路線代碼" data-template-field="route" data-index="${index}" value="${safe(row.route)}"></label>
+      <label>車號<input maxlength="32" placeholder="車號" data-template-field="vehicle" data-index="${index}" value="${safe(row.vehicle)}"></label>
+      <button type="button" class="plan-tiny-remove" data-plan-action="template-remove" data-index="${index}" title="移除此趟" aria-label="移除此趟">×</button>
+    </div>`;
+  }
+  function renderPlanTemplate(){
+    const draft=planState.draft;
+    $('plan-content').innerHTML=`<div class="plan-section-head"><div><h3>單日固定班表 · ${safe(driverName(planState.driver))}</h3><p>只要設定此司機<strong>一天</strong>通常跑的路線和車號，之後再決定要複製到哪些日期。</p></div>${draft.savedAt?`<span class="plan-success">已儲存範本</span>`:''}</div>
+      <div class="plan-info">一份範本代表 <b>一個工作日的預排趟次</b>，不設定每週固定星期。可以把同一份範本套用到不同月份裡<b>自行選取的日期</b>，例外再到每日出勤表修改。</div>
+      <div class="plan-section-head"><div><h3>當日的預排趟次</h3><p>同一司機可有多個類別與欄位；「出勤類別」需手動指定，不由路線溫層推算。</p></div></div>
+      <div class="plan-rowlist">${draft.rows.length?draft.rows.map((row,i)=>planRowHTML(row,i)).join(''):'<div class="plan-empty">尚未建立範本。新增預排趟次，或從目前每日出勤表帶入原定班表。</div>'}</div>
+      <div class="plan-foot-actions"><button class="plan-btn" type="button" data-plan-action="template-import">從 ${safe(iso())} 預排帶入</button><button class="plan-btn" type="button" data-plan-action="template-add">＋ 新增預排趟次</button><button class="plan-btn primary" type="button" data-plan-action="template-save">儲存單日範本</button></div>
+      <div class="plan-error" id="plan-error">${safe(planState.error)}</div>
+      <div class="plan-info" style="margin-top:12px">這是獨立 HTML 示範：範本只存路線、車號、出勤類別與欄號；不會建立時間、租車或計薪規則。更新範本也不會自動改動已安排的日期。</div>`;
+  }
+  function validateRows(rows){
+    const keys=new Set();
+    for(const r of rows){
+      if(!GROUPS.some(g=>g.label===r.group)||!Number.isInteger(+r.number)||+r.number<1||+r.number>MAX)return '請為每趟選擇有效的類別及欄號。';
+      if(!String(r.route||'').trim()||!String(r.vehicle||'').trim())return '每一趟都必須填寫路線與車號，或先移除該趟。';
+      const k=planSlotKey(r);if(keys.has(k))return `${k} 已重複，同一位司機同日不可占用相同欄位。`;keys.add(k);
+    }
+    return '';
+  }
+  function commitTemplate(){
+    const d=planState.draft;
+    if(!d.rows.length){planState.error='請至少建立一趟預排；單日休假或不排班可在每日出勤表另行處理。';renderPlan();return}
+    const err=validateRows(d.rows);if(err){planState.error=err;renderPlan();return}
+    const t={rows:copyPlan(d.rows.map(r=>({group:r.group,number:+r.number,route:r.route.trim(),vehicle:r.vehicle.trim()}))),savedAt:new Date().toISOString()};
+    scheduleState.templates[planState.driver]=t;persistPlan();planState.draft=copyPlan(t);planState.dirty=false;planState.error='';
+    renderPlan();toast('單日班表範本已儲存');
+  }
+  function importDayAsTemplate(){
+    if(planState.dirty||planState.draft.rows.length){if(!confirm(`將 ${iso()} 的原定預排帶入，取代目前正在編輯的範本內容？`))return}
+    const rows=[];
+    for(const g of groupSlots())for(const slot of g.slots){
+      const [route,vehicle]=basePair(planState.driver,slot);
+      if(String(route||'').trim()&&String(vehicle||'').trim())rows.push({group:g.label,number:Number(slot.slice(g.prefix.length)),route,vehicle});
+    }
+    if(!rows.length){planState.error=`${iso()} 的 ${driverName(planState.driver)} 尚無原定班表，請手動新增趟次。`;renderPlan();return}
+    planState.draft.rows=rows;planState.dirty=true;planState.error='';renderPlan();
+  }
+  function renderPlanApply(){
+    const t=planTemplate(planState.driver),month=planState.month,days=planMonthDays(month);
+    const selected=new Set(planState.selectedDates),firstWeekday=planDate(days[0]).getDay();
+    const headers=['日','一','二','三','四','五','六'];
+    const calendar='<div class="plan-calendar"><div class="plan-calendar-head">'+headers.map(d=>`<span>週${d}</span>`).join('')+'</div><div class="plan-calendar-grid">'+
+      Array.from({length:firstWeekday},()=>'<span></span>').join('')+
+      days.map(date=>{
+        const n=Number(date.slice(-2)),closed=!!state.closed[date],off=isOnLeave(planState.driver,date),chosen=selected.has(date)&&!closed&&!off;
+        const existing=!off&&Object.values(scheduleState.monthPlans[month]?.[planState.driver]?.days?.[date]?.slots||{}).some(filledPair);
+        return `<button type="button" class="plan-calendar-day ${chosen?'selected':''} ${existing?'has-plan':''} ${off?'is-off':''}" data-plan-date="${date}" aria-label="${safe(date)}${closed?'（已結案）':''}${off?'（休假，不可套用）':''}" aria-pressed="${chosen}" ${closed||off?`disabled title="${closed?'已結案，不能套用':'此司機當日為「休」，請先在每日出勤表取消休假。'}"`:''}><span>${n}</span>${off?'<small>休</small>':''}</button>`;
+      }).join('')+'</div><div class="plan-summary-note">黃色：本次選取日期　·　小黃點：已排班　·　休：該司機休假　·　刪除線：已結案</div></div>';
+    const grouped={};for(const date of planState.selectedDates){const m=date.slice(0,7);(grouped[m]||(grouped[m]=[])).push(date.slice(-2))}
+    const summary=Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).map(([m,ds])=>
+       `<span class="plan-summary-pill">${safe(m)} · ${ds.length} 天（${safe(ds.map(x=>Number(x)).join('、'))} 日）</span>`).join('');
+    const editable=planState.selectedDates.filter(date=>!state.closed[date]&&!isOnLeave(planState.driver,date));
+    const blocked=planState.selectedDates.length-editable.length;
+    const existing=editable.filter(date=>scheduleState.monthPlans[date.slice(0,7)]?.[planState.driver]?.days?.[date]);
+    const exceptions=existing.filter(date=>scheduleState.monthPlans[date.slice(0,7)]?.[planState.driver]?.days?.[date]?.exception);
+    $('plan-content').innerHTML=`<div class="plan-section-head"><div><h3>挑選要複製班表的日期</h3><p>選取月曆中的具體日期，<b>可切換月份累積選取</b>。不會自動選滿全月或每週固定星期。</p></div></div>
+      <div class="plan-apply-grid"><div class="plan-minicard"><h4>選取日期</h4>
+      <div class="plan-datebar"><button class="plan-btn" type="button" data-plan-action="month-prev" aria-label="上個月">‹</button><input type="month" id="plan-month-picker" class="plan-month-picker" value="${safe(month)}"><button class="plan-btn" type="button" data-plan-action="month-next" aria-label="下個月">›</button></div>
+      ${calendar}
+      <div class="plan-pick-actions"><button class="plan-btn" type="button" data-plan-action="select-month">選取本月全部</button><button class="plan-btn" type="button" data-plan-action="select-weekdays">選取本月週一至週五</button><button class="plan-btn" type="button" data-plan-action="clear-month">清除本月選取</button></div>
+      <div class="plan-summary-note">快捷選取只是勾選日期，不代表司機固定週一至週五上班；可再逐日增減。已結案或此司機標示「休」的日期不會被選取。</div></div>
+      <div class="plan-minicard"><h4>${safe(driverName(planState.driver))} · 已儲存的單日範本</h4><p><b>${safe(planSummary(t))}</b></p><p>${t.rows.map(r=>`${safe(planSlotKey(r))} ${safe(r.route)}／${safe(r.vehicle)}`).join('、')||'請先到「編輯單日範本」建立趟次'}</p>
+      <div class="plan-apply-preview">已選 <b>${planState.selectedDates.length}</b> 天，其中 ${existing.length} 天曾套用排班、${exceptions.length} 天有單日調整。單日調整預設保留。${blocked?` ${blocked} 天為休假或已結案，將略過。`:''}</div>
+      <h4 style="margin-top:17px">本次選取的日期</h4><div class="plan-date-summary">${summary||'<span class="plan-empty">尚未選取任何日期</span>'}</div>
+      </div></div>
+      <label class="plan-reapply"><input type="checkbox" id="plan-overwrite" ${planState.overwrite?'checked':''}><span>允許<b>覆蓋已做的單日預排調整</b>（預設保留；不影響實際出勤）</span></label>
+      <div class="plan-info">範本只會複製到<b>已選日期</b>。其他日期、已結案日及標示「休」的日期不變；即使勾選覆蓋單日調整，也不會覆蓋休假。更改範本不會同步改動先前排班。套用後回到每日出勤表直接修改各日的預排路線及車號。</div>
+      <div class="plan-foot-actions"><span style="font-size:11px;color:#adb0b6">${editable.length} 天可套用</span><button class="plan-btn primary" type="button" data-plan-action="apply-save">套用至選取日期</button></div>
+      <div class="plan-error" id="plan-error">${safe(planState.error)}</div>`;
+  }
+  function ensureSlotCountsForDate(date,slots){
+    let updated=false;const c={...(state.counts[date]||Object.fromEntries(GROUPS.map(g=>[g.label,g.base])))};
+    for(const key of Object.keys(slots)){for(const g of GROUPS){if(key.startsWith(g.prefix)){const n=Number(key.slice(g.prefix.length));if(Number.isInteger(n)&&n>c[g.label]&&n<=MAX){c[g.label]=n;updated=true}break}}}
+    if(updated)state.counts[date]=c;
+    return updated;
+  }
+  function templateSlotsForDate(t){
+    const slots={};for(const row of t.rows)slots[planSlotKey(row)]=[row.route,row.vehicle];
+    return slots;
+  }
+  function applySelectedDates(){
+    if(state.role!=='dispatcher')return;
+    const t=planTemplate(planState.driver),validation=validateRows(t.rows);
+    if(!t.rows.length||validation){planState.error='請先儲存有效的單日班表範本，再選取日期套用。'+validation;renderPlan();return}
+    if(!planState.selectedDates.length){planState.error='請在月曆中選取至少一個日期。';renderPlan();return}
+    if(planState.overwrite&&!confirm('確定覆蓋所選日期已在每日出勤表完成的單日預排調整嗎？此動作不影響實際出勤紀錄。'))return;
+    let adjusted=0,skipped=0,leaveSkipped=0,retained=0,expanded=false;
+    const applied=[];
+    for(const date of planState.selectedDates){
+      if(state.closed[date]){skipped++;continue}
+      // Overwrite never bypasses leave. Do not touch plans, actuals or counts on skipped days.
+      if(isOnLeave(planState.driver,date)){leaveSkipped++;continue}
+      const month=date.slice(0,7);
+      const m=scheduleState.monthPlans[month]||(scheduleState.monthPlans[month]={});
+      const driver=m[planState.driver]||(m[planState.driver]={templateSavedAt:null,appliedAt:null,days:{}});
+      const old=driver.days[date];
+      const original={slots:templateSlotsForDate(t),off:false};
+      let rec={slots:copyPlan(original.slots),off:false,exception:false,note:'',original};
+      if(old?.exception&&!planState.overwrite){rec={...copyPlan(old),original};retained++}
+      driver.days[date]=rec;
+      driver.templateSavedAt=t.savedAt;driver.appliedAt=new Date().toISOString();
+      expanded=ensureSlotCountsForDate(date,rec.slots)||expanded;
+      adjusted++;applied.push(date);
+    }
+    if(expanded)persist();persistPlan();planState.error='';
+    if(!applied.length){planState.error='選取的日期均為休假或已結案，未建立排班。請改選日期，或先回每日出勤表取消該日的休假。';renderPlan();return}
+    const viewing=iso(),sorted=applied.sort();
+    const firstDay=sorted.find(date=>date>=viewing)||sorted[0];
+    state.day=Math.round((planDate(firstDay)-start)/86400000);
+    closePlan();render(false);
+    toast(`已套用 ${adjusted} 天${retained?`，保留 ${retained} 天單日調整`:''}${skipped?`，略過 ${skipped} 天結案日`:''}${leaveSkipped?`，略過 ${leaveSkipped} 天休假日`:''}`);
+  }
+  function nextOpenSlot(rows){
+    for(const g of GROUPS)for(let n=1;n<=MAX;n++)if(!rows.some(r=>r.group===g.label&&+r.number===n))return {group:g.label,number:n,route:'',vehicle:''};
+    return null;
+  }
+  $('plan-x').onclick=()=>closePlan();$('plan-backdrop').onclick=()=>closePlan();
+  $('plan-driver').onchange=e=>{
+    if(!canLeavePlan()){e.target.value=planState.driver;return}
+    planState.driver=e.target.value;
+    const previousCount=planState.selectedDates.length;
+    planState.selectedDates=planState.selectedDates.filter(date=>!state.closed[date]&&!isOnLeave(planState.driver,date));
+    planDraftForDriver();renderPlan();
+    if(previousCount!==planState.selectedDates.length)toast('已取消選取此司機的休假或已結案日期');
+  };
+  $('plan-panel').addEventListener('click',e=>{
+    const btn=e.target.closest('button');if(!btn)return;
+    if(btn.dataset.planTab){
+      const tab=btn.dataset.planTab;if(tab===planState.tab)return;
+      if(!canLeavePlan())return;planState.tab=tab;planState.error='';planState.dirty=false;renderPlan();return;
+    }
+    if(btn.dataset.planDate){
+      const date=btn.dataset.planDate;if(state.closed[date]||isOnLeave(planState.driver,date))return;
+      const old=new Set(planState.selectedDates);if(old.has(date))old.delete(date);else old.add(date);
+      planState.selectedDates=[...old].sort();planState.error='';renderPlan();return;
+    }
+    const action=btn.dataset.planAction;if(!action)return;
+    if(action==='template-import'){importDayAsTemplate();return}
+    if(action==='template-add'){
+      const row=nextOpenSlot(planState.draft.rows);if(!row){planState.error='可用欄位已達上限。';return renderPlan()}
+      planState.draft.rows.push(row);planState.dirty=true;renderPlan();return;
+    }
+    if(action==='template-remove'){planState.draft.rows.splice(Number(btn.dataset.index),1);planState.dirty=true;renderPlan();return}
+    if(action==='template-save'){commitTemplate();return}
+    if(action==='month-prev'||action==='month-next'){
+      const [y,m]=planState.month.split('-').map(Number),dir=action==='month-prev'?-1:1;
+      const d=new Date(y,m-1+dir,1,12);planState.month=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      planState.error='';renderPlan();return;
+    }
+    if(action==='select-month'||action==='select-weekdays'||action==='clear-month'){
+      const old=new Set(planState.selectedDates),days=planMonthDays(planState.month);
+      for(const date of days){if(action==='clear-month'){old.delete(date);continue}
+        if(state.closed[date]||isOnLeave(planState.driver,date)){old.delete(date);continue}
+        if(action==='select-month'||[1,2,3,4,5].includes(planDate(date).getDay()))old.add(date);
+      }
+      planState.selectedDates=[...old].sort();planState.error='';renderPlan();return;
+    }
+    if(action==='apply-save'){applySelectedDates();return}
+  });
+  $('plan-panel').addEventListener('input',e=>{
+    const t=e.target;
+    if(t.dataset.templateField){const row=planState.draft.rows[Number(t.dataset.index)];if(!row)return;row[t.dataset.templateField]=t.dataset.templateField==='number'?Number(t.value):t.value;planState.dirty=true;return}
+  });
+  $('plan-panel').addEventListener('change',e=>{
+    const t=e.target;
+    if(t.id==='plan-overwrite'){planState.overwrite=t.checked;return}
+    if(t.id==='plan-month-picker'){if(/^\d{4}-(0[1-9]|1[0-2])$/.test(t.value)){planState.month=t.value;planState.error='';renderPlan()}return}
+    if(t.dataset.templateField==='group')renderPlan();
+  });
+
+  function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({changed:state.changed,counts:state.counts,closed:state.closed,notes:state.notes,audit:state.audit,leaves:state.leaves}))}catch{}}
+  const safe=str=>String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function iso(){const d=new Date(start);d.setDate(d.getDate()+state.day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  function dailyChanges(){return state.changed[iso()]||(state.changed[iso()]={})}
+  function counts(){return state.counts[iso()]||Object.fromEntries(GROUPS.map(g=>[g.label,g.base]))}
+  // Resolve planned data for an explicit driver/date, independently of visible columns.
+  function plannedSlots(id,date=iso()){
+    const monthDay=scheduleState.monthPlans[date.slice(0,7)]?.[id]?.days?.[date];
+    if(monthDay)return monthDay.slots||{};
+    if(date==='2026-10-15')return base[id]||{};
+    if(date==='2026-10-14'&&id==='d1')return {'日1':['03','1001']};
+    if(date==='2026-10-14'&&id==='d2')return {OC1:['EB','1003']};
+    return {};
+  }
+  function basePair(id,slot){return plannedSlots(id)[slot]||['','']}
+  function filledPair(value){return Array.isArray(value)&&value.some(v=>String(v??'').trim().length>0)}
+  function driverHasRuns(id,date=iso()){
+    // A blank actual override does not cancel an underlying planned run.
+    // Inspect every stored slot, including slots outside the currently visible groups.
+    return Object.values(plannedSlots(id,date)).some(filledPair)||
+      Object.values(state.changed[date]?.[id]||{}).some(filledPair);
+  }
+  function isOnLeave(id,date=iso()){
+    const record=state.leaves[date]?.[id];
+    return record===true||record?.value===true;
+  }
+  function canEditLeave(date=iso()){return state.role==='dispatcher'&&!state.closed[date]}
+  function canEditAttendance(id,date=iso()){return !state.closed[date]&&(state.role==='dispatcher'||id==='d1')}
+  function leaveWasEdited(id,date=iso()){
+    const record=state.leaves[date]?.[id];
+    return typeof record==='object'&&record!==null&&record.value!==record.original;
+  }
+  function storeLeave(id,date,value){
+    if(!canEditLeave(date))return '只有主管能修改尚未結案日期的休假狀態。';
+    if(!people.some(p=>p[0]===id))return '找不到此司機。';
+    if(value&&driverHasRuns(id,date))return '此日已有預排或實際出勤趟次，無法標示「休」。請先確認並清空該司機當日的所有趟次。';
+    const previous=state.leaves[date]?.[id],old=isOnLeave(id,date);
+    if(old===value)return '';
+    const day=state.leaves[date]||(state.leaves[date]={});
+    day[id]={value,original:typeof previous?.original==='boolean'?previous.original:old,updatedAt:new Date().toISOString()};
+    persist();return '';
+  }
+  function leaveCellHTML(id,name){
+    const off=isOnLeave(id),klass=`cell leave-toggle ${off?'':'empty'} ${leaveWasEdited(id)?'edited':''}`;
+    const value=off?'休':'—';
+    if(canEditLeave())return `<button type="button" class="${klass}" data-leave="${id}" aria-label="編輯${safe(name)}的休假狀態：${off?'休':'未標示休假'}" title="編輯此司機當日休假">${value}</button>`;
+    return `<span class="cell ${off?'':'empty'} ${leaveWasEdited(id)?'edited':''}" aria-label="${off?'休':'未標示休假'}">${off?'休':'&nbsp;'}</span>`;
+  }
+  function ensureDayPlan(id,date=iso()){
+    const snapshot=copyPlan(plannedSlots(id,date)),month=date.slice(0,7);
+    const m=scheduleState.monthPlans[month]||(scheduleState.monthPlans[month]={});
+    const driver=m[id]||(m[id]={templateSavedAt:null,appliedAt:null,days:{}});
+    if(!driver.days)driver.days={};
+    if(!driver.days[date])driver.days[date]={slots:snapshot,off:false,exception:false,note:'',original:{slots:copyPlan(snapshot),off:false}};
+    return driver.days[date];
+  }
+  function pair(id,slot){return dailyChanges()[id]?.[slot]||basePair(id,slot)}
+  function editable(id){return canEditAttendance(id)&&!isOnLeave(id)}
+  function driverName(id){return people.find(p=>p[0]===id)?.[1]||id}
+  function groupSlots(){return GROUPS.map(g=>({...g,slots:Array.from({length:counts()[g.label]??g.base},(_,i)=>g.prefix+(i+1))})).filter(g=>g.slots.length)}
+  function slotsInUse(slot){return people.some(([id])=>filledPair(basePair(id,slot))||filledPair(pair(id,slot)))}
+  function render(keepScroll=true){
+    const scroll=$('table-scroll'),oldX=keepScroll?scroll.scrollLeft:0,oldY=keepScroll?scroll.scrollTop:0;
+    const d=new Date(start);d.setDate(d.getDate()+state.day);
+    $('date-caption').textContent=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} · 星期${'日一二三四五六'[d.getDay()]}`;
+    $('date-short').textContent=`${d.getMonth()+1} / ${d.getDate()}`;
+    $('day-action').hidden=state.role!=='dispatcher';
+    $('day-action').textContent=state.closed[iso()]?'重新開啟':'結案';
+    $('slot-adjust').hidden=state.role!=='dispatcher'||!!state.closed[iso()];
+    $('plan-open').hidden=state.role!=='dispatcher';
+    root.querySelectorAll('[data-device]').forEach(b=>b.classList.toggle('is-on',b.dataset.device===state.device));
+    root.querySelectorAll('[data-role]').forEach(b=>b.classList.toggle('is-on',b.dataset.role===state.role));
+    $('stage').classList.toggle('is-mobile',state.device==='mobile');
+    const groups=groupSlots(),all=groups.flatMap(g=>g.slots);
+    let header='<tr class="category"><th rowspan="2" class="name-header">司機</th><th rowspan="2" class="leave-col">休假</th>';
+    for(const g of groups)header+=`<th colspan="${g.slots.length*2}">${safe(g.label)}</th>`;
+    header+='</tr><tr class="subheading">';
+    for(const g of groups)for(let i=0;i<g.slots.length;i++)header+=`<th class="${i===0?'separator':''}">${safe(g.slots[i])}</th><th>車號</th>`;
+    $('thead').innerHTML=header+'</tr>';
+    const q=state.query.trim().toLocaleLowerCase();let rows='',shown=0;
+    for(const [id,name] of people){
+      let found=!q||name.toLocaleLowerCase().includes(q)||all.some(slot=>slot.toLocaleLowerCase().includes(q)&&pair(id,slot).some(Boolean)||pair(id,slot).some(v=>String(v||'').toLocaleLowerCase().includes(q)));
+      if(!found)continue;shown++;
+      rows+=`<tr class="${id==='d1'?'mine':''}"><th class="name">${safe(name)}${scheduleState.monthPlans[iso().slice(0,7)]?.[id]?.days?.[iso()]?.exception?'<span class="plan-month-badge">單日調整</span>':''}</th><td class="leave-col">${leaveCellHTML(id,name)}</td>`;
+      for(const g of groups)for(let i=0;i<g.slots.length;i++){
+        const slot=g.slots[i],p=pair(id,slot),original=basePair(id,slot),begin=i===0?'separator':'';
+        for(let j=0;j<2;j++){
+          const val=String(p[j]||''),modified=val!==String(original[j]||'');
+          const klass=`cell ${modified?'edited':''} ${val?'':'empty'}`;
+          const off=isOnLeave(id);
+          const cell=canEditAttendance(id)?`<button class="${klass}" data-edit="${id}|${slot}" type="button" aria-label="${off?'當日休假，不可新增：':'編輯'}${safe(name)}的${safe(slot)}" ${off?'disabled aria-disabled="true" title="當日標示「休」，請主管先取消休假再安排趟次。"':''}>${val?safe(val):'&nbsp;'}</button>`:`<span class="${klass}">${val?safe(val):'&nbsp;'}</span>`;
+          rows+=`<td class="${j===0?begin:''}">${cell}</td>`;
+        }
+      }
+      rows+='</tr>';
+    }
+    $('tbody').innerHTML=rows||`<tr><td colspan="${all.length*2+2}" style="height:85px">找不到符合條件的紀錄</td></tr>`;
+    $('row-count').textContent=`共 ${shown} 位司機`;
+    $('footer-right').textContent=state.closed[iso()]?'本日已結案':'左右滑動查看更多欄位 →';
+    scroll.scrollLeft=oldX;scroll.scrollTop=oldY;
+  }
+  let to;
+  function dismissToast(){clearTimeout(to);$('toast').classList.remove('show')}
+  function toast(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(to);to=setTimeout(()=>$('toast').classList.remove('show'),2100)}
+  function openModal(type,detail,mode=null){
+    if(type==='leave'&&!canEditLeave())return;
+    if(type==='edit'&&!editable(detail[0])){toast(isOnLeave(detail[0])?'當日已標示「休」，請先取消休假再安排趟次。':'此日期無法編輯出勤');return}
+    dismissToast();
+    $('dialog').classList.toggle('leave-dialog',type==='leave');
+    state.modal={type,detail,mode};$('form-error').textContent='';let title='',description='',fields='',save='儲存';
+    if(type==='edit'){
+      const [id,slot]=detail;
+      const rec=scheduleState.monthPlans[iso().slice(0,7)]?.[id]?.days?.[iso()];
+      const canPlan=state.role==='dispatcher';
+      const mode=state.modal.mode||(canPlan?'planned':'actual');state.modal.mode=mode;
+      const planned=basePair(id,slot),actual=pair(id,slot);
+      const values=mode==='planned'?planned:actual;
+      title=`${driverName(id)} · ${slot}`;
+      description=mode==='planned'?'修改此日期的預排路線與車號，不影響其他日期或常態範本。':'編輯實際出勤路線與車號，不覆寫原定預排。';
+      const tabs=canPlan?`<div class="attendance-edit-modes" aria-label="編輯類型"><button type="button" data-edit-mode="planned" class="${mode==='planned'?'selected':''}">當日預排</button><button type="button" data-edit-mode="actual" class="${mode==='actual'?'selected':''}">實際出勤</button></div>`:'';
+      fields=`${tabs}<label for="route">路線</label><input id="route" maxlength="40" value="${safe(values[0])}" placeholder="路線代碼"><label for="vehicle">車號</label><input id="vehicle" maxlength="32" value="${safe(values[1])}" placeholder="車號"><div class="original">${mode==='planned'?'目前預排':'當日預排'}：${safe(planned.filter(Boolean).join(' / ')||'未指派')}</div><div class="edit-mode-hint">${mode==='planned'?'主管修改的預排只對目前這一天有效；清空兩欄可取消此欄原定趟次。':'實際出勤的修改會獨立記錄；已填寫的實際值不會因預排改動而消失。'}</div>`;
+    }else if(type==='leave'){
+      const id=detail,off=isOnLeave(id),occupied=driverHasRuns(id);
+      // Capture the date: saving must never accidentally target a newly navigated day.
+      state.modal.date=iso();
+      title=`${driverName(id)} · 休假`;
+      description=`${iso()}｜只調整此司機當日狀態。`;
+      fields=`<div class="leave-status-options" role="radiogroup" aria-label="當日休假狀態" aria-describedby="leave-help">
+        <label class="leave-option"><input type="radio" name="leave-status" value="none" ${!off?'checked':''}><span><strong>不標示休假</strong><small>休假欄留白，可安排配送趟次。</small></span></label>
+        <label class="leave-option"><input type="radio" name="leave-status" value="off" ${off?'checked':''} ${occupied&&!off?'disabled':''}><span><strong>休</strong><small>標示休假後，當日不可新增趟次。</small></span></label>
+      </div><p id="leave-help" class="leave-help ${occupied?'is-blocked':''}">${occupied?'此日已有預排或實際出勤趟次，無法標示「休」。請先確認並清空該司機當日的所有趟次；系統不會自動刪除。':'標示「休」後，手動新增及範本套用都會受限制。需先取消休假，才能重新安排趟次。'}</p>`;
+    }else if(type==='slots'){
+      title='調整每日趟數';description='調整各配送類別的欄位數量。新增趟次會一起增加「路線＋車號」兩欄。';
+      fields='<div id="slot-controls" class="slot-stack"></div><p class="slot-footnote">每一天可有不同趟數；有資料的最後一趟無法直接移除。</p>';
+      save='完成';
+    }else if(type==='close'){
+      title='確認當日出勤';description='結案後整張表將鎖定，司機不能繼續修改。';
+      fields=`<label for="note">主管備註（選填）</label><textarea id="note" placeholder="當日異常或補充說明">${safe(state.notes[iso()]||'')}</textarea>`;save='確認結案';
+    }else{
+      title='重新開啟當日出勤';description='請填寫重新開啟原因。';fields='<label for="reason">重新開啟原因</label><textarea id="reason" placeholder="請說明原因"></textarea>';save='重新開啟';
+    }
+    $('dialog-title').textContent=title;$('dialog-desc').textContent=description;$('dialog-fields').innerHTML=fields;$('save').textContent=save;
+    $('dialog').classList.add('show');$('scrim').classList.add('show');
+    if(type==='slots')renderSlotControls();
+    else if(type==='leave')$('dialog-fields').querySelector('input:checked')?.focus();
+    else $('dialog-fields').querySelector('input,textarea')?.focus();
+  }
+  function closeModal(){state.modal=null;$('dialog').classList.remove('show','leave-dialog');$('scrim').classList.remove('show')}
+  function renderSlotControls(){
+    const el=$('slot-controls');if(!el)return;
+    const c=counts();
+    el.innerHTML=GROUPS.map(g=>`<div class="slot-item"><div><div class="slot-title">${safe(g.label)}</div><div class="slot-desc">${safe(g.prefix)}1 – ${safe(g.prefix)}${c[g.label]}</div></div><div class="slot-steps"><button data-step="-1" data-group="${g.label}" aria-label="減少${g.label}趟數" ${c[g.label]<=1?'disabled':''}>−</button><output>${c[g.label]}</output><button class="add" data-step="1" data-group="${g.label}" aria-label="增加${g.label}趟數" ${c[g.label]>=MAX?'disabled':''}>＋</button></div></div>`).join('');
+  }
+  function stepCount(group,step){
+    if(state.role!=='dispatcher'||state.closed[iso()])return;
+    const g=GROUPS.find(x=>x.label===group);if(!g)return;
+    const prev=counts()[group],next=prev+step;if(next<1||next>MAX)return;
+    if(step<0){const removed=g.prefix+prev;if(slotsInUse(removed)){$('form-error').textContent=`${removed} 已有資料，請先移除該欄位的配送紀錄。`;return}}
+    state.counts[iso()]={...counts(),[group]:next};
+    $('form-error').textContent='';persist();render();renderSlotControls();
+  }
+  root.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.device){state.device=b.dataset.device;closeModal();render();return}
+    if(b.dataset.role){state.role=b.dataset.role;closeModal();render();return}
+    if(b.dataset.editMode){
+      if(state.modal?.type!=='edit')return;
+      const prev=state.modal.mode;
+      if(prev===b.dataset.editMode)return;
+      const fields=$('dialog-fields'),id=state.modal.detail[0],slot=state.modal.detail[1],values=prev==='planned'?basePair(id,slot):pair(id,slot);
+      if(($('route')?.value||'')!==String(values[0]||'')||($('vehicle')?.value||'')!==String(values[1]||'')){
+        if(!confirm('尚有未儲存的編輯。確定切換嗎？'))return;
+      }
+      closeModal();openModal('edit',[id,slot],b.dataset.editMode);return;
+    }
+    if(b.dataset.leave){openModal('leave',b.dataset.leave);return}
+    if(b.dataset.edit){const [id,slot]=b.dataset.edit.split('|');if(editable(id))openModal('edit',[id,slot]);else if(isOnLeave(id))toast('當日已標示「休」，請先取消休假再安排趟次。');return}
+    if(b.dataset.step){stepCount(b.dataset.group,Number(b.dataset.step));return}
+  });
+  $('prev').onclick=()=>{dismissToast();state.day--;closeModal();render(false)};
+  $('next').onclick=()=>{dismissToast();state.day++;closeModal();render(false)};
+  $('search').oninput=e=>{state.query=e.target.value.trim();render(false)};
+  $('slot-adjust').onclick=()=>openModal('slots',null);
+  $('plan-open').onclick=()=>openPlan();
+  $('day-action').onclick=()=>openModal(state.closed[iso()]?'reopen':'close',null);
+  $('cancel').onclick=closeModal;$('scrim').onclick=closeModal;
+  $('save').onclick=()=>{
+    if(!state.modal)return;
+    const {type,detail}=state.modal;
+    if(type==='slots'){closeModal();toast('趟數已更新');return}
+    if(type==='leave'){
+      const chosen=$('dialog-fields').querySelector('input[name="leave-status"]:checked');
+      if(!chosen){$('form-error').textContent='請選擇休假狀態。';return}
+      const date=state.modal.date,value=chosen.value==='off',before=isOnLeave(detail,date);
+      const error=storeLeave(detail,date,value);
+      if(error){$('form-error').textContent=error;return}
+      closeModal();render();toast(before===value?'休假狀態未變更':value?'已標示「休」，當日不可新增趟次':'已取消休假，可重新安排當日趟次');return;
+    }
+    if(type==='edit'){
+      const route=$('route').value.trim(),vehicle=$('vehicle').value.trim();
+      if(Boolean(route)!==Boolean(vehicle)){$('form-error').textContent='請同時填寫路線與車號，或兩欄一起清空。';return}
+      const [id,slot]=detail;
+      if(isOnLeave(id)){$('form-error').textContent='當日已標示「休」，請先取消休假再安排趟次。';return}
+      if(!editable(id)){closeModal();toast('沒有編輯權限');return}
+      if(state.modal.mode==='planned'){
+        if(state.role!=='dispatcher'||state.closed[iso()]){closeModal();toast('此日期無法修改預排');return}
+        const rec=ensureDayPlan(id);
+        if(route&&vehicle)rec.slots[slot]=[route,vehicle];else delete rec.slots[slot];
+        // Keep any existing real-world observation unchanged; the applied template is immutable.
+        rec.exception=JSON.stringify(rec.slots)!==JSON.stringify(rec.original?.slots||{});
+        rec.off=false;
+        persistPlan();closeModal();render();toast('已調整此日預排，不影響範本與其他日期');return;
+      }
+      const dc=dailyChanges();if(!dc[id])dc[id]={};
+      const baseValues=basePair(id,slot);
+      if(route===baseValues[0]&&vehicle===baseValues[1])delete dc[id][slot];else dc[id][slot]=[route,vehicle];
+      persist();closeModal();render();toast('已更新出勤紀錄');
+    }else if(type==='close'){
+      state.notes[iso()]=$('note').value.trim();state.closed[iso()]=true;persist();closeModal();render();toast('當日已結案');
+    }else{
+      const reason=$('reason').value.trim();if(!reason){$('form-error').textContent='請填寫重新開啟原因。';return}
+      state.audit[iso()]=[...(state.audit[iso()]||[]),{reason,at:new Date().toISOString()}];
+      state.closed[iso()]=false;persist();closeModal();render();toast('已重新開啟');
+    }
+  };
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(planState.open)closePlan();else closeModal()}});
+  // Replace P3's hard-coded, every-day '休' for d6 with one dated demo record.
+  // Never seed leave over existing scheduled or actual demo data; preserve all imported records.
+  if(!Object.prototype.hasOwnProperty.call(saved,'leaves')&&!driverHasRuns('d6','2026-10-15')){
+    state.leaves['2026-10-15']={d6:{value:true,original:true}};
+  }
+  render();
+})();
+</script>
+</body>
+</html>

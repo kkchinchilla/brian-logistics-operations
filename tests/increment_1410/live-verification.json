@@ -1,0 +1,814 @@
+{
+  "date": "2026-10-21",
+  "project": "dispatch-system-dev",
+  "migration": "20261021014817_increment_1410_attendance_standby",
+  "existingTables": 39,
+  "existingRecords": 92,
+  "hashes": {
+    "before": [
+      {
+        "table_name": "attendance_change_requests",
+        "row_count": 1,
+        "hash": "bd8a3381001fa45801d4c5ffc98b67d7"
+      },
+      {
+        "table_name": "attendance_closeout_events",
+        "row_count": 2,
+        "hash": "7e983d9e15519d86aed90e7bddbe8f2b"
+      },
+      {
+        "table_name": "attendance_driver_days",
+        "row_count": 6,
+        "hash": "61fca1fe6e462d0458a5fe3628f1d9e6"
+      },
+      {
+        "table_name": "attendance_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "attendance_schedule_audit",
+        "row_count": 10,
+        "hash": "7edcad991241b6f7015ae8597bc00133"
+      },
+      {
+        "table_name": "attendance_template_batches",
+        "row_count": 11,
+        "hash": "c44b7dd63b98dfb9f54a994ad37f8a50"
+      },
+      {
+        "table_name": "daily_attendance_change_log",
+        "row_count": 2,
+        "hash": "7f40b7ac85f23c67488700197d381bb7"
+      },
+      {
+        "table_name": "daily_attendance_closeouts",
+        "row_count": 3,
+        "hash": "38cb49938324c940a55c5e165a01f6d1"
+      },
+      {
+        "table_name": "daily_attendance_extra_trips",
+        "row_count": 2,
+        "hash": "7d0224dc7555c47ee368360824395ad2"
+      },
+      {
+        "table_name": "daily_attendance_slot_counts",
+        "row_count": 5,
+        "hash": "ffde60e7b10958447dd5acbb482b0035"
+      },
+      {
+        "table_name": "daily_run_observations",
+        "row_count": 2,
+        "hash": "a4e9cc829880039178ecd106faf572d7"
+      },
+      {
+        "table_name": "delivery_region_zone_rate_audit",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "delivery_region_zone_rates",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "delivery_regions",
+        "row_count": 6,
+        "hash": "dd3118dce84429ae9363c1a8588243bf"
+      },
+      {
+        "table_name": "delivery_temperature_zones",
+        "row_count": 2,
+        "hash": "a884442a9ff1b272df8448d44ccc0ff8"
+      },
+      {
+        "table_name": "driver_day_templates",
+        "row_count": 2,
+        "hash": "41c306a2038cf4ceede128c445b8db42"
+      },
+      {
+        "table_name": "execution_review_history",
+        "row_count": 1,
+        "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+      },
+      {
+        "table_name": "expense_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "finance_audit_logs",
+        "row_count": 1,
+        "hash": "0bb4c4b92c8ce8083911867b29b7a606"
+      },
+      {
+        "table_name": "monthly_settlements",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_adjustments",
+        "row_count": 1,
+        "hash": "4a4ee949d7ee444e5fc55c559e43e046"
+      },
+      {
+        "table_name": "payroll_configs",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_rules",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_supplement_rates",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "profiles",
+        "row_count": 5,
+        "hash": "6c8f0530f4f748defc0f0fc51ab64516"
+      },
+      {
+        "table_name": "report_driver_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "report_route_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "route_change_history",
+        "row_count": 5,
+        "hash": "8ce1c4c410dc0352c6d81c2be13e2ba2"
+      },
+      {
+        "table_name": "routes",
+        "row_count": 3,
+        "hash": "677904ffaf6c251865dc823293ffc5cd"
+      },
+      {
+        "table_name": "runs",
+        "row_count": 9,
+        "hash": "ee3989451cbf909d545da831043b0100"
+      },
+      {
+        "table_name": "trip_executions",
+        "row_count": 1,
+        "hash": "781b56e1d7da545aedda72a32e32c415"
+      },
+      {
+        "table_name": "v05512_execution_attribution_corrections",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_stages",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_work_completions",
+        "row_count": 1,
+        "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+      },
+      {
+        "table_name": "v055_run_work",
+        "row_count": 1,
+        "hash": "124da54b8992640e395620100c63bc9a"
+      },
+      {
+        "table_name": "v055_standby_shifts",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_work_audit",
+        "row_count": 2,
+        "hash": "cd33c224f7404dc8f84b806cdccae5ac"
+      },
+      {
+        "table_name": "vehicle_owner_bindings",
+        "row_count": 4,
+        "hash": "ae11e4e8feb4e0efd1bc5e738e8270fe"
+      },
+      {
+        "table_name": "vehicles",
+        "row_count": 4,
+        "hash": "a970397623996a33c10489385af7e63e"
+      }
+    ],
+    "after": [
+      {
+        "table_name": "attendance_change_requests",
+        "row_count": 1,
+        "hash": "bd8a3381001fa45801d4c5ffc98b67d7"
+      },
+      {
+        "table_name": "attendance_closeout_events",
+        "row_count": 2,
+        "hash": "7e983d9e15519d86aed90e7bddbe8f2b"
+      },
+      {
+        "table_name": "attendance_driver_days",
+        "row_count": 6,
+        "hash": "61fca1fe6e462d0458a5fe3628f1d9e6"
+      },
+      {
+        "table_name": "attendance_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "attendance_schedule_audit",
+        "row_count": 10,
+        "hash": "7edcad991241b6f7015ae8597bc00133"
+      },
+      {
+        "table_name": "attendance_template_batches",
+        "row_count": 11,
+        "hash": "c44b7dd63b98dfb9f54a994ad37f8a50"
+      },
+      {
+        "table_name": "daily_attendance_change_log",
+        "row_count": 2,
+        "hash": "7f40b7ac85f23c67488700197d381bb7"
+      },
+      {
+        "table_name": "daily_attendance_closeouts",
+        "row_count": 3,
+        "hash": "38cb49938324c940a55c5e165a01f6d1"
+      },
+      {
+        "table_name": "daily_attendance_extra_trips",
+        "row_count": 2,
+        "hash": "7d0224dc7555c47ee368360824395ad2"
+      },
+      {
+        "table_name": "daily_attendance_slot_counts",
+        "row_count": 5,
+        "hash": "ffde60e7b10958447dd5acbb482b0035"
+      },
+      {
+        "table_name": "daily_run_observations",
+        "row_count": 2,
+        "hash": "a4e9cc829880039178ecd106faf572d7"
+      },
+      {
+        "table_name": "delivery_region_zone_rate_audit",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "delivery_region_zone_rates",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "delivery_regions",
+        "row_count": 6,
+        "hash": "dd3118dce84429ae9363c1a8588243bf"
+      },
+      {
+        "table_name": "delivery_temperature_zones",
+        "row_count": 2,
+        "hash": "a884442a9ff1b272df8448d44ccc0ff8"
+      },
+      {
+        "table_name": "driver_day_templates",
+        "row_count": 2,
+        "hash": "41c306a2038cf4ceede128c445b8db42"
+      },
+      {
+        "table_name": "execution_review_history",
+        "row_count": 1,
+        "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+      },
+      {
+        "table_name": "expense_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "finance_audit_logs",
+        "row_count": 1,
+        "hash": "0bb4c4b92c8ce8083911867b29b7a606"
+      },
+      {
+        "table_name": "monthly_settlements",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_adjustments",
+        "row_count": 1,
+        "hash": "4a4ee949d7ee444e5fc55c559e43e046"
+      },
+      {
+        "table_name": "payroll_configs",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_rules",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_supplement_rates",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "profiles",
+        "row_count": 5,
+        "hash": "6c8f0530f4f748defc0f0fc51ab64516"
+      },
+      {
+        "table_name": "report_driver_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "report_route_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "route_change_history",
+        "row_count": 5,
+        "hash": "8ce1c4c410dc0352c6d81c2be13e2ba2"
+      },
+      {
+        "table_name": "routes",
+        "row_count": 3,
+        "hash": "677904ffaf6c251865dc823293ffc5cd"
+      },
+      {
+        "table_name": "runs",
+        "row_count": 9,
+        "hash": "ee3989451cbf909d545da831043b0100"
+      },
+      {
+        "table_name": "trip_executions",
+        "row_count": 1,
+        "hash": "781b56e1d7da545aedda72a32e32c415"
+      },
+      {
+        "table_name": "v05512_execution_attribution_corrections",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_stages",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_work_completions",
+        "row_count": 1,
+        "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+      },
+      {
+        "table_name": "v055_run_work",
+        "row_count": 1,
+        "hash": "124da54b8992640e395620100c63bc9a"
+      },
+      {
+        "table_name": "v055_standby_shifts",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_work_audit",
+        "row_count": 2,
+        "hash": "cd33c224f7404dc8f84b806cdccae5ac"
+      },
+      {
+        "table_name": "vehicle_owner_bindings",
+        "row_count": 4,
+        "hash": "ae11e4e8feb4e0efd1bc5e738e8270fe"
+      },
+      {
+        "table_name": "vehicles",
+        "row_count": 4,
+        "hash": "a970397623996a33c10489385af7e63e"
+      }
+    ],
+    "unchanged": true
+  },
+  "advisors": {
+    "before": [
+      {
+        "name": "anon_security_definer_function_executable",
+        "count": 4,
+        "findings": [
+          {
+            "name": "dashboard_log_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_rename_driver",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver uuid, p_name text",
+            "security_definer": true
+          },
+          {
+            "name": "protect_run_assignment",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "route_catalog_rate_audit",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          }
+        ]
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "count": 1,
+        "findings": [
+          {
+            "type": "auth",
+            "entity": "Auth"
+          }
+        ]
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "count": 21,
+        "findings": [
+          {
+            "name": "dashboard_apply_day_template",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_template_revision integer, p_dates date[], p_expected_days jsonb, p_overwrite boolean, p_request_id uuid",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_close_attendance_through",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_through_date date, p_note text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_edit_run_direct",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_run_id bigint, p_route_id bigint, p_vehicle_id bigint, p_note text, p_expected_run_revision integer, p_expected_observation_revision integer, p_cancel boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_attendance_day_state",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_date date",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_capabilities",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_schedule_month",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_month date",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_log_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_rename_driver",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver uuid, p_name text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_reopen_attendance_date",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_date date, p_reason text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_request_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_run_id bigint, p_extra_trip_id bigint, p_route_id bigint, p_vehicle_id bigint, p_note text, p_expected_revision integer, p_expected_observation_revision integer, p_void boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_review_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_request_id bigint, p_expected_revision integer, p_approve boolean, p_reason text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_day_plan",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_category text, p_slot_index integer, p_route_id bigint, p_vehicle_id bigint, p_is_rental boolean, p_note text, p_run_id bigint, p_expected_run_revision integer, p_expected_day_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_day_template",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_rows jsonb, p_expected_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_extra_actual_trip",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_category text, p_slot_index integer, p_route_id bigint, p_vehicle_id bigint, p_is_rental boolean, p_note text, p_expected_revision integer, p_void boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_set_driver_leave",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_is_leave boolean, p_expected_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "protect_run_assignment",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "route_catalog_rate_audit",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "v055_finalize_replacement",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint",
+            "security_definer": true
+          },
+          {
+            "name": "v055_my_special_assignments",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_day date",
+            "security_definer": true
+          },
+          {
+            "name": "v055_submit_special_completion",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint, p_note text",
+            "security_definer": true
+          },
+          {
+            "name": "v05512_reconcile_replacement_execution",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint, p_reason text",
+            "security_definer": true
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "name": "anon_security_definer_function_executable",
+        "count": 4,
+        "findings": [
+          {
+            "name": "dashboard_log_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_rename_driver",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver uuid, p_name text",
+            "security_definer": true
+          },
+          {
+            "name": "protect_run_assignment",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "route_catalog_rate_audit",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          }
+        ]
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "count": 1,
+        "findings": [
+          {
+            "type": "auth",
+            "entity": "Auth"
+          }
+        ]
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "count": 21,
+        "findings": [
+          {
+            "name": "dashboard_apply_day_template",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_template_revision integer, p_dates date[], p_expected_days jsonb, p_overwrite boolean, p_request_id uuid",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_close_attendance_through",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_through_date date, p_note text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_edit_run_direct",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_run_id bigint, p_route_id bigint, p_vehicle_id bigint, p_note text, p_expected_run_revision integer, p_expected_observation_revision integer, p_cancel boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_attendance_day_state",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_date date",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_capabilities",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_get_schedule_month",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_month date",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_log_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_rename_driver",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver uuid, p_name text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_reopen_attendance_date",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_date date, p_reason text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_request_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_run_id bigint, p_extra_trip_id bigint, p_route_id bigint, p_vehicle_id bigint, p_note text, p_expected_revision integer, p_expected_observation_revision integer, p_void boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_review_attendance_change",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_request_id bigint, p_expected_revision integer, p_approve boolean, p_reason text",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_day_plan",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_category text, p_slot_index integer, p_route_id bigint, p_vehicle_id bigint, p_is_rental boolean, p_note text, p_run_id bigint, p_expected_run_revision integer, p_expected_day_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_day_template",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_driver_id uuid, p_rows jsonb, p_expected_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_save_extra_actual_trip",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_category text, p_slot_index integer, p_route_id bigint, p_vehicle_id bigint, p_is_rental boolean, p_note text, p_expected_revision integer, p_void boolean",
+            "security_definer": true
+          },
+          {
+            "name": "dashboard_set_driver_leave",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_service_date date, p_driver_id uuid, p_is_leave boolean, p_expected_revision integer",
+            "security_definer": true
+          },
+          {
+            "name": "protect_run_assignment",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "route_catalog_rate_audit",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "",
+            "security_definer": true
+          },
+          {
+            "name": "v055_finalize_replacement",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint",
+            "security_definer": true
+          },
+          {
+            "name": "v055_my_special_assignments",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_day date",
+            "security_definer": true
+          },
+          {
+            "name": "v055_submit_special_completion",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint, p_note text",
+            "security_definer": true
+          },
+          {
+            "name": "v05512_reconcile_replacement_execution",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_work_id bigint, p_reason text",
+            "security_definer": true
+          }
+        ]
+      }
+    ],
+    "unchanged": true
+  },
+  "liveChecks": [
+    {
+      "verification": {
+        "checks_passed": 6,
+        "canonical_writes": 0,
+        "used_existing_profiles": true
+      }
+    }
+  ]
+}

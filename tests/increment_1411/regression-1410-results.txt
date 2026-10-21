@@ -1,0 +1,53 @@
+PASS: migration creates no standby records
+PASS: dispatcher creates period without route or vehicle
+PASS: overlap rejected across column groups
+PASS: standby allowed in all five groups
+PASS: equal start/end rejected
+PASS: missing times rejected
+PASS: vehicle on standby rejected
+PASS: occupied cell rejected
+PASS: open standby edit increments revision
+PASS: old revision rejected
+PASS: driver can read company standby
+PASS: driver edit queues only
+PASS: identical pending retry is idempotent
+PASS: different pending proposal blocked
+PASS: driver cannot approve
+PASS: driver cannot change another driver
+PASS: raw driver insert blocked
+PASS: approval applies exact driver edit
+PASS: repeated approval does not apply twice
+PASS: driver deletion leaves canonical record before approval
+PASS: rejection leaves original period
+PASS: approved deletion retires period
+PASS: driver addition has no canonical effect
+PASS: approved addition creates one standby
+PASS: stale approval cannot overwrite dispatcher
+PASS: cross-midnight overlap rejected
+PASS: adjacent cross-midnight boundary allowed
+PASS: standby prevents leave
+PASS: slot shrink cannot hide standby
+PASS: raw delivery cannot overwrite standby
+PASS: standby converts atomically into delivery
+PASS: driver delivery-to-standby remains pending
+PASS: approved conversion removes delivery and creates standby
+PASS: template preserves standby even when overwrite enabled
+PASS: closing expires pending standby addition
+PASS: closed standby edit rejected
+PASS: closed raw standby update rejected
+PASS: closing finalizes standby without legacy review
+PASS: standby pay uses existing supplement and no rental
+PASS: reopening removes that date from monthly standby
+PASS: reclosing replaces rather than duplicates allowance
+PASS: planned run converts to standby without a second delivery
+PASS: started delivery cannot be silently converted
+PASS: legacy route addition becomes stale when standby takes cell
+PASS: competing standby approval rechecks time overlap
+PASS: driver cannot invoke private apply helper
+PASS: legacy unpositioned standby remains readable
+PASS: invalid conversion preserves original standby
+PASS: standby retained after failed conversion
+PASS: ordinary dispatcher still cannot read payroll
+PASS: anonymous standby read denied
+PASS: anonymous standby write denied
+RESULT: 52 Increment 1.4.10 database checks passed

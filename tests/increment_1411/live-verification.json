@@ -1,0 +1,536 @@
+{
+  "date": "2026-10-21",
+  "project": "dispatch-system-dev",
+  "migration": "20261021050817_increment_1411_follow_learning_duties",
+  "existingTables": 39,
+  "existingRecords": 132,
+  "hashes": {
+    "before": [
+      {
+        "table_name": "attendance_change_requests",
+        "row_count": 1,
+        "hash": "de9e2efbcd5b6a7a073a3f9950e4b0e8"
+      },
+      {
+        "table_name": "attendance_closeout_events",
+        "row_count": 4,
+        "hash": "4de15d0f321cc526ed777ed6f778fd79"
+      },
+      {
+        "table_name": "attendance_driver_days",
+        "row_count": 7,
+        "hash": "a83491c7bb36f833f098ba783ebbb676"
+      },
+      {
+        "table_name": "attendance_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "attendance_schedule_audit",
+        "row_count": 10,
+        "hash": "48dc3cd72f8d66e4ebe71393120da160"
+      },
+      {
+        "table_name": "attendance_template_batches",
+        "row_count": 11,
+        "hash": "4885a532e68a7725478ea9421a988812"
+      },
+      {
+        "table_name": "daily_attendance_change_log",
+        "row_count": 2,
+        "hash": "082add9001935bfd8b92db4f59d68d38"
+      },
+      {
+        "table_name": "daily_attendance_closeouts",
+        "row_count": 4,
+        "hash": "7652643313efac16ef698887b6e95a51"
+      },
+      {
+        "table_name": "daily_attendance_extra_trips",
+        "row_count": 2,
+        "hash": "c132668e17ee06b0548ae6fc486c2060"
+      },
+      {
+        "table_name": "daily_attendance_slot_counts",
+        "row_count": 5,
+        "hash": "922f46e7e14d083ebd7f21931d920149"
+      },
+      {
+        "table_name": "daily_run_observations",
+        "row_count": 2,
+        "hash": "92ab5939741bf5def25075d640d5a78f"
+      },
+      {
+        "table_name": "delivery_region_zone_rate_audit",
+        "row_count": 13,
+        "hash": "2769d42727cfff82ae40f1b80ac77911"
+      },
+      {
+        "table_name": "delivery_region_zone_rates",
+        "row_count": 12,
+        "hash": "d5e3a9badc1096b5c92751650ceb3a65"
+      },
+      {
+        "table_name": "delivery_regions",
+        "row_count": 6,
+        "hash": "1f585454db403ae7ce43deebe8515a1c"
+      },
+      {
+        "table_name": "delivery_temperature_zones",
+        "row_count": 2,
+        "hash": "e227af363c40db389a5ea20c7c7ca878"
+      },
+      {
+        "table_name": "driver_day_templates",
+        "row_count": 2,
+        "hash": "2df9ea64d01b6a62c254e28a782b3119"
+      },
+      {
+        "table_name": "execution_review_history",
+        "row_count": 1,
+        "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+      },
+      {
+        "table_name": "expense_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "finance_audit_logs",
+        "row_count": 3,
+        "hash": "d26da783282f781a6fe27f8957259a78"
+      },
+      {
+        "table_name": "monthly_settlements",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_adjustments",
+        "row_count": 1,
+        "hash": "4a4ee949d7ee444e5fc55c559e43e046"
+      },
+      {
+        "table_name": "payroll_configs",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_rules",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_supplement_rates",
+        "row_count": 2,
+        "hash": "494d52c39873c49c6def114ec94941c3"
+      },
+      {
+        "table_name": "profiles",
+        "row_count": 5,
+        "hash": "8c79428b3a23ff2c54876b7aef4d26e7"
+      },
+      {
+        "table_name": "report_driver_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "report_route_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "route_change_history",
+        "row_count": 8,
+        "hash": "215784de3c32d27dd3e66f4402aa1d75"
+      },
+      {
+        "table_name": "routes",
+        "row_count": 3,
+        "hash": "beb0b25074baf80a88558c53d9291d47"
+      },
+      {
+        "table_name": "runs",
+        "row_count": 9,
+        "hash": "2f608f75dbe9e6cfd7b4df3e33b335db"
+      },
+      {
+        "table_name": "trip_executions",
+        "row_count": 1,
+        "hash": "781b56e1d7da545aedda72a32e32c415"
+      },
+      {
+        "table_name": "v055_driver_stages",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_work_completions",
+        "row_count": 1,
+        "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+      },
+      {
+        "table_name": "v055_run_work",
+        "row_count": 1,
+        "hash": "124da54b8992640e395620100c63bc9a"
+      },
+      {
+        "table_name": "v055_standby_shifts",
+        "row_count": 2,
+        "hash": "8cf633b7158a45c13f0ac493fc89c760"
+      },
+      {
+        "table_name": "v055_work_audit",
+        "row_count": 4,
+        "hash": "76e048fb1599254e748bc734174d667b"
+      },
+      {
+        "table_name": "v05512_execution_attribution_corrections",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "vehicle_owner_bindings",
+        "row_count": 4,
+        "hash": "1d5085e6135e2c62101b14f44a32ff1b"
+      },
+      {
+        "table_name": "vehicles",
+        "row_count": 4,
+        "hash": "c123ec1fdade7b09afebcbe7cbed2096"
+      }
+    ],
+    "after": [
+      {
+        "table_name": "attendance_change_requests",
+        "row_count": 1,
+        "hash": "de9e2efbcd5b6a7a073a3f9950e4b0e8"
+      },
+      {
+        "table_name": "attendance_closeout_events",
+        "row_count": 4,
+        "hash": "4de15d0f321cc526ed777ed6f778fd79"
+      },
+      {
+        "table_name": "attendance_driver_days",
+        "row_count": 7,
+        "hash": "a83491c7bb36f833f098ba783ebbb676"
+      },
+      {
+        "table_name": "attendance_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "attendance_schedule_audit",
+        "row_count": 10,
+        "hash": "48dc3cd72f8d66e4ebe71393120da160"
+      },
+      {
+        "table_name": "attendance_template_batches",
+        "row_count": 11,
+        "hash": "4885a532e68a7725478ea9421a988812"
+      },
+      {
+        "table_name": "daily_attendance_change_log",
+        "row_count": 2,
+        "hash": "082add9001935bfd8b92db4f59d68d38"
+      },
+      {
+        "table_name": "daily_attendance_closeouts",
+        "row_count": 4,
+        "hash": "7652643313efac16ef698887b6e95a51"
+      },
+      {
+        "table_name": "daily_attendance_extra_trips",
+        "row_count": 2,
+        "hash": "c132668e17ee06b0548ae6fc486c2060"
+      },
+      {
+        "table_name": "daily_attendance_slot_counts",
+        "row_count": 5,
+        "hash": "922f46e7e14d083ebd7f21931d920149"
+      },
+      {
+        "table_name": "daily_run_observations",
+        "row_count": 2,
+        "hash": "92ab5939741bf5def25075d640d5a78f"
+      },
+      {
+        "table_name": "delivery_region_zone_rate_audit",
+        "row_count": 13,
+        "hash": "2769d42727cfff82ae40f1b80ac77911"
+      },
+      {
+        "table_name": "delivery_region_zone_rates",
+        "row_count": 12,
+        "hash": "d5e3a9badc1096b5c92751650ceb3a65"
+      },
+      {
+        "table_name": "delivery_regions",
+        "row_count": 6,
+        "hash": "1f585454db403ae7ce43deebe8515a1c"
+      },
+      {
+        "table_name": "delivery_temperature_zones",
+        "row_count": 2,
+        "hash": "e227af363c40db389a5ea20c7c7ca878"
+      },
+      {
+        "table_name": "driver_day_templates",
+        "row_count": 2,
+        "hash": "2df9ea64d01b6a62c254e28a782b3119"
+      },
+      {
+        "table_name": "execution_review_history",
+        "row_count": 1,
+        "hash": "4f9cc9f6e7780eeb6173777568af0af8"
+      },
+      {
+        "table_name": "expense_records",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "finance_audit_logs",
+        "row_count": 3,
+        "hash": "d26da783282f781a6fe27f8957259a78"
+      },
+      {
+        "table_name": "monthly_settlements",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_adjustments",
+        "row_count": 1,
+        "hash": "4a4ee949d7ee444e5fc55c559e43e046"
+      },
+      {
+        "table_name": "payroll_configs",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_rules",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "payroll_supplement_rates",
+        "row_count": 2,
+        "hash": "494d52c39873c49c6def114ec94941c3"
+      },
+      {
+        "table_name": "profiles",
+        "row_count": 5,
+        "hash": "8c79428b3a23ff2c54876b7aef4d26e7"
+      },
+      {
+        "table_name": "report_driver_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "report_route_mappings",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "route_change_history",
+        "row_count": 8,
+        "hash": "215784de3c32d27dd3e66f4402aa1d75"
+      },
+      {
+        "table_name": "routes",
+        "row_count": 3,
+        "hash": "beb0b25074baf80a88558c53d9291d47"
+      },
+      {
+        "table_name": "runs",
+        "row_count": 9,
+        "hash": "2f608f75dbe9e6cfd7b4df3e33b335db"
+      },
+      {
+        "table_name": "trip_executions",
+        "row_count": 1,
+        "hash": "781b56e1d7da545aedda72a32e32c415"
+      },
+      {
+        "table_name": "v055_driver_stages",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "v055_driver_work_completions",
+        "row_count": 1,
+        "hash": "5787966bb1ec8d45aadacc23d47d26d9"
+      },
+      {
+        "table_name": "v055_run_work",
+        "row_count": 1,
+        "hash": "124da54b8992640e395620100c63bc9a"
+      },
+      {
+        "table_name": "v055_standby_shifts",
+        "row_count": 2,
+        "hash": "8cf633b7158a45c13f0ac493fc89c760"
+      },
+      {
+        "table_name": "v055_work_audit",
+        "row_count": 4,
+        "hash": "76e048fb1599254e748bc734174d667b"
+      },
+      {
+        "table_name": "v05512_execution_attribution_corrections",
+        "row_count": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table_name": "vehicle_owner_bindings",
+        "row_count": 4,
+        "hash": "1d5085e6135e2c62101b14f44a32ff1b"
+      },
+      {
+        "table_name": "vehicles",
+        "row_count": 4,
+        "hash": "c123ec1fdade7b09afebcbe7cbed2096"
+      }
+    ]
+  },
+  "existingDataUnchanged": true,
+  "advisors": {
+    "before": [
+      {
+        "name": "anon_security_definer_function_executable",
+        "count": 4,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "count": 21,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "count": 1,
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+      }
+    ],
+    "after": [
+      {
+        "name": "anon_security_definer_function_executable",
+        "count": 4,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "count": 21,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "count": 1,
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+      }
+    ]
+  },
+  "publicAndPrivateFunctionPermissions": [
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_apply",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_check_follow_conflict",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_guard",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_main",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_read",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": true
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_review",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_stamp",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_submit",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": true
+    },
+    {
+      "nspname": "private",
+      "proname": "dashboard1411_validate",
+      "prosecdef": true,
+      "anon_execute": false,
+      "auth_execute": false
+    },
+    {
+      "nspname": "public",
+      "proname": "dashboard_get_attendance_duties",
+      "prosecdef": false,
+      "anon_execute": false,
+      "auth_execute": true
+    },
+    {
+      "nspname": "public",
+      "proname": "dashboard_save_attendance_duty",
+      "prosecdef": false,
+      "anon_execute": false,
+      "auth_execute": true
+    },
+    {
+      "nspname": "public",
+      "proname": "dashboard_save_duty_supplements",
+      "prosecdef": false,
+      "anon_execute": false,
+      "auth_execute": true
+    }
+  ],
+  "liveChecks": {
+    "count": 8,
+    "result": [
+      {
+        "result": "8 live checks passed; no canonical writes performed"
+      }
+    ],
+    "canonicalWrites": false
+  },
+  "frontendDeployed": false
+}

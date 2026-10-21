@@ -1,0 +1,6 @@
+Project: dispatch-system-dev
+Installed migration: 20261020060723_increment_148_all_driver_schedule_approvals
+Live transaction: addition proposal without attendance mutation; dispatcher approval; duplicate approval; scheduled cancellation request/approval; extra deletion request/approval; reasoned rejected addition; legacy add/edit bypass denial; driver self-approval denial; monthly exclusion of unclosed test records. PASS, transaction rolled back.
+Integrity: all 38 public tables retain row counts and previous field contents (excluding only the four new request metadata fields). No test rows/Auth users remain. Identity sequences may have advanced.
+Security advisor: no new 148 function finding. Existing findings retained for separate scope.
+Frontend: packaged, not deployed to hosting. User acceptance pending.

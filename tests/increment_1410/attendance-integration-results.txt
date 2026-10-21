@@ -1,0 +1,32 @@
+PASS: standby option exists in 日配
+PASS: standby option exists in OC
+PASS: standby option exists in 鮮二
+PASS: standby option exists in 冷凍
+PASS: standby option exists in 低鮮
+PASS: standard route keeps preferred vehicle and hides times
+PASS: standby forces disabled unspecified vehicle
+PASS: standby requires times and removes temperature/rental hints
+PASS: blank period cannot save
+PASS: new standby sends period and no route vehicle fields
+PASS: successful save reloads canonical board
+PASS: switching back restores vehicle and route times
+PASS: reopening standby preloads correct period and source
+PASS: standby removal sends reason and revision
+PASS: standby to delivery uses atomic cell operation
+PASS: driver form explicitly requires approval
+PASS: driver does not optimistically mutate standby
+PASS: failed save surfaces error without changing board
+PASS: approval compares periods and unspecified vehicle
+PASS: approval escapes untrusted notes
+PASS: driver reopens pending request instead of creating another
+PASS: board displays standby and unspecified vehicle with period
+PASS: standby excluded from delivery count
+PASS: standby search matches only its driver
+PASS: closed board hides editable standby action
+PASS: closed editor cannot open
+PASS: leave dialog recognizes standby occupancy
+PASS: fetch loads standalone records and enables editor
+PASS: standby load failure fails closed
+PASS: normal dispatcher add still saves planned route
+PASS: normal driver add still requests approval
+RESULT: 31 attendance VM integration checks passed (not browser/visual QA)

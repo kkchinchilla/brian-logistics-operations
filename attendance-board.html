@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#1e2023">
+  <title>每日出勤｜配送趟次管理系統</title>
+  <link rel="stylesheet" href="css/attendance-board.css">
+</head>
+<body>
+  <div class="attendance-layout">
+    <aside class="sidebar" aria-label="主選單">
+      <a class="brand" href="attendance-board.html"><span class="brand-mark" aria-hidden="true">↗</span><span>Fleet<span class="brand-muted"> / 出勤</span></span></a>
+      <nav class="side-nav">
+        <a class="nav-item active" href="attendance-board.html">每日出勤</a>
+        <a class="nav-item" id="back-nav" href="driver.html">原有工作看板</a>
+        <a class="nav-item" id="routes-nav" href="routes.html" hidden>路線管理</a>
+      </nav>
+      <button class="side-logout" id="side-logout" type="button">登出</button>
+    </aside>
+    <main class="workspace">
+      <header class="workspace-header">
+        <div class="heading">
+          <div class="micro-date" id="readable-date">—</div>
+          <h1>每日出勤</h1>
+        </div>
+        <div class="header-right">
+          <div class="date-nav" aria-label="日期切換">
+            <button id="date-prev" type="button" aria-label="前一天">‹</button>
+            <input id="attendance-date" type="date" aria-label="出勤日期">
+            <button id="date-next" type="button" aria-label="後一天">›</button>
+          </div>
+          <button id="mobile-menu" class="mobile-menu" type="button" aria-label="顯示選單" aria-expanded="false">☰</button>
+        </div>
+      </header>
+      <div class="mobile-links" id="mobile-links" hidden>
+        <a id="mobile-back" href="driver.html">返回原有工作看板</a>
+        <button type="button" id="mobile-logout">登出</button>
+      </div>
+      <section class="toolbar" aria-label="查詢工具">
+        <label class="search-field"><span aria-hidden="true">⌕</span><input id="attendance-search" type="search" autocomplete="off" placeholder="搜尋司機、路線、車號"></label>
+        <button id="today" type="button" class="plain-button">今天</button>
+        <button id="refresh" type="button" class="plain-button" title="重新讀取">重新整理</button>
+        <div class="prototype-roles" id="prototype-roles" hidden>
+          <button type="button" data-demo-role="driver">司機</button>
+          <button type="button" data-demo-role="dispatcher">主管</button>
+        </div>
+        <button type="button" id="slot-settings" class="plain-button" hidden>調整趟數</button>
+        <button type="button" id="day-close" class="accent-button" hidden>結案</button>
+      </section>
+      <p id="source-note" class="source-note" role="status" aria-live="polite"></p>
+      <section class="table-panel" aria-label="每日出勤總覽">
+        <div class="scroll-area" id="scroll-area" tabindex="0" aria-label="全體出勤表，可左右滑動查看更多欄位">
+          <table class="attendance-grid" id="attendance-grid">
+            <thead id="grid-head"></thead>
+            <tbody id="grid-body"></tbody>
+          </table>
+        </div>
+        <footer class="table-footer"><span id="table-count"></span><span id="scroll-hint">左右滑動查看更多欄位 →</span></footer>
+      </section>
+      <div class="extras" id="extras" hidden></div>
+    </main>
+  </div>
+  <div id="modal-backdrop" class="modal-backdrop" hidden></div>
+  <section id="edit-modal" class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-title" hidden>
+    <div class="drag-handle" aria-hidden="true"></div>
+    <div class="modal-top"><h2 id="edit-title"></h2><button type="button" id="modal-x" aria-label="關閉">×</button></div>
+    <p id="edit-detail" class="modal-detail"></p>
+    <form id="edit-form">
+      <label for="edit-route">路線</label><input id="edit-route" type="text" maxlength="64" autocomplete="off">
+      <label for="edit-vehicle">車號</label><input id="edit-vehicle" type="text" maxlength="32" autocomplete="off">
+      <p id="original-value" class="original-value"></p>
+      <p id="edit-error" class="edit-error" role="alert"></p>
+      <div class="form-actions"><button type="button" id="edit-cancel" class="plain-button">取消</button><button class="accent-button" type="submit">預覽異動</button></div>
+    </form>
+  </section>
+  <section id="slot-modal" class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="slot-title" hidden>
+    <div class="drag-handle" aria-hidden="true"></div>
+    <div class="modal-top"><h2 id="slot-title">調整每日趟數</h2><button type="button" id="slot-x" aria-label="關閉">×</button></div>
+    <p class="modal-detail">調整各類別的趟次欄位。例如冷凍可從 4 趟增加至 5、6 趟。所有司機共用相同欄位。</p>
+    <div class="slot-list" id="slot-list"></div>
+    <p id="slot-error" class="edit-error" role="alert"></p>
+    <div class="form-actions"><button type="button" id="slot-done" class="accent-button">完成</button></div>
+    <p class="slot-note">目前只調整原型表格結構，不會修改 Supabase 或正式派車資料。</p>
+  </section>
+  <section id="close-modal" class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="close-title" hidden>
+    <div class="drag-handle" aria-hidden="true"></div>
+    <div class="modal-top"><h2 id="close-title">確認當日出勤</h2><button type="button" id="close-x" aria-label="關閉">×</button></div>
+    <p class="modal-detail" id="close-detail">此操作僅用於示範畫面，不會修改資料庫。</p>
+    <label for="close-note">主管備註</label><textarea id="close-note" rows="3" placeholder="選填"></textarea>
+    <p id="close-error" class="edit-error"></p>
+    <div class="form-actions"><button type="button" id="close-cancel" class="plain-button">取消</button><button type="button" id="close-save" class="accent-button">確認結案</button></div>
+  </section>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/attendance-board.js" defer></script>
+</body>
+</html>

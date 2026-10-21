@@ -1,0 +1,1 @@
+PASS: all 35 application JavaScript files passed node --check

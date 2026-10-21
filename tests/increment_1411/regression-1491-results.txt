@@ -1,0 +1,33 @@
+PASS: migration adds no default amounts
+PASS: blank amounts rejected
+PASS: bad rental amount rejected -1
+PASS: bad rental amount rejected 0.01
+PASS: bad rental amount rejected 10000001
+PASS: bad rental amount rejected NaN
+PASS: reason required
+PASS: two positive settings saved atomically
+PASS: stale settings rejected
+PASS: blank standby leaves prior amount and zero rental is explicit
+PASS: same-day correction retains previous version
+PASS: Brian cannot overwrite history
+PASS: Brian cannot delete history
+PASS: settings writes audited
+PASS: non-Brian read denied 2
+PASS: non-Brian save denied 2
+PASS: raw RLS read denied 2
+PASS: raw RLS insert denied 2
+PASS: non-Brian read denied 3
+PASS: non-Brian save denied 3
+PASS: raw RLS read denied 3
+PASS: raw RLS insert denied 3
+PASS: anonymous RPC denied
+PASS: anonymous table denied
+PASS: month must begin on first
+PASS: unclosed runs excluded
+PASS: real SQL bundle uses route management without legacy payroll rules
+PASS: draft report reflects current route board rate
+PASS: rate edits do not rewrite closing snapshots
+PASS: reopening immediately excludes that date
+PASS: reclose restores one contribution per physical delivery
+PASS: both endpoints are invoker with empty search path
+RESULT: 32 Increment 1.4.9.1 database checks passed

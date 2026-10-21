@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>每日派車看板｜配送趟次管理系統</title>
+
+    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/access-146.css?v=146"></head>
+
+<body class="dashboard-page">
+
+    <header class="topbar">
+
+        <div>
+            <h1>每日派車看板</h1>
+            <p>
+                目前登入：
+                <strong id="dispatcher-name">...</strong>
+            </p>
+        </div>
+
+        <div class="finance-header-actions"><a href="attendance-board.html" class="finance-back">每日出勤總覽</a><a href="ui-attendance.html" class="finance-back">四大新版 UI 預覽</a><a href="ui-routes.html" class="finance-back">路線 UI</a><a href="ui-vehicles.html" class="finance-back">車輛 UI</a><a href="ui-monthly.html" class="finance-back">月報 UI</a><a href="routes.html" class="finance-back">配送路線管理</a><a href="special.html" class="finance-back">特殊勤務管理</a><a href="monthly.html" class="finance-back" id="monthly-report-link">月出勤報表</a></div>
+
+        <button id="logout-button">
+            登出
+        </button>
+
+    </header>
+
+
+    <main class="dashboard">
+
+        <!-- CREATE RUN -->
+
+        <section class="panel">
+
+            <h2>新增配送趟次</h2>
+
+            <form id="run-form">
+
+                <div class="form-grid">
+
+                    <div>
+                        <label for="service-date">
+                            配送日期
+                        </label>
+
+                        <input type="date" id="service-date" required>
+                    </div>
+
+
+
+
+
+                    <div>
+                        <label for="route">
+                            配送路線
+                        </label>
+
+                        <select id="route" required>
+                            <option value="">
+                                載入中...
+                            </option>
+                        </select>
+                        <p id="route-details" class="route-details" aria-live="polite"></p>
+                    </div>
+
+
+                    <div>
+                        <label for="driver">
+                            司機
+                        </label>
+
+                        <select id="driver" required>
+                            <option value="">
+                                載入中...
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div>
+                        <label for="vehicle">車輛</label>
+                        <select id="vehicle" required><option value="">載入中...</option></select>
+                    </div>
+                    <div><p class="note" id="run-vehicle-hint" role="status">選取司機後，系統會帶入已綁定車輛。</p></div>
+
+                </div>
+
+
+                <div>
+                    <label for="dispatcher-notes">
+                        調度備註
+                    </label>
+
+                    <textarea id="dispatcher-notes" rows="3"></textarea>
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button type="submit" id="submit-run-button">
+                        新增趟次
+                    </button>
+
+                    <button type="button" id="cancel-edit-button" hidden>
+                        取消編輯
+                    </button>
+
+                </div>
+
+                <p id="form-message"></p>
+
+            </form>
+
+        </section>
+
+
+        <!-- DAILY BOARD -->
+
+        <section class="panel">
+
+            <div class="board-header">
+
+                <h2>每日配送趟次</h2>
+
+                <input type="date" id="board-date">
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>路線</th><th>溫層</th>
+                            <th>司機</th>
+                            <th>車輛</th><th>是否租車</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="runs-table-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p id="empty-message"></p>
+
+        </section>
+
+        <section class="panel">
+
+            <div class="board-header">
+
+                <div>
+                    <h2>每月趟次統計</h2>
+                    <p>
+                        僅統計已由主管確認的實際配送趟次（不包含薪資計算）
+                    </p>
+                    <p class="finance-disclaimer">v0.5.5 開發階段：下方原有趟次統計與 CSV 仍依原派車司機顯示；故障接替的 B／C 個人計酬歸屬請至「特殊勤務管理」與月報特殊勤務區核對，尚未自動轉算。</p>
+                </div>
+
+                <div class="report-controls">
+
+                    <input type="month" id="report-month">
+
+                    <button type="button" id="refresh-report-button">
+                        重新整理
+                    </button>
+
+                    <button type="button" id="export-csv-button">
+                        匯出已確認 CSV
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-summary">
+
+                <div class="summary-card">
+
+                    <span>
+                        已確認趟次
+                    </span>
+
+                    <strong id="total-completed-runs">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="summary-card">
+                    <span>待審核趟次</span>
+                    <strong id="pending-review-count">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span>已退回趟次</span>
+                    <strong id="rejected-review-count">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="report-columns">
+
+                <div>
+
+                    <h3>司機趟次統計</h3>
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>司機</th>
+                                <th>趟次</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="driver-report-body">
+                        </tbody>
+
+                    </table>
+
+                    <p id="driver-report-empty"></p>
+
+                </div>
+
+
+                <div>
+
+                    <h3>車輛趟次統計</h3>
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>車輛</th>
+                                <th>趟次</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="vehicle-report-body">
+                        </tbody>
+
+                    </table>
+
+                    <p id="vehicle-report-empty"></p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ACTUAL EXECUTION REVIEW / 實際趟次審核 -->
+        <section class="panel" id="execution-review-panel">
+            <div class="board-header">
+                <div>
+                    <h2>實際趟次審核</h2>
+                    <p>司機回報完成後，須由調度人員確認才會計入月統計。</p>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr>
+                        <th>日期</th><th>路線</th><th>溫層</th><th>司機</th><th>車輛</th>
+                        <th>是否租車</th><th>司機備註</th><th>操作</th>
+                    </tr></thead>
+                    <tbody id="execution-review-body"></tbody>
+                </table>
+            </div>
+            <p id="execution-review-empty"></p>
+        </section>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
+    <script src="js/config.js"></script><script src="js/access-146.js?v=146"></script>
+    <script src="js/attendance.js"></script>
+    <script src="js/vehicle-bindings-144.js?v=144"></script><script src="js/dispatcher.js?v=144"></script>
+
+</body>
+
+</html>

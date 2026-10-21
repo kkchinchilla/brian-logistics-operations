@@ -1,0 +1,43 @@
+PASS: 320px new trip uses request button
+PASS: 320px addition leaves saved attendance untouched
+PASS: 320px pending addition keeps original empty cell
+PASS: 320px pending addition opens request detail
+PASS: 320px dispatcher sees addition type and target slot
+PASS: 320px only approval creates saved extra
+PASS: 320px deletion requires reason before submission
+PASS: 320px deletion request leaves scheduled run active
+PASS: 320px approved deletion cancels saved run once
+PASS: 320px no JS error and no page overflow
+PASS: 390px new trip uses request button
+PASS: 390px addition leaves saved attendance untouched
+PASS: 390px pending addition keeps original empty cell
+PASS: 390px pending addition opens request detail
+PASS: 390px dispatcher sees addition type and target slot
+PASS: 390px only approval creates saved extra
+PASS: 390px deletion requires reason before submission
+PASS: 390px deletion request leaves scheduled run active
+PASS: 390px approved deletion cancels saved run once
+PASS: 390px no JS error and no page overflow
+PASS: 768px new trip uses request button
+PASS: 768px addition leaves saved attendance untouched
+PASS: 768px pending addition keeps original empty cell
+PASS: 768px pending addition opens request detail
+PASS: 768px dispatcher sees addition type and target slot
+PASS: 768px only approval creates saved extra
+PASS: 768px deletion requires reason before submission
+PASS: 768px deletion request leaves scheduled run active
+PASS: 768px approved deletion cancels saved run once
+PASS: 768px no JS error and no page overflow
+PASS: 1366px new trip uses request button
+PASS: 1366px addition leaves saved attendance untouched
+PASS: 1366px pending addition keeps original empty cell
+PASS: 1366px pending addition opens request detail
+PASS: 1366px dispatcher sees addition type and target slot
+PASS: 1366px only approval creates saved extra
+PASS: 1366px deletion requires reason before submission
+PASS: 1366px deletion request leaves scheduled run active
+PASS: 1366px approved deletion cancels saved run once
+PASS: 1366px no JS error and no page overflow
+PASS: addition rejection requires reason
+PASS: rejected addition never creates attendance
+RESULT: 42 new browser assertions passed

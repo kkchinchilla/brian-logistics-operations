@@ -1,0 +1,2 @@
+SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name IN ('vehicle_owner_bindings','daily_run_observations','daily_attendance_closeouts','delivery_regions','delivery_temperature_zones','delivery_region_zone_rates') ORDER BY table_name;
+SELECT (SELECT count(*) FROM public.routes) AS routes, (SELECT count(*) FROM public.vehicles) AS vehicles, (SELECT count(*) FROM public.runs) AS runs;

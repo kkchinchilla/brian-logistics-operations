@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>特殊勤務管理｜配送趟次管理系統</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/access-146.css?v=146"></head>
+<body class="dashboard-page finance-page special-page">
+<header class="topbar">
+  <div><h1>特殊勤務管理</h1><p>支援趟次、故障接替、值班及跟車 · <strong id="special-user">確認身分中...</strong></p></div>
+  <div class="finance-header-actions"><a href="dispatcher.html" class="finance-back">返回派車看板</a><a href="monthly.html" class="finance-back">月出勤報表</a><button id="special-logout" type="button">登出</button></div>
+</header>
+<main class="dashboard" id="special-main" hidden>
+  <section class="panel">
+    <h2>本次更新說明</h2>
+    <p>此版本先建立<strong>可追溯的排班及特殊勤務紀錄</strong>。一般主線由原本的每日派車看板管理；特殊勤務關聯原始趟次，不會再新增一筆主線。</p>
+    <p class="finance-disclaimer">v0.5.5 第一階段＋1.1：已建立主管登記、審核、任職階段、值班轉支援識別及資料庫衝突防護。<strong>尚未將特殊勤務計入正式薪資試算或 Excel 匯出</strong>。故障接替的 B／C 薪資規則尚未整合正式計酬。實際趟次會以完成配送的接替司機與車輛作為營運歸屬，原派車資訊保留在主線與稽核紀錄；已確認的舊資料若不一致，須由主管按「稽核校正」操作。請勿使用目前試算作為付款依據。</p>
+    <div class="form-grid finance-form-grid">
+      <div><label for="special-date">管理日期</label><input id="special-date" type="date" required></div>
+      <div class="special-action-wrap"><button id="special-refresh" type="button">重新整理當日資料</button></div>
+    </div>
+    <p id="special-feedback" class="special-feedback" role="status" aria-live="polite"></p>
+  </section>
+  <section class="panel">
+    <h2>司機任職／訓練階段</h2>
+    <p>訓練期間跟車採每日固定計酬；正式入職後依跟車路線計酬。此處先紀錄各階段生效日，後續薪資依當日快照判定。已建立的階段紀錄不可直接覆寫。</p>
+    <form id="stage-form"><div class="form-grid finance-form-grid">
+      <div><label for="stage-driver">司機</label><select id="stage-driver" required></select></div>
+      <div><label for="stage-from">生效日期</label><input id="stage-from" type="date" required></div>
+      <div><label for="stage-value">階段</label><select id="stage-value" required><option value="trainee">訓練中</option><option value="employed">正式入職</option></select></div>
+    </div><div><label for="stage-reason">階段依據／備註</label><input id="stage-reason" required placeholder="例如：新人訓練開始；正式入職生效"></div><div class="form-actions"><button type="submit">新增生效紀錄</button></div></form>
+    <div class="table-wrapper"><table><thead><tr><th>生效日期</th><th>司機</th><th>階段</th><th>備註</th></tr></thead><tbody id="stage-rows"></tbody></table></div>
+  </section>
+  <section class="panel">
+    <h2>排定值班班段</h2>
+    <p>若整個班段未支援，審核後可作為值班；若班段內有<strong>已確認的支援／故障接替</strong>，整個班段轉為支援，不另外計算值班。原始值班安排保留。</p>
+    <form id="standby-form"><div class="form-grid finance-form-grid">
+      <div><label for="standby-driver">值班司機</label><select id="standby-driver" required></select></div>
+      <div><label for="standby-start">班段開始</label><input type="time" id="standby-start" required></div>
+      <div><label for="standby-end">班段結束（可跨日）</label><input type="time" id="standby-end" required></div>
+    </div><div><label for="standby-note">備註</label><input id="standby-note" placeholder="例如：當日支援待命"></div><div class="form-actions"><button type="submit">新增待審核值班</button></div></form>
+    <div class="table-wrapper"><table><thead><tr><th>司機</th><th>班段</th><th>原始排班</th><th>出勤結果</th><th>審核</th><th>操作</th></tr></thead><tbody id="standby-rows"></tbody></table></div>
+  </section>
+  <section class="panel">
+    <h2>支援、故障接替與跟車</h2>
+    <p>選擇同一天已派出的主線；附屬支援必須同司機同車，故障接替必須更換司機與車輛，跟車則共用主線車輛。司機需先在「我的特殊勤務」回報完成；若為故障接替，主管再按「結束主線並送審」，接著至每日派車看板「實際趟次審核」確認原始配送，最後回此頁「確認勤務」。未回報不可核准。</p>
+    <form id="work-form"><div class="form-grid finance-form-grid">
+      <div><label for="work-parent">關聯原始趟次</label><select id="work-parent" required></select></div>
+      <div><label for="work-kind">勤務類型</label><select id="work-kind" required>
+        <option value="attached_support">主線附屬支援</option><option value="breakdown_replacement">車輛故障接替</option><option value="follow_along">跟車</option>
+      </select></div>
+      <div><label for="work-driver">執行／跟車司機</label><select id="work-driver" required></select></div>
+      <div><label for="work-vehicle">執行車輛</label><select id="work-vehicle" required></select></div>
+      <div id="work-standby-wrap"><label for="work-standby">關聯值班班段（選填）</label><select id="work-standby"></select></div>
+      <div id="work-reference-wrap"><label for="work-reference">支援任務／路線識別（必填）</label><input id="work-reference" maxlength="100" placeholder="例如：支援 A、臨時支援線" required></div>
+      <div id="work-payee-wrap" hidden><label for="work-payee">故障接替趟次歸屬</label><select id="work-payee">
+        <option value="replacement_only">B：只計接替司機（預設）</option><option value="both">C：原司機與接替司機都計入</option>
+      </select></div>
+    </div><div><label for="work-note">說明（必填）</label><textarea id="work-note" required placeholder="例如：支援配送門市；車輛拋錨、交接地點；新人跟車訓練"></textarea></div>
+    <p class="finance-disclaimer" id="work-kind-hint">附屬支援會與原主線關聯，不另建主線配送。</p>
+    <div class="form-actions"><button type="submit">新增待審核特殊勤務</button></div></form>
+    <div class="table-wrapper"><table><thead><tr><th>原始趟次</th><th>勤務</th><th>司機</th><th>車輛</th><th>值班關聯</th><th>計酬分類</th><th>司機回報</th><th>審核</th><th>操作</th></tr></thead><tbody id="work-rows"></tbody></table></div>
+  </section>
+</main>
+<div id="special-blocked" class="finance-blocked" hidden>此帳號沒有主管權限，無法管理特殊勤務。</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script src="js/access-146.js?v=146"></script><script src="js/special.js"></script>
+</body></html>

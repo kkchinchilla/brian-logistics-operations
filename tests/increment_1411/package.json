@@ -1,0 +1,11 @@
+{
+  "name": "dispatch-increment-1411-verification",
+  "version": "1.4.11",
+  "private": true,
+  "scripts": {
+    "test": "node database.mjs && node attendance-integration.cjs && node regression-1410.mjs && node regression-attendance-1410.cjs && node regression-147.mjs && node regression-148.mjs && node regression-149.mjs && node regression-1491.mjs && node demo.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10"
+  }
+}

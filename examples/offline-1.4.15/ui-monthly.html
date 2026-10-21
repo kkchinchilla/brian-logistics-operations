@@ -1,0 +1,864 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>月度報表 · 調度系統</title><style>/* Production parity system | approved charcoal / white / yellow, no gradients.
+   All sizing derives from real viewport, never prototype device toggles. */
+:root{color-scheme:dark;--bg:#17191c;--nav:#1b1d20;--canvas:#202226;--panel:#26292d;--panel2:#303338;--panel3:#373a3f;--line:#3c3f44;--line2:#4b4e53;--fg:#f5f5f2;--secondary:#c3c5c8;--muted:#a1a4a9;--yellow:#ffda36;--ink:#191b1d;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-synthesis:none}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-width:0;min-height:100%;background:var(--bg);color:var(--fg)}
+body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.45;cursor:not-allowed}a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}[hidden]{display:none!important}
+.app-shell{width:100%;max-width:1920px;min-height:100dvh;margin:auto;display:grid;grid-template-columns:194px minmax(0,1fr);background:var(--canvas)}
+.side{min-width:0;background:var(--nav);border-right:1px solid #383b40;padding:23px 13px 20px;display:flex;flex-direction:column;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 29px;font-size:15px;letter-spacing:-.025em;font-weight:800;white-space:nowrap}
+.brand-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--yellow);color:var(--ink);font-size:22px;line-height:1;font-weight:900;flex:none}
+.brand small{display:block;font-size:9px;color:#8f9399;margin-top:5px;letter-spacing:.09em;font-weight:480}
+.sidelinks{display:flex;flex-direction:column;gap:5px}.sidelinks a{display:flex;align-items:center;gap:11px;padding:13px 12px;border-radius:10px;color:#afb2b7;font-size:12px;white-space:nowrap}.sidelinks a:hover{background:#303338;color:var(--fg)}.sidelinks a.active{background:var(--yellow);color:var(--ink);font-weight:790}
+.nav-symbol{width:19px;text-align:center;font-size:18px;font-weight:550;line-height:1}.side-bottom{margin-top:auto;border-top:1px solid #383b40;padding:14px 12px 5px;color:#a1a4a9;font-size:11px}.side-logout{width:100%;padding:10px 12px;text-align:left;border:0;background:none;color:#a1a4a9;font-size:12px;border-radius:9px}.side-logout:hover,.side-bottom:hover{color:#fff}
+.main{min-width:0;width:100%;padding:clamp(20px,2.3vw,34px);overflow:hidden}
+.head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:21px}.head h1{font-size:clamp(23px,2.25vw,29px);font-weight:780;letter-spacing:-.045em;margin:0;line-height:1.25}.head p{color:#93979d;font-size:12px;margin:8px 0 0}.eyebrow{color:#9ba0a5;font-size:11px;letter-spacing:.065em;margin-bottom:7px}.account{align-self:center;color:#b7b9bd;font-size:11px;padding:9px 12px;border:1px solid #404349;border-radius:9px;background:#292c31}
+#page{min-width:0}.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:17px 0 16px}.btn{background:var(--panel2);border:1px solid #4b4e53;color:var(--fg);padding:10px 14px;border-radius:10px;min-height:42px;white-space:nowrap;font-size:12px;font-weight:640}.btn:hover{background:#3a3e42}.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:780}.btn.primary:hover{background:#ffe469}
+.field{background:#303338;color:var(--fg);border:1px solid #505358;border-radius:10px;padding:10px 12px;min-height:42px;min-width:0;max-width:100%;font-size:13px}.search{flex:1;min-width:170px;max-width:360px}.field::placeholder{color:#93979c}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.kpis:empty{display:none}.kpi{min-width:0;min-height:95px;padding:16px 17px;background:#292c30;border:1px solid #393c40;border-radius:14px}.kpi small{font-size:11px;color:#a2a6aa}.kpi strong{display:block;font-size:27px;letter-spacing:-.045em;margin-top:10px;font-weight:780;font-variant-numeric:tabular-nums}.kpi:first-child strong{color:var(--yellow)}
+.panel{background:#26292d;border:1px solid #3d4045;border-radius:16px;overflow:hidden;min-width:0;margin:14px 0 0}.panel-title{font-size:16px;font-weight:750;padding:19px 20px 15px;letter-spacing:-.02em}.scroll{max-width:100%;max-height:min(620px,calc(100dvh - 268px));overflow:auto;scrollbar-color:#5c6064 #25282c;scrollbar-width:thin;overscroll-behavior-x:contain}.gridtable{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:12px;font-variant-numeric:tabular-nums;text-align:left}.gridtable th,.gridtable td{border-bottom:1px solid #383b40;padding:13px 14px;white-space:nowrap;text-align:left}.gridtable th{position:sticky;top:0;z-index:3;background:#35383d;color:#bec0c3;font-size:11px;font-weight:640}.gridtable td{background:#26292d}.gridtable tbody tr:nth-child(even) td{background:#2b2e32}.gridtable tbody tr:hover td{background:#35383d}.gridtable .sticky{position:sticky;left:0;z-index:4;background:#303338;box-shadow:1px 0 0 #43464b;font-weight:740}.gridtable tbody tr:nth-child(even) .sticky{background:#32353a}.gridtable tbody tr:hover .sticky{background:#3a3d42}.gridtable th.sticky{background:#383b40;z-index:6}.gridtable .changed{background:#e3c547!important;color:#181a1d;font-weight:780}.gridtable .cell{padding:7px 9px;border-radius:7px;border:1px solid transparent;background:#35383c;color:inherit;min-height:35px;min-width:37px}.gridtable .cell:hover{border-color:var(--yellow)}.gridtable .changed .cell{background:var(--yellow);color:var(--ink)}.gridtable .empty,.empty{padding:28px;color:#a1a4a9;font-size:12px}.gridtable .empty{text-align:center}
+.note{font-size:11px;color:#9ea1a5;line-height:1.65;margin:14px 2px}.note.alert{border:1px solid #64593f;background:#353125;padding:12px 14px;border-radius:10px;color:#e9d18d;margin-bottom:14px}.rowlink{border:0;background:none;color:var(--yellow);font-weight:720;font-size:12px;padding:7px 0}.rowlink:hover{text-decoration:underline;text-underline-offset:3px}.tag{font-size:11px;color:#b9bbbf}.footer{border-top:1px solid #3d4045;font-size:11px;color:#a2a4a8;padding:13px 19px}
+/* Attendance: two-level grouped table based on real temperature categories. */
+body[data-dashboard="attendance"] .head{margin-bottom:18px}body[data-dashboard="attendance"] .head p{display:none}
+body[data-dashboard="attendance"] .tools{margin:0 0 16px}body[data-dashboard="attendance"] .tools input[type=date]{width:158px}body[data-dashboard="attendance"] .tools .search{margin-left:auto}
+body[data-dashboard="attendance"] .panel{margin-top:0}body[data-dashboard="attendance"] .scroll{max-height:min(900px,calc(100dvh - 248px))}
+.attendance-matrix{width:max-content;min-width:100%;table-layout:fixed}.attendance-matrix th,.attendance-matrix td{width:69px;min-width:69px;height:51px;padding:0 5px;text-align:center;border-right:1px solid #35383c}.attendance-matrix thead tr.category th{position:sticky;top:0;z-index:5;height:41px;background:#383b40;color:#f0f0ee;border-bottom:1px solid #4a4d51;font-size:12px}.attendance-matrix thead tr.subheading th{position:sticky;top:41px;z-index:5;height:37px;background:#303338;color:#b9babe;font-size:11px}.attendance-matrix thead .sticky{background:#383b40!important;top:0!important;z-index:9!important}.attendance-matrix td.sticky{position:sticky;left:0;width:112px;min-width:112px;padding-left:15px;text-align:left;background:#26292d;z-index:4;color:#f5f4f1;font-weight:750}.attendance-matrix thead .sticky{width:112px;min-width:112px;text-align:left;padding-left:15px}.attendance-matrix tbody tr:nth-child(even) td.sticky{background:#292c30}.attendance-matrix tbody tr.mine td{background:#302e25}.attendance-matrix tbody tr.mine td.sticky{background:#373325;color:#ffdc42;box-shadow:inset 3px 0 0 var(--yellow)}.attendance-matrix td.changed{background:#302e25!important;color:inherit}.attendance-matrix td.changed .cell{background:var(--yellow);color:var(--ink)}.attendance-matrix .group-start{border-left:2px solid #5a5c60}.attendance-matrix td:not(.changed) .cell{background:#35383c}.attendance-matrix td.empty-slot .cell{background:transparent}.attendance-matrix td.empty-slot{color:transparent}
+/* Vehicle layout follows approved stats + two subviews. */
+.subtabs{display:flex;gap:21px;border-bottom:1px solid #42454a;margin:8px 0 0}.subtabs button{background:none;border:0;border-bottom:3px solid transparent;color:#a8abb0;padding:13px 3px;font-size:13px}.subtabs button.on{border-bottom-color:var(--yellow);color:#f5f5f3;font-weight:740}.fleet-filter{margin:0 0 12px}.fleet-section .scroll{max-height:630px}.fleet-section .gridtable th,.fleet-section .gridtable td{height:57px}.fleet-section .gridtable td:first-child{font-weight:750}.fleet-section .gridtable .rowlink{color:#f4f4f1}
+/* Monthly parity: clear KPI strip, horizontally scrollable ledger, detail drawer. */
+body[data-dashboard="monthly"] .gridtable td:not(:first-child),body[data-dashboard="monthly"] .gridtable th:not(:first-child){text-align:right}body[data-dashboard="monthly"] .gridtable td:last-child{color:var(--yellow);font-weight:780}
+body[data-dashboard="monthly"] .tools{margin:0 0 16px}body[data-dashboard="monthly"] .tools .search{margin-left:auto}body[data-dashboard="monthly"] .panel{margin-top:0}
+.monthly-summary{margin-top:12px}.monthly-detail-overlay{position:fixed;inset:0;background:#0b0c0de0;z-index:25;display:none}.monthly-detail-overlay.open{display:block}.monthly-detail{position:fixed;top:0;right:0;bottom:0;z-index:26;width:min(535px,100vw);background:#282b2f;border-left:1px solid #46494f;box-shadow:-16px 0 50px #0008;display:none;flex-direction:column}.monthly-detail.open{display:flex}.monthly-detail-header{flex:none;padding:23px 23px 17px;border-bottom:1px solid #42454a;display:flex;align-items:center;justify-content:space-between;gap:12px}.monthly-detail-header h2{margin:2px 0;font-size:24px;letter-spacing:-.04em}.monthly-detail-body{min-height:0;overflow:auto;padding:18px 22px 28px}.monthly-detail .panel{margin:0}.monthly-detail .scroll{max-height:420px}.monthly-detail .gridtable{min-width:440px}.monthly-detail .gridtable th,.monthly-detail .gridtable td{padding:10px 11px}.monthly-detail .tools{margin:0 0 16px!important;padding:0!important}.monthly-detail .panel-title{padding:16px}.icon-close{border:1px solid #4b4e53;background:#373a3f;border-radius:9px;width:37px;height:37px;display:grid;place-items:center;font-size:24px;color:#fff}
+/* Cross-device dialog/editor */
+.dialog-back{position:fixed;inset:0;background:#08090bd9;display:none;align-items:center;justify-content:center;z-index:40;padding:14px}.dialog-back.open{display:flex}.dialog{position:relative;width:min(430px,100%);max-height:90dvh;overflow:auto;padding:24px;background:#2b2e32;border:1px solid #55585e;border-radius:18px;box-shadow:0 18px 52px #0007}.dialog h2{font-size:19px;margin:0 0 15px;letter-spacing:-.025em}.dialog label{display:block;margin:13px 0 7px;color:#d9dade;font-size:12px}.dialog .field{width:100%;max-width:none}.dialog p.note{margin:5px 0 13px}.dialog .actions{display:flex;gap:10px;margin-top:18px}.dialog .actions button{flex:1}.dialog .error{color:#ffdc42;font-size:12px;min-height:16px;margin-top:10px}.dialog-handle{display:none}
+.mobilebar{display:none}
+@media(min-width:1600px){.main{padding:34px 39px}.kpis{gap:14px}.gridtable th,.gridtable td{padding:16px 18px}}
+@media(max-width:1150px){.app-shell{grid-template-columns:156px minmax(0,1fr)}.side{padding:19px 8px}.sidelinks a{padding:12px 8px;gap:7px}.brand{font-size:13px;gap:7px;padding:2px 5px 23px}.brand-icon{width:32px;height:32px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:22px 17px}}
+@media(max-width:800px){.app-shell{display:block;min-height:100dvh}.side{display:none}.main{padding:21px 16px 92px;overflow:visible}.head{margin-bottom:18px}.head h1{font-size:24px}.head p{display:none}.account{padding:7px 9px}.kpis{gap:9px}.kpi{min-height:83px;padding:14px}.kpi strong{font-size:22px}.tools{gap:8px}.search{flex:1 1 100%;max-width:none;order:10}.panel{border-radius:13px}.scroll{max-height:min(620px,calc(100dvh - 285px))}.mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;align-items:center;justify-content:space-around;gap:4px;padding:11px 8px calc(11px + env(safe-area-inset-bottom));border-top:1px solid #45484d;background:#1b1d20}.mobilebar a{color:#a3a5aa;font-size:11px;text-align:center;padding:10px 5px;border-radius:8px;flex:1;white-space:nowrap}.mobilebar a.active{color:var(--yellow);font-weight:780}.dialog-back{align-items:flex-end;padding:0}.dialog{width:100%;border-radius:22px 22px 0 0;max-height:min(85dvh,820px);padding:25px 20px calc(28px + env(safe-area-inset-bottom))}.dialog-handle{display:block;width:37px;height:4px;background:#76797e;border-radius:9px;margin:-13px auto 20px}.monthly-detail{top:auto;left:0;right:0;bottom:0;width:100%;height:min(90dvh,890px);border-left:0;border-top:1px solid #52555a;border-radius:20px 20px 0 0}.monthly-detail-header{padding:20px}.monthly-detail-body{padding:15px 17px 22px}.attendance-matrix td.sticky,.attendance-matrix thead .sticky{width:96px;min-width:96px;padding-left:10px}.attendance-matrix th,.attendance-matrix td{height:52px;min-width:65px;width:65px}.attendance-matrix thead tr.category th{height:37px}.attendance-matrix thead tr.subheading th{top:37px;height:35px}.attendance-matrix .scroll{max-height:calc(100dvh - 250px)}body[data-dashboard="attendance"] .tools input[type=date]{width:145px}}
+@media(max-width:480px){.main{padding:18px 12px 88px}.head{gap:8px}.head h1{font-size:23px}.account{max-width:140px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.panel{margin-left:-12px;margin-right:-12px;border-left:0;border-right:0;border-radius:0}.panel-title{padding:17px 13px}.tools{gap:6px}.btn{padding:10px 11px}.field{padding:10px}.kpis{gap:7px}.kpi{padding:13px 11px}.scroll{max-height:calc(100dvh - 270px)}.gridtable th,.gridtable td{padding:13px 10px}.attendance-matrix .scroll{max-height:calc(100dvh - 275px)}.subtabs{gap:15px}}
+@media(max-width:350px){.main{padding:15px 9px 88px}.panel{margin-left:-9px;margin-right:-9px}.account{font-size:10px;max-width:95px}.head h1{font-size:22px}.btn{font-size:11px}.tools input[type=date]{width:131px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:800px){body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style><style>/* UI parity pass 1 — visual only. No data, permissions or database changes. */
+:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:#ffdc42}
+html{min-width:0}body{font-size:13px;line-height:1.45}
+.app-shell{max-width:none;grid-template-columns:196px minmax(0,1fr);min-height:100dvh}
+.side{padding:23px 12px 18px;gap:5px}
+.side .brand{display:flex;align-items:center;gap:11px;font-weight:780;font-size:15px;letter-spacing:.01em;padding:3px 10px 25px}
+.side .brand:before{content:'↗';width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--yellow);color:#1b1c1d;font-size:20px;font-weight:850;flex:none}
+.side a{font-size:12px;font-weight:550;padding:12px 13px;min-height:41px;display:flex;align-items:center;transition:background-color .12s ease}
+.side a:hover:not(.active){background:#2a2d31;color:#fff}
+.side a.active{font-weight:770}
+.side .side-bottom{margin-top:auto;font-size:11px}
+.side #logout{align-self:stretch;font-size:12px}
+.main{padding:29px clamp(18px,2.2vw,33px) 32px;min-width:0}
+.head{margin-bottom:20px;align-items:center}
+.head .muted#account-name{font-size:11px;color:#9ea1a6;letter-spacing:.035em;margin-bottom:8px}
+.head h1{font-size:clamp(24px,2vw,28px);font-weight:780;line-height:1.2;letter-spacing:-.047em}
+.tools{gap:9px;margin:17px 0;min-width:0}
+.btn{border-radius:10px;background:#303338;border-color:#494c52;font-size:12px;font-weight:630;min-height:42px;transition:background-color .12s ease,border-color .12s ease}
+.btn:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
+.btn.primary:not(:disabled):hover{background:#ffe66b;border-color:#ffe66b}
+.field{border-radius:10px;min-height:42px;background:#2e3135;border-color:#4b4e53;font-size:12px}
+.field:focus{outline:none;border-color:var(--yellow)}
+.panel{background:#25282c;border-radius:16px;margin:15px 0 18px}
+.panel-title{font-size:16px;font-weight:750;padding:19px 20px 16px;letter-spacing:-.02em}
+.kpis{gap:11px}
+.kpi{background:#292c30;border:1px solid #393c40;border-radius:14px;padding:17px 18px;min-height:90px}
+.kpi:first-child strong{color:var(--yellow)}
+.kpi small{font-size:11px;color:#a1a4aa}
+.kpi strong{font-size:26px;letter-spacing:-.04em;font-weight:780}
+.scroll{border-radius:12px;max-width:100%;max-height:min(64dvh,720px)}
+.gridtable{font-size:12px;min-width:max(760px,100%);font-variant-numeric:tabular-nums}
+.gridtable th,.gridtable td{height:53px;padding:12px 14px;border-bottom:1px solid #373a3e}
+.gridtable th{height:43px;color:#b8bbc0;font-size:11px;font-weight:610}
+.gridtable tbody tr:nth-child(even) td{background:#292c30}
+.gridtable td.sticky{background:#26292d}
+.gridtable tbody tr:nth-child(even) td.sticky{background:#292c30}
+.gridtable tbody tr:hover td.sticky{background:#35383d}
+.gridtable .sticky{min-width:108px;box-shadow:1px 0 0 #4a4d51}
+.gridtable button.cell{min-height:35px;min-width:34px;border-radius:7px}
+.gridtable .rowlink{color:#f1f1ee;font-size:12px}
+.gridtable .rowlink:hover{color:var(--yellow)}
+.note{font-size:11px;line-height:1.7;color:#9ea2a8}
+.dialog{background:#2a2d31;border-color:#53565b;border-radius:17px;padding:23px;width:min(440px,100%);box-shadow:0 25px 60px #0009}
+.dialog h2{font-size:20px;letter-spacing:-.035em}
+.dialog label{font-size:12px;color:#dedfe1;margin:15px 0 8px}
+.dialog .actions{margin-top:23px}
+.dialog .actions .btn{min-height:44px}
+.footer{font-size:11px;padding:13px 19px}
+@media(min-width:1600px){.main{padding-left:clamp(30px,3vw,64px);padding-right:clamp(30px,3vw,64px)}.gridtable th,.gridtable td{padding-left:19px;padding-right:19px}}
+@media(max-width:1150px){.app-shell{grid-template-columns:158px minmax(0,1fr)}.side{padding-inline:9px}.side a{padding-inline:10px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ .app-shell{display:block;padding-bottom:calc(70px + env(safe-area-inset-bottom));min-width:0}
+ .side{display:none}.main{padding:23px 14px 20px;min-width:0}
+ .head h1{font-size:24px}.head{margin-bottom:15px}
+ .tools{gap:8px;margin:15px 0}
+ .tools>.field.search{max-width:none;flex:1 1 100%}
+ .panel{border-radius:14px}.panel-title{padding:16px 15px 14px;font-size:15px}
+ .gridtable{min-width:max(690px,100%)}
+ .gridtable th,.gridtable td{height:53px;padding:11px 10px}
+ .gridtable .sticky{min-width:95px;max-width:145px}
+ .scroll{max-height:62dvh}
+ .kpis{gap:8px}.kpi{padding:14px 12px;min-height:82px}.kpi strong{font-size:23px}
+ .mobilebar{display:flex;min-height:58px;align-items:center;background:#1b1d20;border-top:1px solid #414449;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+ .mobilebar a{flex:1;min-width:0;font-size:11px;line-height:1.3;padding:10px 2px;white-space:nowrap}
+ .dialog-back{align-items:flex-end;padding:0}.dialog{max-height:88dvh;width:100%;border-radius:21px 21px 0 0;padding:25px 20px max(24px,env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){.main{padding-inline:10px}.head h1{font-size:22px}.btn{padding:9px 10px}.kpi{padding:11px 10px}.kpi strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style><style>/* UI/UX 對版 v2 — based on four finalized standalone prototypes.
+  Presentation only; formal dashboard JS retains Supabase queries and policies. */
+:root{--yellow:#ffda36;--fg:#f5f5f3}
+body[data-dashboard="attendance"],body[data-dashboard="vehicles"],body[data-dashboard="monthly"]{background:#1b1d20}
+body[data-dashboard="attendance"] .side .brand::before,
+body[data-dashboard="vehicles"] .side .brand::before,
+body[data-dashboard="monthly"] .side .brand::before{display:none}
+.side .brand{padding-bottom:23px;letter-spacing:-.02em}
+.side .brand-icon{flex:none;width:36px;height:36px;font-weight:850;display:grid;place-items:center;background:var(--yellow);border-radius:9px;color:#1b1c1e;font-size:19px}
+.side .brand small{display:block;font-size:9px;color:#91959c;letter-spacing:.08em;font-weight:480;white-space:nowrap;margin-top:4px}
+.side .sidelinks{display:flex;flex-direction:column;gap:5px}
+.side .sidelinks a{padding:12px 13px;font-size:12px;font-weight:540;border-radius:9px;color:#afb3b9;min-height:42px}
+.side .sidelinks a.active{color:#1b1c1d;font-weight:790;background:var(--yellow)}
+.side .side-bottom{margin-top:auto}
+.main{background:#202226;overflow:hidden}
+.head{align-items:center;gap:15px;margin-bottom:21px}
+.head .eyebrow{font-size:11px;font-weight:640;color:#9b9fa7;letter-spacing:.06em;margin-bottom:8px}
+.head p{display:block!important;color:#92979f;font-size:12px;margin-top:8px}
+.head-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:9px;margin-left:auto}
+.head .account{order:4;color:#a9adb3;font-size:11px;background:transparent;border:0;padding:7px 0 7px 8px}
+.date-navigation{display:flex;align-items:center;gap:5px;padding:4px;background:#292c30;border:1px solid #45494e;border-radius:12px}
+.date-navigation .icon-nav{width:34px;min-width:34px;height:34px;min-height:34px;display:grid;place-items:center;border:0;background:transparent;padding:2px;font-size:23px;line-height:1}
+.date-navigation .field{border:0;background:none;min-height:34px;height:34px;padding:5px 2px;max-width:153px;color:#f3f3f1}
+.date-navigation .field:focus{outline:1px solid var(--yellow)}
+.board-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px!important}
+.board-tools .search{margin-left:auto;order:0!important}
+.board-legend{font-size:11px;color:#b3b6bb;display:flex;align-items:center;gap:8px}
+.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:#ffda36;border-radius:3px}
+.attendance-panel .scroll{border-radius:0}
+.attendance-panel .footer{display:flex;justify-content:space-between;gap:10px}
+body[data-dashboard="attendance"] .kpis{display:none}
+body[data-dashboard="attendance"] .attendance-matrix thead .subheading th{font-size:11px}
+body[data-dashboard="attendance"] .attendance-matrix tbody tr.mine td:not(.changed){background:#302e25}
+body[data-dashboard="vehicles"] .head{margin-bottom:25px}
+body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:19px}
+body[data-dashboard="vehicles"] .kpi{min-height:105px}
+body[data-dashboard="vehicles"] .subtabs{margin-top:3px;margin-bottom:0}
+body[data-dashboard="vehicles"] .fleet-section{margin-top:15px}
+body[data-dashboard="vehicles"] .fleet-filter{gap:9px;padding-bottom:12px!important}
+body[data-dashboard="vehicles"] .fleet-filter .btn{min-height:40px}
+.status-pill{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:680;background:#343b37;border:1px solid #486650;color:#c9efd1}
+.status-pill.off{background:#373233;border-color:#584648;color:#cab9bb}
+body[data-dashboard="monthly"] .head{margin-bottom:18px}
+body[data-dashboard="monthly"] .subtabs{margin:0 0 15px}
+body[data-dashboard="monthly"] .report-panel{margin-top:0}
+.report-panel .panel-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px 16px}
+.report-panel .panel-heading h2{font-size:16px;font-weight:770;letter-spacing:-.025em;margin:0 0 7px}
+.report-panel .panel-heading p{margin:0;font-size:11px;color:#a5a8ad;line-height:1.5}
+.report-filters{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.report-filters label{color:#a7abb1;font-size:11px;white-space:nowrap}
+.report-filters select{min-width:145px}
+.report-filters .search{min-width:110px;max-width:180px}
+.report-panel .gridtable{min-width:max(980px,100%)}
+.report-panel .gridtable tbody tr td:last-child{color:#aaadb2;font-weight:540}
+.report-panel .note{padding:0 16px 14px}
+.rule-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rule-card{margin:0;padding:23px;line-height:1.8}
+.rule-card h3{font-size:16px;margin:0 0 10px}
+.rule-card p{color:#c1c4c9;font-size:12px;margin:0 0 14px}
+.rule-card strong{font-size:20px;color:var(--yellow)}
+.rule-card:last-child{grid-column:1/-1}
+.drawer-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.drawer-stat-grid .kpi{min-height:76px;padding:13px}
+.drawer-stat-grid .kpi strong{margin-top:7px;font-size:22px}
+.monthly-detail .drawer-tabs{margin-bottom:17px}
+.monthly-detail-body section[hidden],#month-panel[hidden],#rule-panel[hidden]{display:none!important}
+.monthly-detail .panel-title{font-size:14px}
+.monthly-detail .gridtable{min-width:420px}
+body[data-dashboard="routes"] .inc-bar{display:none!important}
+body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}
+body[data-dashboard="routes"] .prototype{padding:0}
+body[data-dashboard="routes"] #reset-btn{display:none!important}
+body[data-dashboard="routes"] .nav-bottom{margin-top:auto}
+body[data-dashboard="routes"] .nav{border-right:1px solid #36393d}
+body[data-dashboard="routes"] .mobile-navbar a{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;text-decoration:none;color:#9ea2aa;font-size:10px}
+body[data-dashboard="routes"] .mobile-navbar a.active{color:var(--yellow)}
+body[data-dashboard="routes"] .mobile-navbar svg{width:19px;height:19px}
+@media(max-width:1100px){.head-actions .account{display:none}.head p{font-size:11px}.report-panel .panel-heading{align-items:flex-start;flex-direction:column}.report-filters{justify-content:flex-start}}
+@media(max-width:800px){.head{align-items:flex-start}.head-actions{justify-content:flex-start;width:100%;margin-left:0}.date-navigation{max-width:100%}.board-tools .search{max-width:none;flex:1 1 170px;order:0}.board-legend{white-space:nowrap}.attendance-panel .footer{font-size:10px}.report-filters{width:100%}.report-filters .search{max-width:none;flex:1 1 100%}.rule-info-grid{grid-template-columns:1fr}.rule-card:last-child{grid-column:auto}.head .eyebrow{font-size:10px}.head p{display:block!important}}
+@media(max-width:900px){body[data-dashboard="routes"] .app{height:100dvh;min-height:100dvh}body[data-dashboard="routes"] .mobile-navbar{padding-bottom:max(11px,env(safe-area-inset-bottom));gap:4px}body[data-dashboard="routes"] .mobile-navbar a{min-width:0}}
+@media(max-width:480px){.head .head-actions{gap:6px}.head-actions>.btn{min-height:39px}.date-navigation{padding:2px}.date-navigation .field{max-width:129px}.date-navigation .icon-nav{width:27px;min-width:27px}.board-legend{font-size:10px}.report-panel .panel-heading{padding:15px 13px}.rule-card{padding:17px}.drawer-stat-grid .kpi strong{font-size:19px}}
+@media(max-width:360px){.head-actions{gap:5px}.date-navigation .field{max-width:122px}.head-actions .btn:not(.icon-nav){padding:8px 9px}.board-tools .search{min-width:155px}}
+
+body[data-dashboard="routes"] .route-status{font-size:11px;color:#a9adb3;margin-bottom:5px;min-height:0}
+body[data-dashboard="routes"] .stage.mobile .app{max-width:100%;width:100%;border-radius:0}
+body[data-dashboard="routes"] .stage.mobile{width:100%;max-width:none}
+body[data-dashboard="routes"] .stage.mobile .mobile-navbar{display:flex}
+</style><style>body:not([data-finance-access="allowed"]) a[href="ui-monthly.html"],
+body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!important}
+body[data-finance-access="denied"] .mobilebar,
+body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
+body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+</style><style>.pricing-section{margin-bottom:18px;min-width:0}.pricing-section .panel{border-radius:0;border-left:0;border-right:0;border-bottom:0}.pricing-section .panel-heading{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 16px;gap:12px;flex-wrap:wrap}.pricing-section h2{font-size:16px;margin:0}.pricing-section .panel-heading p{font-size:12px;line-height:1.7;max-width:680px}.pricing-section .pricing-note{white-space:normal;min-width:180px;max-width:320px;overflow-wrap:anywhere}.pricing-section .rowlink{display:inline-block;margin:3px 8px 3px 0}.pricing-detail{margin:16px 0 22px}.pricing-detail h3{font-size:15px}.pricing-detail details{margin:14px 0}.pricing-detail summary{cursor:pointer;font-size:13px;line-height:1.6}.pricing-issues{padding-left:22px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}.pricing-section .note{padding:12px 16px}.pricing-detail .gridtable{font-size:12px}#pricing-reason{resize:vertical;min-height:86px}@media(max-width:600px){.pricing-section .panel-heading{padding:14px}.pricing-section .panel-heading .btn{width:100%}.pricing-detail .gridtable{min-width:580px}}
+
+body[data-dashboard="monthly"] .pricing-section .pricing-note{text-align:left;color:#bec0c3;font-weight:400}
+</style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head><body data-dashboard="monthly"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div><div class="app-shell"><aside class="side"><div class="brand"><span class="brand-icon" aria-hidden="true">↗</span><span>物流調度<small>DISPATCH / 管理後台</small></span></div><div class="sidelinks"><a href="ui-attendance.html" class="">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="active">月度報表</a></div><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="btn" id="logout">登出</button></aside><main class="main"><div class="head"><div><div class="eyebrow">司機配送統計 · 薪資加給 · 獎懲</div><h1>月度報表</h1><p>由「結案」保存的出勤紀錄彙整月度統計</p></div><div class="head-actions" id="head-actions"><div class="account" id="account-name"></div></div></div><section id="stats" class="kpis"></section><div id="message" class="note" hidden></div><div id="page"></div></main></div><nav class="mobilebar"><a href="ui-attendance.html" class="">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="active">月度報表</a></nav><div id="modal" class="dialog-back"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title"><h2 id="modal-title"></h2><div id="modal-fields"></div><div id="modal-error" class="error"></div><div class="actions"><button id="modal-cancel" class="btn">取消</button><button id="modal-save" class="btn primary">儲存</button></div></div></div><script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
+(()=>{
+const D='11111111-1111-4111-8111-111111111111',E='22222222-2222-4222-8222-222222222222',F='33333333-3333-4333-8333-333333333333',M='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const copy=x=>JSON.parse(JSON.stringify(x));
+window.mock143={role:'dispatcher',fail:null,calls:[],tables:{
+ profiles:[{id:M,display_name:'測試主管',role:'dispatcher',active:true,can_manage_finance:true},{id:D,display_name:'測試司機 A',role:'driver',active:true},{id:E,display_name:'測試司機 B',role:'driver',active:true},{id:F,display_name:'測試司機 C',role:'driver',active:true}],
+ vehicles:[{id:1,plate_number:'1001',active:true},{id:2,plate_number:'1002',active:true}],
+ routes:[{id:1,route_code:'01',route_name:'測試日配一',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'},
+ {id:2,route_code:'02',route_name:'測試日配二',temperature_zone:'冷藏',active:true,default_start_time:'09:00:00',default_end_time:'11:00:00'},
+ {id:3,route_code:'03',route_name:'測試替代路線',temperature_zone:'冷藏',active:true,default_start_time:'06:00:00',default_end_time:'08:00:00'}],
+ runs:[{id:1,service_date:'2026-10-15',route_id:1,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'01',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:1,dashboard_schedule_revision:1},
+ {id:2,service_date:'2026-10-15',route_id:2,driver_id:D,vehicle_id:1,status:'assigned',is_rental:false,dispatcher_notes:'',route_code_snapshot:'02',temperature_zone_snapshot:'冷藏',attendance_category:'日配',attendance_slot_index:2,dashboard_schedule_revision:1}],
+ vehicle_owner_bindings:[{id:1,driver_id:D,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:E,vehicle_id:1,effective_from:'2026-10-01',effective_to:null},{id:3,driver_id:D,vehicle_id:2,effective_from:'2026-10-10',effective_to:null}],
+ daily_attendance_slot_counts:[],daily_run_observations:[],daily_attendance_extra_trips:[],daily_attendance_closeouts:[],driver_day_templates:[],attendance_driver_days:[{service_date:'2026-10-15',driver_id:F,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}],trip_executions:[]}};
+const t=mock143.tables;
+function day(date,id){let d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===id);if(!d){d={service_date:date,driver_id:id,is_leave:false,revision:0,has_plan_exception:false,applied_rows:null};t.attendance_driver_days.push(d);}return d;}
+function hasRuns(date,id){return t.runs.some(x=>x.service_date===date&&x.driver_id===id&&x.status!=='cancelled')||t.daily_attendance_extra_trips.some(x=>x.service_date===date&&x.driver_id===id&&x.status==='active');}
+class Q{
+ constructor(table){this.table=table;this.filters=[];this.bounds=null;this.op='read';}
+ select(){return this;}eq(k,v){this.filters.push(x=>x[k]===v);return this;}in(k,v){this.filters.push(x=>v.includes(x[k]));return this;}
+ gte(k,v){this.filters.push(x=>x[k]>=v);return this;}lte(k,v){this.filters.push(x=>x[k]<=v);return this;}
+ order(){return this;}range(a,b){this.bounds=[a,b];return this;}single(){this.one=true;return this;}maybeSingle(){this.one=true;return this;}
+ insert(x){this.op='insert';this.payload=x;return this;}update(x){this.op='update';this.payload=x;return this;}upsert(x){this.op='upsert';this.payload=x;return this;}
+ match(x){for(const [k,v]of Object.entries(x))this.eq(k,v);return this;}
+ then(resolve,reject){return Promise.resolve().then(()=>{
+  if(mock143.fail===this.table)return {error:{message:'測試：資料表尚未安裝'}};
+  let data=t[this.table]||[];
+  if(this.op==='insert'){const x={id:100+data.length,...this.payload};data.push(x);}
+  if(this.op==='upsert'){const old=data.find(x=>x.service_date===this.payload.service_date);if(old)Object.assign(old,this.payload);else data.push(copy(this.payload));}
+  data=data.filter(x=>this.filters.every(f=>f(x)));
+  if(this.op==='update')data.forEach(x=>Object.assign(x,this.payload));
+  if(this.bounds)data=data.slice(this.bounds[0],this.bounds[1]+1);
+  return {data:copy(this.one?data[0]||null:data),error:null};
+ }).then(resolve,reject);}
+}
+async function rpc(fn,p){
+ mock143.calls.push({fn,args:copy(p)});
+ if(mock143.fail===fn){mock143.fail=null;return {data:null,error:{message:'測試：資料已被其他人更新'}};}
+ if(mock143.role!=='dispatcher'&&['dashboard_save_day_template','dashboard_apply_day_template','dashboard_set_driver_leave','dashboard_save_day_plan'].includes(fn))return {error:{message:'只有主管可執行'}};
+ try{
+ let data;
+ if(fn==='dashboard_save_day_template'){
+  let old=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);if((old?.revision||0)!==p.p_expected_revision)throw Error('範本已被更新');
+  data={driver_id:p.p_driver_id,rows:copy(p.p_rows),revision:(old?.revision||0)+1,updated_at:new Date().toISOString()};if(old)Object.assign(old,data);else t.driver_day_templates.push(data);
+ }else if(fn==='dashboard_get_schedule_month'){
+  const month=p.p_month.slice(0,7),n=new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate();
+  data=Array.from({length:n},(_,i)=>{const date=month+'-'+String(i+1).padStart(2,'0'),d=t.attendance_driver_days.find(x=>x.service_date===date&&x.driver_id===p.p_driver_id);
+   return {date,revision:d?.revision||0,is_leave:!!d?.is_leave,closed:!!t.daily_attendance_closeouts.find(x=>x.service_date===date)?.closed_at,has_runs:hasRuns(date,p.p_driver_id),has_plan_exception:!!d?.has_plan_exception,template_revision:d?.template_revision};});
+ }else if(fn==='dashboard_set_driver_leave'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.revision!==p.p_expected_revision)throw Error('此日出勤已被更新');
+  if(p.p_is_leave&&hasRuns(p.p_service_date,p.p_driver_id))throw Error('此日已有趟次');d.is_leave=p.p_is_leave;d.revision++;data=d;
+ }else if(fn==='dashboard_apply_day_template'){
+  const template=t.driver_day_templates.find(x=>x.driver_id===p.p_driver_id);data={applied_dates:[],skipped:[]};
+  for(const date of p.p_dates){const d=day(date,p.p_driver_id);if(d.is_leave){data.skipped.push({date,reason:'休假'});continue;}if(d.has_plan_exception&&!p.p_overwrite){data.skipped.push({date,reason:'保留單日調整'});continue;}
+   d.applied_rows=copy(template.rows);d.template_revision=template.revision;d.has_plan_exception=false;d.revision++;
+   for(const x of template.rows){let r=t.runs.find(r=>r.service_date===date&&r.driver_id===p.p_driver_id&&r.attendance_category===x.category&&r.attendance_slot_index===x.slot_index);const vals={service_date:date,driver_id:p.p_driver_id,route_id:x.route_id,vehicle_id:x.vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(x.vehicle_id)&&b.effective_from<=date&&(!b.effective_to||b.effective_to>=date))),status:'assigned',attendance_category:x.category,attendance_slot_index:x.slot_index,dashboard_schedule_revision:1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});}
+   data.applied_dates.push(date);
+  }
+ }else if(fn==='dashboard_save_day_plan'){
+  const d=day(p.p_service_date,p.p_driver_id);if(d.is_leave)throw Error('已休假');if(d.revision!==p.p_expected_day_revision)throw Error('此日出勤已被更新');
+  let r=p.p_run_id?t.runs.find(x=>x.id===p.p_run_id):null;
+  if(d.applied_rows===null)d.applied_rows=t.runs.filter(x=>x.service_date===p.p_service_date&&x.driver_id===p.p_driver_id).map(x=>({category:x.attendance_category,slot_index:x.attendance_slot_index,route_id:x.route_id,vehicle_id:x.vehicle_id}));
+  const vals={service_date:p.p_service_date,driver_id:p.p_driver_id,route_id:p.p_route_id,vehicle_id:p.p_vehicle_id,is_rental:!(t.vehicle_owner_bindings.some(b=>b.driver_id===p.p_driver_id&&String(b.vehicle_id)===String(p.p_vehicle_id)&&b.effective_from<=p.p_service_date&&(!b.effective_to||b.effective_to>=p.p_service_date))),dispatcher_notes:p.p_note,status:p.p_route_id?'assigned':'cancelled',attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,dashboard_schedule_revision:(r?.dashboard_schedule_revision||0)+1};if(r)Object.assign(r,vals);else t.runs.push({id:100+t.runs.length,...vals});d.revision++;d.has_plan_exception=true;data={};
+ }else if(fn==='dashboard_set_attendance_slot_counts'){
+  for(const[category,slot_count]of Object.entries(p.p_counts)){const old=t.daily_attendance_slot_counts.find(x=>x.service_date===p.p_service_date&&x.category===category);if(old)old.slot_count=slot_count;else t.daily_attendance_slot_counts.push({service_date:p.p_service_date,category,slot_count});}data=null;
+ }else if(fn==='dashboard_edit_run_direct'){
+  const r=t.runs.find(x=>x.id===p.p_run_id);if(!r)throw Error('找不到趟次');
+  if(mock143.role!=='dispatcher'&&r.driver_id!==D)throw Error('沒有編輯權限');
+  if(!['assigned','in_progress'].includes(r.status)||t.trip_executions.some(x=>x.run_id===r.id))throw Error('已確認的趟次不可直接修改');
+  if(r.dashboard_schedule_revision!==p.p_expected_run_revision)throw Error('趟次已被其他人更新');
+  const obs=t.daily_run_observations.find(x=>x.run_id===r.id);
+  if((obs?.revision||0)!==p.p_expected_observation_revision)throw Error('配送資料已被其他人更新');
+  if(p.p_cancel&&mock143.role!=='dispatcher')throw Error('只有主管可以取消趟次');
+  const d=day(r.service_date,r.driver_id);if(d.is_leave)throw Error('休假不可排車');
+  if(t.daily_attendance_closeouts.some(x=>x.service_date===r.service_date&&x.closed_at))throw Error('已結案');
+  if(obs){const i=t.daily_run_observations.indexOf(obs);t.daily_run_observations.splice(i,1);}
+  if(p.p_cancel){r.status='cancelled';}
+  else {r.route_id=p.p_route_id;r.vehicle_id=p.p_vehicle_id;
+    r.is_rental=!t.vehicle_owner_bindings.some(b=>b.driver_id===r.driver_id&&String(b.vehicle_id)===String(r.vehicle_id)&&b.effective_from<=r.service_date&&(!b.effective_to||b.effective_to>=r.service_date));
+    r.route_code_snapshot=t.routes.find(x=>x.id===r.route_id)?.route_code||'';}
+  r.dispatcher_notes=p.p_note;r.dashboard_schedule_revision++;d.revision++;d.has_plan_exception=true;
+  data={run_id:r.id,revision:r.dashboard_schedule_revision,cancelled:!!p.p_cancel};
+ }else if(fn==='dashboard_save_actual_observation'){
+  const r=t.runs.find(x=>x.id===p.p_run_id),old=t.daily_run_observations.find(x=>x.run_id===r.id);const next={id:old?.id||1,driver_id:r.driver_id,run_id:r.id,actual_route_id:p.p_actual_route_id,actual_vehicle_id:p.p_actual_vehicle_id,actual_note:p.p_note,revision:(old?.revision||0)+1};if(old)Object.assign(old,next);else t.daily_run_observations.push(next);data=next.revision;
+ }else if(fn==='dashboard_save_extra_actual_trip'){
+  data=1;
+ }else throw Error('未模擬 RPC '+fn);
+ return {data:copy(data),error:null};
+ }catch(e){return {data:null,error:{message:e.message}};}
+}
+window._testDB143={auth:{async getUser(){return {data:{user:{id:mock143.role==='dispatcher'?M:D}},error:null};},async signOut(){return {error:null};}},from:table=>new Q(table),rpc};
+})();
+
+/* UI-only fixture layered on mock_supabase_143.js. Never loaded in production. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;mock143.financeAllowed=false;t.attendance_change_requests=[];let cutoff=null,reopened=new Set();
+ const isClosed=d=>!!cutoff&&d<=cutoff&&!reopened.has(d);
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_capabilities','dashboard_get_attendance_day_state','dashboard_request_attendance_change','dashboard_review_attendance_change','dashboard_close_attendance_through','dashboard_reopen_attendance_date'].includes(fn))return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：資料載入失敗'}};
+  let data;
+  if(fn==='dashboard_get_capabilities')data={increment:'1.4.6',can_manage_finance:mock143.financeAllowed};
+  if(fn==='dashboard_get_attendance_day_state')data={service_date:p.p_date,closed:isClosed(p.p_date),closed_at:isClosed(p.p_date)?'2026-10-20T00:00:00Z':null};
+  if(fn==='dashboard_request_attendance_change'){
+   const r=t.runs.find(r=>r.id===p.p_run_id),x=t.daily_attendance_extra_trips.find(x=>x.id===p.p_extra_trip_id);
+   data={id:1+t.attendance_change_requests.length,run_id:r?.id||null,extra_trip_id:x?.id||null,service_date:(r||x).service_date,driver_id:(r||x).driver_id,base_record:{route_id:r?.route_id||x?.actual_route_id,vehicle_id:r?.vehicle_id||x?.actual_vehicle_id,note:r?.dispatcher_notes||x?.actual_note},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:p.p_void,revision:1,status:'pending'};
+   t.attendance_change_requests.push(data);
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   data=t.attendance_change_requests.find(q=>q.id===p.p_request_id);data.status=p.p_approve?'approved':'rejected';data.review_reason=p.p_reason;data.revision++;
+   if(p.p_approve){const r=t.runs.find(r=>r.id===data.run_id);if(r){r.route_id=data.proposed_route_id;r.vehicle_id=data.proposed_vehicle_id;r.dispatcher_notes=data.proposed_note;r.dashboard_schedule_revision++;}}
+  }
+  if(fn==='dashboard_close_attendance_through'){
+   cutoff=cutoff&&cutoff>p.p_through_date?cutoff:p.p_through_date;reopened=new Set([...reopened].filter(d=>d>p.p_through_date));
+   for(const q of t.attendance_change_requests)if(q.status==='pending'&&q.service_date<=p.p_through_date){q.status='stale';q.revision++;}data={through_date:p.p_through_date,closed_dates:[],expired_requests:0};
+  }
+  if(fn==='dashboard_reopen_attendance_date'){reopened.add(p.p_date);data={reopened:true};}
+  return {data:structuredClone(data),error:null};
+ };
+})();
+
+/* Browser-only finalized-report fixture. Never load in production. */
+(()=>{
+ const base=_testDB143.rpc,from=_testDB143.from;
+ mock143.reads=[];_testDB143.from=(name)=>{mock143.reads.push(name);return from(name);};
+ const driver=mock143.tables.profiles[1].id,other=mock143.tables.profiles[2].id;
+ const row=(id,date,who,rental,zone)=>({id,source_type:id.split(':')[0],run_id:id.startsWith('run:')?Number(id.slice(4)):null,extra_trip_id:id.startsWith('extra:')?Number(id.slice(6)):null,service_date:date,driver_id:who,route_id:1,vehicle_id:1,route_code_snapshot:'FROZEN-01',route_temperature_zone:zone,plate_snapshot:'FROZEN-CAR',is_rental:rental,status:'assigned',finalized:true,close_event_id:10,closed_at:'2026-10-20T00:00:00Z'});
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:[row('run:1','2026-10-15',driver,false,'常溫'),row('run:2','2026-10-19',driver,true,'冷藏'),row('extra:1','2026-10-19',other,null,null)],standby:[{id:1,service_date:'2026-10-15',driver_id:driver,finalized:true,converted_to_support:false,review_status:'pending'},{id:2,service_date:'2026-10-19',driver_id:other,finalized:true,converted_to_support:true,review_status:'pending'}],special_work:[],attendance_records:[],original_runs:[],dates:[{service_date:'2026-10-15',status:'finalized'},{service_date:'2026-10-19',status:'finalized'},{service_date:'2026-10-20',status:'reopened'}]};
+ mock143.tables.trip_executions=[{id:999,service_date:'2026-10-20',driver_id:driver,review_status:'confirmed',route_id:1,is_rental:true}];
+ mock143.tables.payroll_adjustments=[{id:1,service_date:'2026-10-15',driver_id:driver,category:'allowance',amount:100,reason:'approved adjustment'}];
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn!=='dashboard_get_finalized_monthly')return base(fn,p);
+  mock143.calls.push({fn,args:structuredClone(p)});
+  if(mock143.fail===fn)return {data:null,error:{message:'測試：結案月報無法讀取'}};
+  if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可查看月度報表'}};
+  const result=structuredClone(mock143.finalized);
+  if(p.p_month!==result.month){result.month=p.p_month;for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])result[k]=[];}
+  if(mock143.reportDelay)await new Promise(resolve=>setTimeout(resolve,mock143.reportDelay));
+  return {data:result,error:null};
+ };
+})();
+
+/* Test-only request queue; no production data or connection. */
+(()=>{
+ const base=_testDB143.rpc,t=mock143.tables;
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_request_attendance_add'){
+   mock143.calls.push({fn,args:structuredClone(p)});
+   if(mock143.fail===fn)return {data:null,error:{message:'測試：新增申請未送出'}};
+   const driver=t.profiles.find(x=>x.role==='driver').id;
+   let q=t.attendance_change_requests.find(q=>q.request_kind==='add'&&q.status==='pending'&&q.driver_id===driver&&q.service_date===p.p_service_date&&q.attendance_category===p.p_category&&q.attendance_slot_index===p.p_slot_index);
+   if(!q){q={id:t.attendance_change_requests.length+1,request_kind:'add',service_date:p.p_service_date,driver_id:driver,attendance_category:p.p_category,attendance_slot_index:p.p_slot_index,source_revision:p.p_expected_revision,base_record:{status:'empty'},proposed_route_id:p.p_route_id,proposed_vehicle_id:p.p_vehicle_id,proposed_note:p.p_note,proposed_void:false,status:'pending',revision:1};t.attendance_change_requests.push(q);}
+   return {data:structuredClone(q),error:null};
+  }
+  if(fn==='dashboard_review_attendance_change'){
+   const q=t.attendance_change_requests.find(q=>q.id===p.p_request_id);
+   if(q?.request_kind==='add'){
+    mock143.calls.push({fn,args:structuredClone(p)});
+    if(mock143.fail===fn)return {data:null,error:{message:'測試：審核失敗'}};
+    if(q.status!=='pending')return {data:{status:q.status,already_reviewed:true},error:null};
+    if(p.p_approve){
+     let x=t.daily_attendance_extra_trips.find(x=>x.driver_id===q.driver_id&&x.service_date===q.service_date&&x.attendance_category===q.attendance_category&&x.attendance_slot_index===q.attendance_slot_index);
+     const values={service_date:q.service_date,driver_id:q.driver_id,attendance_category:q.attendance_category,attendance_slot_index:q.attendance_slot_index,actual_route_id:q.proposed_route_id,actual_vehicle_id:q.proposed_vehicle_id,actual_note:q.proposed_note,is_rental:false,status:'active',revision:(x?.revision||0)+1};
+     if(x)Object.assign(x,values);else {x={id:100+t.daily_attendance_extra_trips.length,...values};t.daily_attendance_extra_trips.push(x);}q.result_extra_trip_id=x.id;
+    }
+    q.status=p.p_approve?'approved':'rejected';q.review_reason=p.p_reason;q.revision++;return {data:structuredClone(q),error:null};
+   }
+   const result=await base(fn,p);
+   if(!result.error&&p.p_approve&&q?.proposed_void){
+    if(q.run_id)t.runs.find(r=>r.id===q.run_id).status='cancelled';
+    else {const x=t.daily_attendance_extra_trips.find(x=>x.id===q.extra_trip_id);x.status='void';x.revision++;}
+   }
+   return result;
+  }
+  return base(fn,p);
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. All names, rates and records are fictional. */
+(()=>{
+ const t=mock143.tables,copy=x=>structuredClone(x),base=_testDB143.rpc,originalFrom=_testDB143.from;
+ const [manager,a,b,c]=t.profiles;manager.display_name='演示 Brian';mock143.financeAllowed=true;
+ t.delivery_regions=[{id:1,name:'示範北區'},{id:2,name:'示範南區'}];t.delivery_temperature_zones=[{name:'冷藏'},{name:'常溫'}];
+ t.delivery_region_zone_rates=[{region_id:1,zone_name:'冷藏',delivery_fee:900},{region_id:1,zone_name:'常溫',delivery_fee:800},{region_id:2,zone_name:'冷藏',delivery_fee:1100},{region_id:2,zone_name:'常溫',delivery_fee:1000}];
+ t.routes=Array.from({length:6},(_,i)=>({id:i+1,route_code:'DEMO-'+String(i+1).padStart(2,'0'),route_name:'示範路線 '+(i+1),temperature_zone:i===5?'常溫':'冷藏',delivery_region_id:i===5?2:1,active:true,default_start_time:String(5+i).padStart(2,'0')+':00:00',default_end_time:String(6+i).padStart(2,'0')+':00:00'}));
+ t.vehicle_owner_bindings=[{id:1,driver_id:a.id,vehicle_id:1,effective_from:'2026-09-01',effective_to:null},{id:2,driver_id:b.id,vehicle_id:2,effective_from:'2026-09-01',effective_to:null}];
+ t.vehicles[0].label='示範自有車';t.vehicles[1].label='示範共用車';
+ t.runs=[];for(const date of ['2026-10-15','2026-10-20'])for(let i=0;i<7;i++){
+  const route=t.routes[i<5?i:i-4],driver=i<5?a:b;
+  t.runs.push({id:t.runs.length+1,service_date:date,route_id:route.id,driver_id:driver.id,vehicle_id:1,status:'assigned',is_rental:driver===b,dispatcher_notes:'隔離示範資料',route_code_snapshot:route.route_code,temperature_zone_snapshot:route.temperature_zone,attendance_category:'日配',attendance_slot_index:i<5?i+1:i-4,dashboard_schedule_revision:1});
+ }
+ t.daily_attendance_slot_counts=['2026-10-15','2026-10-20'].map(service_date=>({service_date,category:'日配',slot_count:5}));
+ t.attendance_driver_days=[{service_date:'2026-10-20',driver_id:c.id,is_leave:true,revision:1,has_plan_exception:true,applied_rows:null}];
+ t.daily_attendance_closeouts=[{service_date:'2026-10-15',closed_at:'2026-10-16T00:00:00Z'}];
+ t.payroll_configs=[];t.payroll_rules=[];t.payroll_supplement_rates=[{id:1,component:'standby',amount:400,effective_from:'2026-10-01',reason:'虛構示範值班津貼'},{id:2,component:'rental',amount:80,effective_from:'2026-10-01',reason:'虛構示範租車扣款'}];
+ t.payroll_adjustments=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'allowance',amount:500,reason:'示範加給'},{id:2,driver_id:a.id,service_date:'2026-10-15',category:'deduction',amount:-100,reason:'示範懲處'}];
+ t.expense_records=[{id:1,driver_id:a.id,service_date:'2026-10-15',category:'parking',amount:50,description:'示範獨立停車費'}];
+ mock143.finalized={version:147,month:'2026-10-01',deliveries:t.runs.filter(r=>r.service_date==='2026-10-15').map(r=>({...r,id:'run:'+r.id,run_id:r.id,original_driver_id:r.driver_id,source_type:'run',route_temperature_zone:r.temperature_zone_snapshot,plate_snapshot:t.vehicles[0].plate_number,finalized:true,close_event_id:10,closed_at:'2026-10-16T00:00:00Z'})),standby:[{id:1,driver_id:c.id,service_date:'2026-10-15',converted_to_support:false,finalized:true,close_event_id:10}],special_work:[{id:1,kind:'follow_along',driver_id:b.id,run_id:1,service_date:'2026-10-15',follow_stage_snapshot:'trainee',finalized:true,close_event_id:10}],attendance_records:[],original_runs:copy(t.runs.filter(r=>r.service_date==='2026-10-15')),dates:Array.from({length:31},(_,i)=>({service_date:'2026-10-'+String(i+1).padStart(2,'0'),status:i===14?'finalized':'open'}))};
+ // Seed the existing fixture's close-state before disabling operational mutations.
+ base('dashboard_close_attendance_through',{p_through_date:'2026-10-15'});
+ const actor=typeof location!=='undefined'?new URLSearchParams(location.search).get('actor'):null;
+ if(actor==='driver'){mock143.role='driver';mock143.financeAllowed=false;}
+ if(actor==='karen'){mock143.financeAllowed=false;manager.display_name='演示 Karen';manager.can_manage_finance=false;}
+ _testDB143.from=name=>{const q=originalFrom(name),then=q.then.bind(q);for(const op of ['insert','update','upsert','delete'])q[op]=()=>{q.demoBlocked=true;return q;};q.then=(resolve,reject)=>q.demoBlocked?Promise.resolve({data:null,error:{message:'營運示範僅供瀏覽；值班／租車設定可在記憶體試填。'}}).then(resolve,reject):then(resolve,reject);return q;};
+ _testDB143.rpc=async(fn,p={})=>{
+  if(!['dashboard_get_route_payroll','dashboard_save_payroll_supplements'].includes(fn)){
+   if(fn.startsWith('dashboard_get_'))return base(fn,p);
+   return {data:null,error:{message:'營運示範僅供瀏覽；不連接 Supabase。'}};
+  }
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可使用月度計薪對帳');let data;
+   if(fn==='dashboard_get_route_payroll'){
+    const finalized=copy(mock143.finalized);finalized.month=p.p_month;
+    if(p.p_month!=='2026-10-01')for(const k of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])finalized[k]=[];
+    const route_rates=t.routes.map(r=>{const fee=t.delivery_region_zone_rates.find(f=>f.region_id===r.delivery_region_id&&f.zone_name===r.temperature_zone);return {route_id:r.id,region_id:r.delivery_region_id,zone_name:r.temperature_zone,amount:fee?.delivery_fee??null};});
+    data={version:1491,month:p.p_month,finalized,route_rates,supplements:t.payroll_supplement_rates,adjustments:t.payroll_adjustments.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7))),expenses:t.expense_records.filter(x=>x.service_date.startsWith(p.p_month.slice(0,7)))};
+   }else{
+    let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+    if(p.p_expected_revision!==revision)throw Error('設定已變更');
+    if(!p.p_reason?.trim())throw Error('請填原因');
+    const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount]].filter(x=>x[1]!==null);
+    if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+    for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+    data={revision};
+   }
+   return {data:copy(data),error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY. Never loaded by a production page. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc;
+ t.v055_standby_shifts=[
+  {id:1,driver_id:t.profiles[3].id,service_date:'2026-10-15',attendance_category:'OC',attendance_slot_index:1,start_time:'12:00:00',end_time:'16:00:00',note:'虛構已結案值班',revision:1},
+  {id:2,driver_id:t.profiles[2].id,service_date:'2026-10-20',attendance_category:'冷凍',attendance_slot_index:1,start_time:'14:00:00',end_time:'18:00:00',note:'虛構未結案值班，不指定車輛、不限溫層',revision:1}
+ ];
+ Object.assign(mock143.finalized.standby[0],structuredClone(t.v055_standby_shifts[0]));
+ _testDB143.rpc=async(fn,p={})=>fn==='dashboard_get_attendance_standby'
+  ?{data:structuredClone(t.v055_standby_shifts.filter(s=>s.service_date===p.p_date)),error:null}
+  :fn==='dashboard_save_attendance_standby'
+   ?{data:null,error:{message:'隔離展示可試填值班時段；儲存及審核請在開發系統驗收。示範資料保持不變。'}}
+   :base(fn,p);
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional duties and amounts, no network writes. */
+(()=>{
+ const t=mock143.tables,base=_testDB143.rpc,copy=x=>structuredClone(x),driver=t.profiles[2].id;
+ t.attendance_duty_entries=[];
+ for(const [i,date] of ['2026-10-15','2026-10-20'].entries()){
+  const main=t.runs.find(r=>r.service_date===date&&r.attendance_slot_index===1&&r.driver_id===t.profiles[1].id);
+  for(let n=1;n<=3;n++)t.attendance_duty_entries.push({id:i*3+n,service_date:date,driver_id:driver,attendance_category:'OC',attendance_slot_index:n,
+   kind:n===1?'follow_along':'learning',linked_run_id:n===1?main.id:null,
+   linked_run:n===1?{id:main.id,service_date:date,driver_id:main.driver_id,vehicle_id:main.vehicle_id,route_id:main.route_id,revision:1,observation_revision:0}:null,
+   revision:1,note:n===1?'虛構跟車，共用主線車輛':'虛構學習，每筆各計一次'});
+ }
+ t.payroll_supplement_rates.push({id:3,component:'follow_along',amount:120,effective_from:'2026-10-01',reason:'虛構跟車費，每筆'},
+  {id:4,component:'learning',amount:60,effective_from:'2026-10-01',reason:'虛構學習費，每筆'});
+ mock143.finalized.special_work=t.attendance_duty_entries.filter(x=>x.service_date==='2026-10-15').map(x=>({...copy(x),id:'duty:'+x.id,source_type:'attendance_duty',run_id:x.linked_run_id,plate_snapshot:x.linked_run?t.vehicles.find(v=>v.id===x.linked_run.vehicle_id)?.plate_number:null,pay_basis:'per_entry',finalized:true,close_event_id:10}));
+ _testDB143.rpc=async(fn,p={})=>{
+  if(fn==='dashboard_get_attendance_duties')return {data:copy(t.attendance_duty_entries.filter(x=>x.service_date===p.p_date)),error:null};
+  if(fn==='dashboard_save_attendance_duty')return {data:null,error:{message:'隔離展示可試填勤務；儲存及審核請在開發系統驗收。'}};
+  if(fn!=='dashboard_save_duty_supplements')return base(fn,p);
+  try{
+   if(!mock143.financeAllowed)throw Error('僅 Brian 可設定勤務／租車');
+   let revision=Math.max(0,...t.payroll_supplement_rates.map(x=>x.id));
+   if(revision!==p.p_expected_revision)throw Error('設定已變更');
+   if(!p.p_reason?.trim()||!/^\d{4}-\d{2}-\d{2}$/.test(p.p_effective_from))throw Error('請填寫生效日及原因');
+   const entries=[['standby',p.p_standby_amount],['rental',p.p_rental_amount],['follow_along',p.p_follow_along_amount],['learning',p.p_learning_amount]].filter(x=>x[1]!==null&&x[1]!==undefined);
+   if(!entries.length||entries.some(x=>!Number.isSafeInteger(x[1])||x[1]<0||x[1]>10000000))throw Error('請輸入有效金額');
+   for(const [component,amount] of entries)t.payroll_supplement_rates.push({id:++revision,component,amount,effective_from:p.p_effective_from,reason:p.p_reason});
+   return {data:{revision},error:null};
+  }catch(e){return {data:null,error:{message:e.message}};}
+ };
+})();
+
+/* OFFLINE DEMONSTRATION ONLY: fictional notes-only duties. */
+(()=>{
+ const t=mock143.tables;
+ for(const d of t.attendance_duty_entries){delete d.linked_run_id;delete d.linked_run;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of t.v055_standby_shifts){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+ for(const d of mock143.finalized.special_work){delete d.linked_run_id;delete d.linked_run;d.run_id=null;d.vehicle_id=null;d.plate_snapshot=null;d.note=d.kind==='follow_along'?'虛構跟車，每筆各計一次':'虛構學習，每筆各計一次';}
+ for(const s of mock143.finalized.standby){s.start_time=null;s.end_time=null;s.note='虛構值班，不需起迄時間';}
+})();
+
+/* OFFLINE MOCK ONLY: production uses the database calculation; this demo has no network. */
+(()=>{
+ const base=_testDB143.rpc;
+ mock143.tables.payroll_supplement_rates=mock143.tables.payroll_supplement_rates.filter(x=>x.component==='rental');
+ _testDB143.rpc=async(fn,p={})=>{
+  if(['dashboard_save_driver_base_salary','dashboard_save_duty_supplements','dashboard_save_payroll_supplements'].includes(fn))return {data:null,error:{message:'此設定已停用'}};
+  if(fn==='dashboard_save_rental_rate'){
+   if(!mock143.financeAllowed)return {data:null,error:{message:'僅 Brian 可設定租車費用'}};
+   const table=mock143.tables.payroll_supplement_rates,revision=Math.max(0,...table.map(x=>x.id));
+   if(revision!==p.p_expected_revision)return {data:null,error:{message:'設定已變更，請重新整理'}};
+   if(!Number.isInteger(p.p_amount)||p.p_amount<0||p.p_amount>10000000||!p.p_reason?.trim())return {data:null,error:{message:'金額或原因不正確'}};
+   table.push({id:revision+1,component:'rental',amount:p.p_amount,effective_from:p.p_effective_from,reason:p.p_reason});return {data:{revision:revision+1},error:null};
+  }
+  if(fn!=='dashboard_get_calculated_payroll')return base(fn,p);
+  const response=await base('dashboard_get_route_payroll',p);if(response.error)return response;
+  const b=response.data,drivers=mock143.tables.profiles.filter(x=>x.role==='driver');
+  const report=PayrollReconciliation1491.build({...b,month:p.p_month.slice(0,7),drivers});
+  for(const x of report.summaries){
+   const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);
+   Object.assign(x,{standbyCount:b.finalized.standby.filter(r=>r.driver_id===x.driverId&&!r.converted_to_support).length,
+    followAlongCount:dw.filter(r=>r.kind==='follow_along').length,learningCount:dw.filter(r=>r.kind==='learning').length,
+    rentalCount:rr.filter(r=>r.is_rental===true).length,unknownRentalCount:rr.filter(r=>r.is_rental==null).length,knownItemsReady:x.basicSubtotal!==null});
+  }
+  b.calculation={...report,version:1415,engine:'database'};return {data:b,error:null};
+ };
+})();
+</script><script>const db=window._testDB143;window.db=db;</script><script>/* Server capability is authoritative. Hidden by default, including legacy links. */
+const DashboardAccess146=(()=>{
+ let pending=null,allowed=false;
+ async function load(){
+  if(!pending)pending=(async()=>{
+   try{
+    const {data,error}=await db.rpc('dashboard_get_capabilities',{});
+    allowed=!error&&data?.increment==='1.4.6'&&data.can_manage_finance===true;
+   }catch(e){allowed=false;}
+   document.body.dataset.financeAccess=allowed?'allowed':'denied';
+   return allowed;
+  })();
+  return pending;
+ }
+ document.addEventListener('DOMContentLoaded',load);
+ return {load,finance:()=>allowed};
+})();
+</script><script>const $=s=>document.querySelector(s);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('zh-TW');
+const today=()=> '2026-10-20';
+const notify=msg=>{const e=$('#message');if(e){e.textContent=msg;e.hidden=false;}else alert(msg)};
+let currentUser=null,currentProfile=null;
+async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
+const supervisor=()=>currentProfile?.role==='dispatcher';
+const finance=()=>supervisor()&&DashboardAccess146.finance();
+async function rows(table,fields='*',q){let req=db.from(table).select(fields);if(q)req=q(req);const {data,error}=await req;if(error)throw error;return data||[]}
+// Supabase's default API page size is often 1,000. Reports must fetch every page.
+// Call only for tables with a stable unique numeric 'id' column.
+async function allPagedRows(table,fields='*',scope){
+ const out=[];const size=500;let offset=0;
+ while(true){
+  let q=db.from(table).select(fields);
+  if(scope)q=scope(q);
+  q=q.order('id',{ascending:true}).range(offset,offset+size-1);
+  const {data,error}=await q;if(error)throw error;
+  out.push(...(data||[]));
+  if(!data||data.length<size)break;
+  offset+=size;
+  if(offset>100000)throw Error('報表筆數超出安全上限，請分批查詢');
+ }
+ return out;
+}
+async function save(table,payload,match){const q=match?db.from(table).update(payload).match(match):db.from(table).insert(payload);const {error}=await q;if(error)throw error;return true}
+function modal(title,fields,onSave){$('#modal-title').textContent=title;$('#modal-fields').innerHTML=fields;$('#modal-error').textContent='';$('#modal').classList.add('open');$('#modal-save').hidden=false;$('#modal-save').onclick=async()=>{try{$('#modal-save').disabled=true;await onSave();closeModal()}catch(e){$('#modal-error').textContent=e.message||String(e)}finally{$('#modal-save').disabled=false}}}
+function closeModal(){$('#modal').classList.remove('open')}
+function option(v,t,selected){return `<option value="${esc(v)}" ${String(v)===String(selected)?'selected':''}>${esc(t)}</option>`}
+function dropdown(arr,key,label,selected){return arr.map(x=>option(x[key],x[label]||x[key],selected)).join('')}
+function field(label,id,value='',type='text'){return `<label for="${id}">${label}</label><input id="${id}" class="field" type="${type}" value="${esc(value)}">`}
+function chosen(id){return $('#'+id).value}
+function wrapTable(headers,body){return `<div class="panel"><div class="scroll"><table class="gridtable"><thead><tr>${headers.map((h,i)=>`<th class="${i?'':'sticky'}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料</td></tr>`}</tbody></table></div></div>`}
+async function init(){if(!await requireLogin())return;try{await window.loadPage()}catch(e){console.error(e);notify('載入失敗：'+e.message)}}
+document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});$('#logout').onclick=async()=>{await db.auth.signOut();location.replace('index.html')};init()});
+</script><script>/* One authoritative source for monthly UI and exports. No live execution fallback. */
+(function(root){
+ 'use strict';
+ async function load(db,month){
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))throw Error('月份格式不正確');
+  const {data,error}=await db.rpc('dashboard_get_finalized_monthly',{p_month:month+'-01'});
+  if(error)throw error;
+  if(!data||data.version!==147||data.month!==month+'-01'||!['deliveries','standby','special_work','attendance_records','original_runs','dates'].every(k=>Array.isArray(data[k])))throw Error('結案月報資料不完整，請確認 1.4.7 資料庫版本');
+  if(data.deliveries.some(r=>r.finalized!==true||!r.service_date?.startsWith(month+'-')||!r.close_event_id)||new Set(data.deliveries.map(r=>r.id)).size!==data.deliveries.length)throw Error('結案月報來源不一致');
+  return data;
+ }
+ const api={load};root.FinalizedMonthly147=api;
+ if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script>
+<script>/* 1.4.9.1: 1.4.15: delivery pay - rental cost + adjustments; duties are attendance only. */
+(function(root){
+ 'use strict';
+ const basisLabels={fixed_only:'固定月薪',per_run_only:'按路線計趟',fixed_plus_run:'固定＋按趟',manual:'人工計算'};
+ const componentLabels={per_run:'配送計酬',rental:'租車費用（扣款）',adjustment:'加給／獎懲'};
+ const same=(a,b)=>String(a)===String(b);
+ function dates(month){
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||Number(month.slice(0,4))<1900||Number(month.slice(0,4))>9998)throw Error('月份格式不正確');
+  const [y,m]=month.split('-').map(Number);
+  return {first:month+'-01',last:month+'-'+new Date(Date.UTC(y,m,0)).getUTCDate()};
+ }
+ function cents(value){
+  if(value===null||value===undefined||value==='')return null;
+  const s=String(value);if(!/^-?\d+(\.\d{1,2})?$/.test(s))return null;
+  const [whole,fraction='']=s.replace('-','').split('.');
+  const n=Number(whole)*100+Number(fraction.padEnd(2,'0'));
+  return Number.isSafeInteger(n)?(s.startsWith('-')?-n:n):null;
+ }
+ const money=n=>n===null?null:n/100;
+ function validate(finalized,month){
+  dates(month);
+  if(!finalized||finalized.version!==147||finalized.month!==month+'-01'||!['deliveries','standby','special_work','attendance_records','original_runs','dates'].every(k=>Array.isArray(finalized[k])))throw Error('結案資料不完整');
+  const validDates=new Set(finalized.dates.filter(d=>d.status==='finalized').map(d=>d.service_date));
+  for(const k of ['deliveries','standby','special_work','attendance_records']){
+   const seen=new Set();for(const row of finalized[k]){
+    if(row.finalized!==true||!row.service_date?.startsWith(month+'-')||!row.close_event_id||!validDates.has(row.service_date)||row.id===null||row.id===undefined||seen.has(String(row.id)))throw Error('結案對帳來源不一致');
+    seen.add(String(row.id));
+   }
+  }
+ }
+ function build({month,finalized,drivers=[],route_rates=[],supplements=[],adjustments=[],expenses=[]}){
+  validate(finalized,month);const range=dates(month),issues=[],lines=[];
+  const issue=(code,driverId,date,source,message)=>{const x={code,driverId:driverId||'',date:date||'',source:source||'',message};issues.push(x);return x;};
+  const idSet=new Set(drivers.map(d=>d.id));
+  for(const list of [adjustments,finalized.deliveries,finalized.standby,finalized.special_work,finalized.attendance_records])for(const row of list)if(row.driver_id)idSet.add(row.driver_id);
+  for(const work of finalized.special_work)if(work.kind==='breakdown_replacement'){
+   const run=finalized.original_runs.find(r=>same(r.id,work.run_id));if(run?.driver_id)idSet.add(run.driver_id);
+   const delivery=finalized.deliveries.find(r=>same(r.run_id,work.run_id));if(delivery?.original_driver_id)idSet.add(delivery.original_driver_id);
+  }
+  const names=new Map(drivers.map(d=>[d.id,d.display_name]));
+  for(const d of finalized.dates)if(d.status!=='finalized')issue('date_unfinalized','',d.service_date,'',d.status==='reopened'?'日期已重新開啟，未計入本次對帳':'日期尚未結案或缺少結案快照，未計入本次對帳');
+  const summaries=[];
+  for(const driverId of idSet){
+   const deliveries=finalized.deliveries.filter(r=>same(r.driver_id,driverId));
+   const adjustmentsFor=adjustments.filter(r=>same(r.driver_id,driverId));
+   const start=issues.length;
+   let variable=0,rentalCost=0,adjustment=0;
+   const supplement=(component,date,source,closeEventId)=>{
+    const rate=selectSupplement(supplements,component,date),value=rate?cents(rate.amount):null;
+    const valid=value!==null&&value>=0;
+    if(!valid)issue(component+'_rate_missing',driverId,date,source,component==='rental'?'租車費用尚未設定，扣款待確認':(componentLabels[component]||component)+'尚未設定');
+    lines.push({driverId,date,source,kind:component,quantity:1,ruleId:rate?.id||null,amount:valid?money(component==='rental'?-value:value):null,closeEventId,status:valid?(component==='rental'?'自薪資扣除':'加入薪資'):'待設定'});
+    return valid?value:null;
+   };
+   for(const run of deliveries){
+    const matches=route_rates.filter(r=>same(r.route_id,run.route_id));
+    const rate=matches.length===1?matches[0]:null,value=rate?cents(rate.amount):null;
+    // Use the closed temperature, and do not silently price a route whose temperature changed.
+    const valid=value!==null&&value>=0&&!!rate.region_id&&!!run.route_temperature_zone&&rate.zone_name===run.route_temperature_zone;
+    if(!valid){variable=null;issue('route_rate_missing',driverId,run.service_date,run.id,'路線管理費率未設定，或目前溫層與結案紀錄不符');}
+    else if(variable!==null)variable+=value;
+    lines.push({driverId,date:run.service_date,source:run.id,kind:'per_run',routeId:run.route_id,routeCode:run.route_code_snapshot||'',temperatureZone:run.route_temperature_zone||'',quantity:1,ruleId:valid?'route:'+rate.region_id+':'+rate.zone_name:null,rateUpdatedAt:rate?.updated_at||null,amount:valid?money(value):null,closeEventId:run.close_event_id,status:valid?'路線管理目前費率（試算）':'待設定'});
+    if(run.is_rental===true){const cost=supplement('rental',run.service_date,run.id,run.close_event_id);rentalCost=rentalCost===null||cost===null?null:rentalCost+cost;}
+    else if(run.is_rental!==false){rentalCost=null;issue('rental_unknown',driverId,run.service_date,run.id,'結案快照的租車狀態未確認，扣款待確認');}
+   }
+   for(const w of finalized.special_work){
+    const original=finalized.original_runs.find(r=>same(r.id,w.run_id));
+    const delivery=finalized.deliveries.find(r=>same(r.run_id,w.run_id));
+    const related=same(w.driver_id,driverId)||(w.kind==='breakdown_replacement'&&(same(original?.driver_id,driverId)||same(delivery?.original_driver_id,driverId)));
+    if(!related)continue;
+    if(['follow_along','learning'].includes(w.kind))continue;
+    const label={attached_support:'附屬支援',breakdown_replacement:'故障接替',follow_along:'跟車'}[w.kind]||'特殊勤務';
+    issue('special_pay',driverId,w.service_date,'special:'+w.id,label+'計酬歸屬與金額待確認；不另增加配送總趟次');
+    lines.push({driverId,date:w.service_date,source:'special:'+w.id,kind:w.kind,quantity:null,ruleId:null,amount:null,closeEventId:w.close_event_id,status:label+'待對帳'});
+   }
+   for(const a of finalized.attendance_records.filter(a=>same(a.driver_id,driverId)))issue('attendance_exception',driverId,a.service_date,'attendance:'+a.id,'出勤例外／原始代碼對薪資的影響待確認');
+   for(const a of adjustmentsFor){
+    const value=cents(a.amount),inMonth=a.service_date>=range.first&&a.service_date<=range.last;
+    if(value===null||!inMonth){issue('adjustment_invalid',driverId,a.service_date,'adjustment:'+a.id,'調整金額或月份無效');adjustment=null;}
+    else if(adjustment!==null)adjustment+=value;
+    lines.push({driverId,date:a.service_date,source:'adjustment:'+a.id,kind:'adjustment',quantity:1,ruleId:null,amount:inMonth?money(value):null,closeEventId:null,status:'月報人工調整'});
+   }
+   if([variable,rentalCost,adjustment].some(v=>v!==null&&!Number.isSafeInteger(v)))throw Error('對帳金額超出安全計算範圍');
+   const subtotal=[variable,rentalCost,adjustment].every(v=>v!==null)?variable-rentalCost+adjustment:null;
+   if(subtotal!==null&&!Number.isSafeInteger(subtotal))throw Error('對帳金額超出安全計算範圍');
+   // The approved formula is complete; only actual source/input issues block this driver.
+   summaries.push({driverId,name:names.get(driverId)||'未列於司機名冊',basis:'route_management',count:deliveries.length,variable:money(variable),rentalDeduction:money(rentalCost===null?null:-rentalCost),adjustment:money(adjustment),basicSubtotal:money(subtotal),salary:issues.length===start?money(subtotal):null,salaryReady:subtotal!==null&&issues.length===start,issues:issues.slice(start)});
+  }
+  for(const e of expenses){
+   if(e.service_date<range.first||e.service_date>range.last||cents(e.amount)===null)throw Error('費用資料月份或金額無效');
+   issue('expense_treatment',e.driver_id,e.service_date,'expense:'+e.id,'停車交通／零用金列為獨立費用；不自動併入薪資');
+  }
+  return {version:1491,month,summaries,lines,issues,expenses,dates:finalized.dates};
+ }
+ function csv(rows){return '\ufeff'+rows.map(row=>row.map(value=>{const raw=String(value??'');const safe=typeof value==='string'&&/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;return '"'+safe.replace(/"/g,'""')+'"';}).join(',')).join('\r\n');}
+ function exportRows(report){
+  const names=new Map(report.summaries.map(x=>[x.driverId,x.name]));
+  const rows=[['月份','資料類型','司機 ID','司機','日期','來源','結案紀錄','計薪項目','數量','費率來源／版本','金額','狀態／待確認事項']];
+  for(const x of report.lines)rows.push([report.month,'明細',x.driverId,names.get(x.driverId)||'',x.date,x.source,x.closeEventId||'',x.kind,x.quantity??'',x.ruleId??'',x.notApplicable?'不適用':x.amount??'待設定',x.status]);
+  for(const x of report.summaries){
+   rows.push([report.month,'應計薪資',x.driverId,x.name,'','','','配送計酬－租車費用＋加給／獎懲','','',x.salary??(x.basicSubtotal===null?'待設定':'待確認'),x.salaryReady?'依已結案紀錄計算':x.issues.map(i=>i.message).join('；')]);
+   if(!x.salaryReady)rows.push([report.month,'已知項目小計',x.driverId,x.name,'','','','','','',x.basicSubtotal??'待設定','尚有缺漏或待確認紀錄，不能當作應計薪資']);
+  }
+  for(const x of report.issues)rows.push([report.month,'待確認',x.driverId,names.get(x.driverId)||'',x.date,x.source,'',x.code,'','','',x.message]);
+  for(const x of report.expenses)rows.push([report.month,'獨立費用',x.driver_id||'',names.get(x.driver_id)||'',x.service_date,'expense:'+x.id,'',x.category,1,'',x.amount,x.description||'']);
+  return rows;
+ }
+ function selectSupplement(rates,component,date){return rates.filter(r=>r.component===component&&r.effective_from<=date).sort((a,b)=>b.effective_from.localeCompare(a.effective_from)||Number(b.id)-Number(a.id))[0]||null;}
+ const api={selectSupplement,build,validate,dates,cents,csv,exportRows,basisLabels,componentLabels};root.PayrollReconciliation1491=api;
+ if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script><script>/* Validate the database-calculated report. Never fall back to stale/client-calculated pay. */
+(function(root){
+ 'use strict';
+ function read(bundle,month){
+  const e=root.PayrollReconciliation1491,p=bundle?.calculation,f=bundle?.finalized;
+  e.validate(f,month);
+  if(!p||p.version!==1415||p.engine!=='database'||p.month!==month||!['summaries','lines','issues','expenses','dates'].every(k=>Array.isArray(p[k])))throw Error('計薪資料不完整，請確認 1.4.15 資料庫版本');
+  const same=(a,b)=>String(a)===String(b),ids=new Set();
+  const moneyKeys=['variable','rentalDeduction','adjustment'];
+  const countKeys=['count','standbyCount','followAlongCount','learningCount','rentalCount','unknownRentalCount'];
+  const fail=()=>{throw Error('計薪結果與結案來源不一致');};
+  for(const x of p.summaries){
+   if(!x.driverId||ids.has(x.driverId)||typeof x.name!=='string'||!Array.isArray(x.issues))fail();ids.add(x.driverId);
+   if(countKeys.some(k=>!Number.isSafeInteger(x[k])||x[k]<0))fail();
+   if([...moneyKeys,'basicSubtotal','salary'].some(k=>x[k]!==null&&(typeof x[k]!=='number'||e.cents(x[k])===null)))fail();
+   const runs=f.deliveries.filter(r=>same(r.driver_id,x.driverId)),duties=f.special_work.filter(r=>same(r.driver_id,x.driverId));
+   const counts=[runs.length,f.standby.filter(r=>same(r.driver_id,x.driverId)&&!r.converted_to_support).length,
+    duties.filter(r=>r.kind==='follow_along').length,duties.filter(r=>r.kind==='learning').length,
+    runs.filter(r=>r.is_rental===true).length,runs.filter(r=>r.is_rental===null||r.is_rental===undefined).length];
+   if(countKeys.some((k,i)=>x[k]!==counts[i]))fail();
+   const complete=moneyKeys.every(k=>x[k]!==null);
+   if(x.knownItemsReady!==complete||(complete?(e.cents(x.basicSubtotal)!==moneyKeys.reduce((n,k)=>n+e.cents(x[k]),0)):x.basicSubtotal!==null))fail();
+   const salaryReady=complete&&x.issues.length===0;
+   if(x.salaryReady!==salaryReady||(salaryReady?e.cents(x.salary)!==e.cents(x.basicSubtotal):x.salary!==null))fail();
+  }
+  for(const group of [f.deliveries,f.standby,f.special_work,f.attendance_records,bundle.adjustments])if(group.some(r=>!ids.has(r.driver_id)))fail();
+  if(p.summaries.some(x=>['baseSalary','standbyPay','followAlongPay','learningPay'].some(k=>Object.hasOwn(x,k)))||p.lines.some(l=>['base','standby','follow_along','learning'].includes(l.kind)))fail();
+  const seen=new Set();
+  for(const l of p.lines){
+   const key=[l.driverId,l.kind,l.source].join('|');
+   if(!ids.has(l.driverId)||seen.has(key)||typeof l.source!=='string'||typeof l.status!=='string'||(l.amount!==null&&(typeof l.amount!=='number'||e.cents(l.amount)===null)))fail();
+   seen.add(key);
+  }
+  if(JSON.stringify(p.dates)!==JSON.stringify(f.dates)||JSON.stringify(p.expenses)!==JSON.stringify(bundle.expenses))fail();
+  return p;
+ }
+ const api={read};root.PayrollServer1412=api;
+ if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script><script>/* Brian-only rental settings. Route pay is maintained on 路線管理. */
+(function(root){
+ 'use strict';let state=null;
+ const engine=()=>root.PayrollReconciliation1491;
+ const amount=n=>n===null||n===undefined?'待設定':Number(n).toLocaleString('zh-TW',{maximumFractionDigits:2});
+ const setState=next=>{state=next;};
+ function open(){
+  if(!state||!finance())return;
+  const selected=state,rates=selected.supplements.filter(r=>r.component==='rental'),revision=Math.max(0,...rates.map(r=>Number(r.id)));
+  const label={rental:'租車費用（扣款／趟）'};
+  const history=rates.slice().sort((a,b)=>b.effective_from.localeCompare(a.effective_from)||b.id-a.id).map(r=>`<tr><td>${esc(label[r.component])}</td><td>${amount(r.amount)}</td><td>${esc(r.effective_from)}</td><td>${esc(r.reason)}</td><td>#${r.id}</td></tr>`).join('');
+  const current=Object.keys(label).map(k=>{const r=engine().selectSupplement(selected.supplements,k,selected.month+'-01');return `${label[k]}：${amount(r?.amount)}`;}).join('；');
+  modal('租車費用設定',`<p class="note">配送趟次計酬使用「路線管理」的地區 × 溫層費率。租車費用適用所有司機，以配送日期選擇生效版本。</p><p>${esc(selected.month)} 月初：${esc(current)}</p>`+
+   field('生效日','supplement-from',selected.month+'-01','date')+
+   field('租車費用（NT$／趟，自薪資扣除）','supplement-rental','','number')+
+   `<p class="note">金額請填正數或 0，系統依已結案租車配送趟數自動扣除。0 表示明確設為零。</p><label for="supplement-reason">變更原因（必填）</label><textarea class="field" id="supplement-reason" maxlength="2000" rows="3"></textarea><p class="note">新設定自生效日起套用，直到下一個生效版本。同日更正採最新版本，歷次紀錄保留；回溯生效日會更新該期間的月報試算。</p><details><summary>查看設定紀錄（${rates.length} 筆）</summary>${wrapTable(['項目','金額','生效日','原因','版本'],history)}</details>`,async()=>{
+    if(!finance())throw Error('僅 Brian 可設定租車費用');
+    const parse=id=>{const raw=chosen(id).trim();if(raw==='')return null;if(!/^\d+$/.test(raw)||!Number.isSafeInteger(Number(raw))||Number(raw)>10000000)throw Error('金額請輸入 0 至 10,000,000 的整數；租車費用會自動扣除');return Number(raw);};
+    const rental=parse('supplement-rental'),date=chosen('supplement-from'),reason=chosen('supplement-reason').trim();
+    if(rental===null)throw Error('請填寫租車費用');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date<'1900-01-01'||date>'9998-12-31')throw Error('請選擇有效生效日');
+    if(!reason||reason.length>2000)throw Error('請填寫 1 至 2000 字的變更原因');
+    const {data,error}=await db.rpc('dashboard_save_rental_rate',{p_effective_from:date,p_amount:rental,p_reason:reason,p_expected_revision:revision});
+    if(error)throw error;if(!data||!Number.isSafeInteger(Number(data.revision)))throw Error('設定回傳不完整，請重新整理確認');
+    if(!await loadMonth())notify('設定已儲存，請重新載入月報。');else notify('租車費用設定已儲存。租車費用已按扣款計算。');
+   });
+  for(const id of ['supplement-rental']){const input=document.querySelector('#'+id);input.min='0';input.max='10000000';input.step='1';}
+ }
+ function detailHTML(id){
+  const x=state?.report.summaries.find(x=>x.driverId===id);if(!x)return '';
+  const lines=state.report.lines.filter(l=>l.driverId===id);
+  const rows=lines.map(l=>`<tr><td class="sticky">${esc(l.date)}</td><td>${esc(l.kind==='per_run'?l.routeCode:engine().componentLabels[l.kind]||l.kind)}</td><td>${esc(l.source)}</td><td>${esc(l.closeEventId||'—')}</td><td>${esc(l.ruleId||'—')}</td><td>${amount(l.amount)}</td></tr>`).join('');
+  return `<section class="pricing-detail"><h3>薪資計算明細</h3><p class="note">配送計酬－租車費用＋加給／獎懲。配送與租車依結案紀錄計算；值班、跟車與學習僅統計出勤；路線費率取自路線管理目前設定。計算結果為目前應計薪資，並非已發薪紀錄。</p>${wrapTable(['配送計酬','租車費用（扣款）','加給／獎懲','應計薪資'],`<tr><td>${amount(x.variable)}</td><td>${amount(x.rentalDeduction)}</td><td>${amount(x.adjustment)}</td><td>${x.salary===null?(x.knownItemsReady?'待確認':'待設定'):amount(x.salary)}</td></tr>`)}${x.salary===null?`<p class="note">已知項目小計：${amount(x.basicSubtotal)}；仍有缺漏或待確認紀錄，不能當作應計薪資。</p>`:''}<details><summary>查看 ${lines.length} 筆計薪依據</summary>${wrapTable(['日期','項目／路線','來源','結案紀錄','費率來源／版本','金額'],rows)}</details><details open><summary>${x.issues.length} 項待確認</summary><ul class="pricing-issues">${x.issues.map(i=>`<li>${esc([i.date,i.source,i.message].filter(Boolean).join(' · '))}</li>`).join('')}</ul></details></section>`;
+ }
+ async function exportCSV(){
+  const selectedMonth=month;if(!await loadMonth()||month!==selectedMonth||!state)return;
+  const text=engine().csv(engine().exportRows(state.report));
+  const u=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='計薪對帳_'+selectedMonth+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+ }
+ root.PayrollSettings1491={setState,open,detailHTML,exportCSV};
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script><script>let month=today().slice(0,7),drivers=[],runs=[],routes=[],adjustments=[],supplements=[],standby=[],monthlyDuties=[],reconciliation=null,sortMode="name";
+async function loadPage(){if(!finance()){$('#page').innerHTML='<p class="empty">目前帳號未被授權查看薪資資料。</p>';return}drivers=await rows('profiles','id,display_name,role,active',q=>q.eq('role','driver'));routes=await rows('routes','id,route_code,route_name,temperature_zone,delivery_region_id,active');$('#head-actions').insertAdjacentHTML('afterbegin',`<div class="date-navigation"><button class="btn icon-nav" id="month-prev" aria-label="上個月">‹</button><input class="field" type="month" id="month" value="${month}" aria-label="報表月份"><button class="btn icon-nav" id="month-next" aria-label="下個月">›</button></div><button class="btn" id="supplement-settings">租車費用設定</button><button class="btn" id="export">匯出 CSV</button><button class="btn" id="export-reconciliation">匯出對帳 CSV</button>`);
+$('#page').innerHTML=`<div id="month-panel"><section class="panel report-panel"><div class="panel-heading"><div><h2>司機月度統計</h2><p>由每日出勤彙整趟數、勤務及租車；加給與獎懲在本月報編輯</p></div><div class="report-filters"><label for="sort">姓名順序</label><select class="field" id="sort"><option value="name">姓名順序</option><option value="trips">趟次由高至低</option><option value="adjust">加給由高至低</option></select><input class="field search" id="filter" placeholder="搜尋司機" aria-label="搜尋司機"></div></div><div id="monthly-body"></div></section></div>`;
+$('#month').onchange=e=>{month=e.target.value;loadMonth()};
+const shiftMonth=dir=>{const [y,m]=month.split('-').map(Number);const d=new Date(y,m-1+dir,1);month=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');$('#month').value=month;loadMonth()};
+$('#month-prev').onclick=()=>shiftMonth(-1);$('#month-next').onclick=()=>shiftMonth(1);
+$('#filter').oninput=drawMonth;$('#sort').onchange=e=>{sortMode=e.target.value;drawMonth()};
+$('#export').onclick=exportCSV;
+$('#export-reconciliation').onclick=()=>PayrollSettings1491.exportCSV();
+$('#supplement-settings').onclick=()=>PayrollSettings1491.open();
+await loadMonth()}
+const first=()=>month+'-01',last=()=>{let d=new Date(month+'-01T12:00:00');d.setMonth(d.getMonth()+1);d.setDate(0);return d.toLocaleDateString('en-CA')};
+let monthRequest=0,monthlyReady=false,closedDates=[];
+async function loadMonth(){
+ const request=++monthRequest,selectedMonth=month;
+ monthlyReady=false;$('#export').disabled=true;$('#export-reconciliation').disabled=true;PayrollSettings1491.setState(null);
+ $('#supplement-settings').disabled=true;
+ document.querySelectorAll('#monthly-detail,#monthly-overlay').forEach(el=>el.remove());
+ $('#monthly-body').innerHTML='<p class="note">讀取結案紀錄中…</p>';$('#stats').innerHTML='';
+ try{
+ PayrollReconciliation1491.dates(selectedMonth);
+ const {data:bundle,error}=await db.rpc('dashboard_get_calculated_payroll',{p_month:selectedMonth+'-01'});
+ if(error)throw error;
+ if(!bundle||bundle.version!==1491||bundle.month!==selectedMonth+'-01'||!['route_rates','supplements','adjustments','expenses'].every(k=>Array.isArray(bundle[k])))throw Error('計薪對帳資料不完整，請確認 1.4.9.1 資料庫版本');
+ const nextReport=PayrollServer1412.read(bundle,selectedMonth);
+ if(request!==monthRequest||selectedMonth!==month)return false;
+ runs=bundle.finalized.deliveries;standby=bundle.finalized.standby;monthlyDuties=bundle.finalized.special_work.filter(x=>['follow_along','learning'].includes(x.kind));closedDates=bundle.finalized.dates;
+ adjustments=bundle.adjustments;supplements=bundle.supplements;reconciliation=nextReport;
+ const known=new Set(drivers.map(d=>d.id));for(const row of nextReport.summaries)if(!known.has(row.driverId))drivers.push({id:row.driverId,display_name:row.name,active:false});
+ PayrollSettings1491.setState({month:selectedMonth,drivers,routes,supplements,report:nextReport});monthlyReady=true;
+ drawMonth();return true;
+ }catch(error){if(request!==monthRequest)return false;monthlyReady=false;runs=[];standby=[];monthlyDuties=[];adjustments=[];supplements=[];displayed=[];closedDates=[];reconciliation=null;PayrollSettings1491.setState(null);
+ console.error(error);$('#monthly-body').innerHTML='<p class="empty">無法讀取結案月報，請重新載入。未匯出任何資料。</p>';notify('無法讀取完整月報：'+(error.message||error));return false;
+ }finally{if(request===monthRequest){$('#export').disabled=!monthlyReady;$('#export-reconciliation').disabled=!monthlyReady;$('#supplement-settings').disabled=!monthlyReady;}}
+}
+
+function report(d){
+ const rr=runs.filter(r=>r.driver_id===d.id&&r.finalized===true),adj=adjustments.filter(a=>a.driver_id===d.id);
+ const z={};rr.forEach(r=>{const zone=r.route_temperature_zone||'未設定';z[zone]=(z[zone]||0)+1});
+ // Use the rental value frozen at closing; historical unknown stays unknown.
+ const rental=rr.filter(r=>r.is_rental===true).length;
+ const unknownRental=rr.filter(r=>r.is_rental===null||r.is_rental===undefined).length;
+ const calculated=reconciliation.summaries.find(x=>x.driverId===d.id);
+ const adjustment=calculated?.adjustment??0;
+ return {d,rr,adj,z,rental,unknownRental,adjustment,calculated,standby:calculated?.standbyCount??0,followAlong:calculated?.followAlongCount??0,learning:calculated?.learningCount??0};
+}
+let displayed=[];
+function drawMonth(){if(!monthlyReady)return;const term=($('#filter').value||'').toLowerCase();displayed=drivers.filter(d=>d.display_name.toLowerCase().includes(term)).map(report);if(sortMode==='trips')displayed.sort((a,b)=>b.rr.length-a.rr.length||a.d.display_name.localeCompare(b.d.display_name,'zh-Hant'));else if(sortMode==='adjust')displayed.sort((a,b)=>b.adj.filter(x=>x.category==='allowance').reduce((n,x)=>n+Number(x.amount),0)-a.adj.filter(x=>x.category==='allowance').reduce((n,x)=>n+Number(x.amount),0));else displayed.sort((a,b)=>a.d.display_name.localeCompare(b.d.display_name,'zh-Hant'));const all=displayed.reduce((n,x)=>({trips:n.trips+x.rr.length,standby:n.standby+x.standby,rental:n.rental+x.rental,unknown:n.unknown+x.unknownRental,adjust:n.adjust+x.adjustment}),{trips:0,standby:0,rental:0,unknown:0,adjust:0});
+$('#stats').innerHTML=`<div class="kpi"><small>已結案配送總趟次</small><strong>${fmt(all.trips)}</strong></div><div class="kpi"><small>值班筆數</small><strong>${fmt(all.standby)}</strong></div><div class="kpi"><small>租車趟次</small><strong>${fmt(all.rental)}</strong>${all.unknown?`<small>${all.unknown} 趟租車狀態未確認</small>`:''}</div><div class="kpi"><small>薪資調整淨額</small><strong>${fmt(all.adjust)}</strong></div>`;
+const header=['司機','總趟數','值班','跟車','學習','租車','加給／獎勵','懲處','應計薪資'];const body=displayed.map(x=>`<tr><td class="sticky"><button class="rowlink" data-person="${x.d.id}">${esc(x.d.display_name)}</button></td><td>${x.rr.length}</td><td>${x.standby}</td><td>${x.followAlong}</td><td>${x.learning}</td><td>${x.rental}</td><td>${fmt(x.adj.filter(a=>a.category==='allowance').reduce((n,a)=>n+Number(a.amount),0))}</td><td>${fmt(x.adj.filter(a=>a.category!=='allowance').reduce((n,a)=>n+Number(a.amount),0))}</td><td${x.calculated?.salary==null?' class="muted"':''}>${x.calculated?.salary==null?(x.calculated?.knownItemsReady?'待確認':'待設定'):fmt(x.calculated.salary)}</td></tr>`).join('');$('#monthly-body').innerHTML=wrapTable(header,body)+`<p class="note">僅計入「結案」保存的配送紀錄（含有效加趟）；重新開啟的日期暫不計入，重新結案後更新。租車依結案快照，未知值不算租車。本月已納入 ${closedDates.filter(d=>d.status==='finalized').length} 個結案日期；${closedDates.filter(d=>d.status==='reopened').length} 個日期已重新開啟。路線計酬取自「路線管理」目前費率；值班、跟車及學習欄顯示已結案筆數，僅統計出勤，不計算勤務費用；租車費用扣款。點選司機查看各項金額及待確認事項。應計薪資＝配送計酬－租車費用＋加給／獎懲。缺少配送或租車費率，或仍有待確認紀錄時，請點選司機查看原因。</p>`;
+ document.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>detail(b.dataset.person))}
+function detail(id){
+ const x=displayed.find(x=>x.d.id===id);if(!x)return;
+ const overlay=document.createElement('div');overlay.className='monthly-detail-overlay open';overlay.id='monthly-overlay';overlay.setAttribute('aria-hidden','true');
+ const detail=document.createElement('aside');detail.className='monthly-detail open';detail.id='monthly-detail';detail.setAttribute('role','dialog');detail.setAttribute('aria-modal','true');detail.setAttribute('aria-label',x.d.display_name+' 月度薪資明細');
+ const adjustments=x.adj.map(a=>`<tr><td>${esc(a.service_date)}</td><td>${a.category==='deduction'?'懲處':a.category==='allowance'?'加給／獎勵':'調整'}</td><td>${esc(a.reason)}</td><td>${fmt(a.amount)}</td><td><button class="rowlink" data-adj="${a.id}">編輯</button></td></tr>`).join('');
+ const dutyRows=monthlyDuties.filter(w=>w.driver_id===id).slice().sort((a,b)=>a.service_date.localeCompare(b.service_date)).map(w=>`<tr><td>${esc(w.service_date)}</td><td>${w.kind==='follow_along'?'跟車':'學習'}</td><td>${esc(w.note||'—')}</td><td>${esc(w.id)}</td></tr>`).join('');
+ const dayRows=x.rr.slice().sort((a,b)=>a.service_date.localeCompare(b.service_date)).map(r=>{
+ return `<tr><td>${esc(r.service_date)}</td><td>${esc(r.route_code_snapshot||'未保存（#'+r.route_id+'）')}</td><td>${r.is_rental===true?'租車':r.is_rental===false?'非租車':'未確認'}</td></tr>`;
+}).join('');
+detail.innerHTML=`<div class="monthly-detail-header"><div><div class="eyebrow">${esc(month)} / 月度出勤</div><h2>${esc(x.d.display_name)}</h2></div><button class="icon-close" type="button" id="close-detail" aria-label="關閉明細">×</button></div><div class="monthly-detail-body"><div class="drawer-stat-grid"><div class="kpi"><small>配送總趟次</small><strong>${x.rr.length}</strong></div><div class="kpi"><small>值班筆數</small><strong>${x.standby}</strong></div><div class="kpi"><small>租車趟次</small><strong>${x.rental}</strong>${x.unknownRental?`<small>${x.unknownRental} 趟未確認</small>`:''}</div><div class="kpi"><small>薪資調整淨額</small><strong>${fmt(x.adjustment)}</strong></div></div><div class="subtabs drawer-tabs"><button type="button" class="on" id="detail-salary">薪資明細</button><button type="button" id="detail-daily">每日出勤</button></div><section id="detail-salary-panel">${PayrollSettings1491.detailHTML(x.d.id)}<div class="panel-title" style="padding:12px 0">薪資加給與獎懲</div><div class="tools"><button class="btn primary" id="newAdj">＋ 新增加給／獎懲</button></div>${wrapTable(['日期','類型','事由','金額','操作'],adjustments)}<p class="note">懲處以負數入帳。地區或職務相關加給可登記於此；值班、跟車及學習僅保留出勤紀錄。</p></section><section id="detail-daily-panel" hidden><div class="panel-title" style="padding:12px 0">本月已結案配送</div>${wrapTable(['日期','路線編號','租車'],dayRows)}<div class="panel-title" style="padding:12px 0">本月已結案跟車／學習（每筆各計一次）</div>${wrapTable(['日期','勤務','備註','來源'],dutyRows)}<p class="note">僅顯示結案快照。修改請由調度員填寫原因重新開啟日期，修改後再結案。</p></section></div>`;
+const salary=detail.querySelector('#detail-salary'),daily=detail.querySelector('#detail-daily');
+salary.onclick=()=>{salary.classList.add('on');daily.classList.remove('on');detail.querySelector('#detail-salary-panel').hidden=false;detail.querySelector('#detail-daily-panel').hidden=true};
+daily.onclick=()=>{daily.classList.add('on');salary.classList.remove('on');detail.querySelector('#detail-daily-panel').hidden=false;detail.querySelector('#detail-salary-panel').hidden=true};
+
+ document.querySelectorAll('#monthly-detail,#monthly-overlay').forEach(el=>el.remove());
+ document.body.append(overlay,detail);
+ const close=()=>{overlay.remove();detail.remove()};
+ overlay.onclick=close;detail.querySelector('#close-detail').onclick=close;
+ detail.querySelector('#newAdj').onclick=()=>editAdj(x);
+ detail.querySelectorAll('[data-adj]').forEach(b=>b.onclick=()=>editAdj(x,x.adj.find(a=>a.id==b.dataset.adj)));
+}
+
+function editAdj(x,a){const amount=Math.abs(Number(a?.amount||0));const category=a?.category==='deduction'?'deduction':'allowance';modal(a?'編輯薪資調整':'新增薪資加給或獎懲',`<label>類型</label><select class="field" id="adjcat">${option('allowance','薪資加給／獎勵',category)}${option('deduction','懲處（自動扣薪）',category)}</select>${field('日期','adjdate',a?.service_date||last(),'date')}${field('金額（NT$，請輸入正數）','adjamount',amount||'','number')}<div class="note" id="adj-help">選擇懲處時由系統自動扣除，不需要負號。</div>${field('事由','adjreason',a?.reason||'')}`,async()=>{const n=Number(chosen('adjamount'));if(!Number.isSafeInteger(n)||n<=0||n>10000000)throw Error('金額請輸入 1 至 10,000,000 的正整數');if(!chosen('adjreason').trim())throw Error('請填寫原因');if(!chosen('adjdate').startsWith(month))throw Error('請選擇目前報表月份內的日期');const c=chosen('adjcat');const payload={driver_id:x.d.id,service_date:chosen('adjdate'),category:c,amount:c==='deduction'?-n:n,reason:chosen('adjreason').trim(),recorded_by:currentUser.id};await save('payroll_adjustments',payload,a?{id:a.id}:null);await loadMonth();detail(x.d.id)})}
+async function exportCSV(){
+ const exportMonth=month;if(!await loadMonth()||month!==exportMonth||!monthlyReady)return;
+ const zoneColumns=[...new Set(displayed.flatMap(x=>Object.keys(x.z)))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+ const header=['月份','司機','已結案總趟次',...zoneColumns.map(z=>`${z}趟次`),'值班筆數','跟車筆數','學習筆數','租車趟次','租車未確認趟次','薪資加給／獎勵','懲處','加給／獎懲淨額','配送計酬','租車費用（扣款）','應計薪資','待確認事項'];
+ const body=displayed.map(x=>[month,x.d.display_name,x.rr.length,...zoneColumns.map(z=>x.z[z]||0),x.standby,x.followAlong,x.learning,x.rental,x.unknownRental,
+  x.adj.filter(a=>a.category==='allowance').reduce((n,a)=>n+Number(a.amount),0),
+  x.adj.filter(a=>a.category==='deduction').reduce((n,a)=>n+Number(a.amount),0),x.adjustment,x.calculated.variable??'待設定',x.calculated.rentalDeduction??'待設定',x.calculated.salary??(x.calculated.knownItemsReady?'待確認':'待設定'),x.calculated.issues.map(i=>i.message).join('；')]);
+ const quote=value=>{const raw=String(value??'');const safe=typeof value==='string'&&/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;return '"'+safe.replace(/"/g,'""')+'"'};
+ const csv=[header,...body].map(row=>row.map(quote).join(',')).join('\r\n');
+ const u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+ const a=document.createElement('a');a.href=u;a.download='月度出勤_'+month+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+</script></body></html>

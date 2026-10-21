@@ -1,0 +1,5 @@
+body:not([data-finance-access="allowed"]) a[href="ui-monthly.html"],
+body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!important}
+body[data-finance-access="denied"] .mobilebar,
+body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
+body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
