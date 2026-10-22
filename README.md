@@ -42,16 +42,18 @@ Open `http://localhost:8080/` for the login page. Sign in with an existing activ
 | `tests/` | Isolated synthetic tests; `increment_1415/` is the current contract |
 | `examples/offline-1.4.15/` | Fictional, network-disabled demonstration generated from the app |
 | `docs/` | Current architecture, deployment and database instructions; historical handoffs |
-| `.github/workflows/verify.yml` | Build and regression checks plus downloadable application artifact |
-| `.openai/hosting.json` | Registered private Sites project and static output directory |
+| `.github/workflows/verify.yml` | Build, regression checks, and GitHub Pages deployment from `main` |
+| `.openai/hosting.json` | Earlier private Sites preview configuration |
 | `dist/` | Generated deployable application, ignored by Git |
 
 ## Deployment
 
 Build with `npm run build`; publish **only `dist/`**. This prevents SQL, documentation, tests and schema definitions from becoming web assets. The login page is `/` (`index.html`). Retain ordinary `.html` routes; do not use an SPA rewrite for every missing path.
 
-The deployed host is a private Sites project, `appgprj_6ad8d1520fa081918fc641a01198c53c`. Its login address is https://brian-logistics-operations.sunlitlake65.chatgpt.site. Native deployment status is authoritative for whether it is live. Owner-private hosting adds a ChatGPT access check before the existing Supabase application login. Sharing with Brian or drivers requires a separately agreed hosting audience.
+The selected deployment destination is **GitHub Pages**, with login address https://kkchinchilla.github.io/brian-logistics-operations/. The repository administrator must first set **Settings → Pages → Source → GitHub Actions**. A successful `deploy` job publishes the tested build; the expected address is not live until that job succeeds. Every subsequent push to `main` runs the checks and deploys only after they pass. Pull requests run checks without deploying.
 
-Source repository: [kkchinchilla/brian-logistics-operations](https://github.com/kkchinchilla/brian-logistics-operations). Public source publication was approved by the owner. This is separate from the existing `dispatch-system` repository. GitHub CI validates and packages the app; it does not automatically publish to Sites. Public source visibility does not change the private hosting audience or Supabase account permissions.
+Source repository: [kkchinchilla/brian-logistics-operations](https://github.com/kkchinchilla/brian-logistics-operations). Public source and GitHub Pages publication were approved by the owner. The public login page uses the existing Supabase account authentication and database permissions. GitHub Pages does not require visitors to sign in to GitHub or ChatGPT. The separate `dispatch-system` repository is unchanged.
+
+The earlier owner-private Sites preview remains at https://brian-logistics-operations.sunlitlake65.chatgpt.site. It is not updated by the GitHub Pages workflow.
 
 Read [architecture](docs/ARCHITECTURE.md), [database setup](docs/DATABASE.md), and [deployment](docs/DEPLOYMENT.md). Current decisions override all historical documents.

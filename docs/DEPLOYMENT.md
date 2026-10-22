@@ -4,25 +4,38 @@
 
 - Accepted application: Increment 1.4.15.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
-- Host identity: `.openai/hosting.json`; retain this project ID on subsequent deployments.
-- Access: private to the Site owner, followed by Supabase email/password authentication.
+- Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
+- Access: public login page, followed by existing Supabase email/password authentication and database permissions.
 - Public source repository: `kkchinchilla/brian-logistics-operations`, approved by the owner. The separate `kkchinchilla/dispatch-system` repository is unchanged.
-- Login URL: https://brian-logistics-operations.sunlitlake65.chatgpt.site (private Site audience).
+- GitHub Pages login URL: https://kkchinchilla.github.io/brian-logistics-operations/ (live after the first successful `deploy` job).
+
+## One-time GitHub Pages setup
+
+1. Open https://github.com/kkchinchilla/brian-logistics-operations/settings/pages as a repository administrator.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**. The deployment workflow is already included; no additional starter workflow is needed.
+3. Open **Actions → Verify and deploy accepted application**. If a deployment failed before Pages was enabled, rerun the failed jobs. Otherwise run the workflow on `main`.
+4. Wait for the `verify` and `deploy` jobs to succeed. The deployment environment reports the live URL.
+
+Enabling Pages is a repository administration operation. The workflow uses only the standard `GITHUB_TOKEN` with `pages: write` and `id-token: write` for deployment; it cannot enable Pages on a repository that has not been configured yet. No personal access token is required for normal deployments.
 
 ## Release procedure
 
 1. Start from the source checkout, install the locked dependencies with `npm ci`.
 2. Run `npm run build`, `npm run check`, `npm test`, and `npm run test:schema`. Use `npm run test:demo` when touching demonstrations/fixtures.
 3. Review the application changes and generated `dist/`. Never put service-role credentials or real exported company records in the source or static output.
-4. Commit the source. For Sites, obtain a short-lived source credential for the persisted project, then use the Sites source helper to commit/push, build and package that exact source.
-5. Publish the matching archive and commit through the native Sites operation for the current audience. Poll nonterminal deployments and retain the returned live URL.
+4. Commit and push the source to `main`. GitHub Actions installs the locked dependencies, builds `dist/`, and runs application, schema and demonstration checks in an isolated runner.
+5. After verification succeeds, the workflow uploads only `dist/` and deploys that same artifact to GitHub Pages. Check the `deploy` job and its environment URL. Deployments are serialized and pull requests cannot publish.
 6. Check the login form, loaded script assets and signed-out dashboard redirect. A complete signed-in user acceptance test requires a legitimate application account; do not create test users or write attendance simply to test a deployment.
 
-GitHub's included workflow runs isolated tests and creates a `dist` artifact. It has read-only repository permissions and does not run SQL against Supabase. Sites hosting is an explicit release step; no automatic GitHub-to-Sites deployment has been configured.
+The verification job has read-only repository permissions. The deployment job has only Pages and identity-token write permissions. Neither job runs SQL against the live Supabase project. Browser assets and navigation use relative paths so that the app works under `/brian-logistics-operations/`.
+
+## Earlier Sites preview
+
+The owner-private preview at https://brian-logistics-operations.sunlitlake65.chatgpt.site uses the persisted project in `.openai/hosting.json`. It has a separate release process and is not updated by this workflow. GitHub Pages is the requested destination for ongoing deployment.
 
 ## Rollback
 
-Use a previous saved Site version only if it matches the current database contract. The 1.4.14 client rejects the 1.4.15 calculation response and is not a safe frontend-only rollback. Use a forward correction or a compatible 1.4.15 source commit. Do not rerun historical SQL to roll back a frontend deployment.
+Revert the relevant source change on `main` and allow the workflow to deploy the compatible build. The 1.4.14 client rejects the 1.4.15 calculation response and is not a safe frontend-only rollback. Use a forward correction or a compatible 1.4.15 source commit. Do not rerun historical SQL to roll back a frontend deployment.
 
 ## Verification for this packaging
 
