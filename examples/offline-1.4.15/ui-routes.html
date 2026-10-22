@@ -129,6 +129,14 @@ body[data-dashboard="routes"] .route-view{min-width:0}
  body[data-dashboard="routes"] .stat{min-height:82px}
 }
 @media(max-width:360px){body[data-dashboard="routes"] .page-header{padding-inline:12px}body[data-dashboard="routes"] .workspace{padding-inline:10px}}
+/* Rates stay hidden until the server confirms the finance-owner capability. */
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) [data-route-finance]{display:none!important}
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+body[data-dashboard="routes"] .routes-table{min-width:620px}
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .routes-table{min-width:480px}
+body[data-dashboard="routes"] .routes-table th:last-child,
+body[data-dashboard="routes"] .routes-table td:last-child{width:38px;min-width:38px;text-align:center}
+@media(max-width:480px){body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .stat{padding:12px 9px}body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .stat-label{font-size:11px}}
 </style><style>/* UI/UX 對版 v2 — based on four finalized standalone prototypes.
   Presentation only; formal dashboard JS retains Supabase queries and policies. */
 :root{--yellow:#ffda36;--fg:#f5f5f3}
@@ -416,19 +424,19 @@ body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:non
     <aside class="nav route-side" aria-label="主選單"><div class="brand"><span class="brand-icon" aria-hidden="true">↗</span><span>物流調度<small>DISPATCH / 管理後台</small></span></div>
       <nav class="sidelinks" aria-label="Dashboard 導覽"><a href="ui-attendance.html">每日出勤</a><a href="ui-routes.html" class="active" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="route-side-logout" id="route-logout" type="button">登出</button>
     </aside>
-    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><h1>路線管理</h1><p>編輯路線資訊，依配送地區與溫層自動計算路線費用。</p></div><div class="header-actions"><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
-      <div class="workspace"><div id="route-status" class="route-status" role="status" aria-live="polite"></div><section class="summary" aria-label="路線統計"><div class="stat"><span class="stat-label">啟用路線</span><strong class="stat-value" id="stat-routes">—</strong></div><div class="stat"><span class="stat-label">配送地區</span><strong class="stat-value" id="stat-regions">—</strong></div><div class="stat"><span class="stat-label">配送溫層</span><strong class="stat-value" id="stat-zones">—</strong></div><div class="stat"><span class="stat-label">平均每趟費用</span><strong class="stat-value yellow" id="stat-avg">—</strong></div></section>
-      <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">所有路線的地區、溫層與費用一目了然</div></div><div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab">費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div></div>
-      <div id="route-view"><div class="toolbar"><label class="search"><svg><use href="#i-search"></use></svg><input id="route-search" placeholder="搜尋路線名稱、編號…" autocomplete="off" aria-label="搜尋路線"></label><select class="filter" id="filter-region" aria-label="篩選地區"></select><select class="filter" id="filter-zone" aria-label="篩選溫層"></select></div><div class="table-scroll" id="table-scroll"><table class="routes-table"><thead><tr><th>路線名稱 / 編號</th><th>配送地區</th><th>溫層</th><th>路線費用／趟</th><th>固定時段</th><th>　</th></tr></thead><tbody id="routes-body"></tbody></table></div><div class="table-footer"><span id="result-count">—</span><span>點選路線進行編輯</span></div></div>
-      <div id="rate-view" class="hide"><div class="tariff-panel"><p class="tariff-intro">依「配送地區 × 溫層」決定每趟配送費用；月度報表使用此費率計算已結案趟次的司機計酬。</p><div class="tariff-actions"><button type="button" class="quiet-btn" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增地區</button><button type="button" class="quiet-btn" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增溫層</button></div><div class="tariff-scroller"><table class="tariff-table"><thead id="rates-head"></thead><tbody id="rates-body"></tbody></table></div><p class="tariff-hint">費率同時作為月報趟次計酬來源；新增地區或溫層後，新組合顯示「待設定」。</p></div></div>
+    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><h1>路線管理</h1><p>管理路線編號、名稱、配送地區與溫層。</p></div><div class="header-actions"><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
+      <div class="workspace"><div id="route-status" class="route-status" role="status" aria-live="polite"></div><section class="summary" aria-label="路線統計"><div class="stat"><span class="stat-label">啟用路線</span><strong class="stat-value" id="stat-routes">—</strong></div><div class="stat"><span class="stat-label">配送地區</span><strong class="stat-value" id="stat-regions">—</strong></div><div class="stat"><span class="stat-label">配送溫層</span><strong class="stat-value" id="stat-zones">—</strong></div><div class="stat" data-route-finance><span class="stat-label">平均每趟費用</span><strong class="stat-value yellow" id="stat-avg">—</strong></div></section>
+      <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">查看路線編號、配送地區與溫層</div></div><div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab" data-route-finance>費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div></div>
+      <div id="route-view"><div class="toolbar"><label class="search"><svg><use href="#i-search"></use></svg><input id="route-search" placeholder="搜尋路線名稱、編號…" autocomplete="off" aria-label="搜尋路線"></label><select class="filter" id="filter-region" aria-label="篩選地區"></select><select class="filter" id="filter-zone" aria-label="篩選溫層"></select></div><div class="table-scroll" id="table-scroll"><table class="routes-table"><thead><tr><th>路線名稱 / 編號</th><th>配送地區</th><th>溫層</th><th data-route-finance>路線費用／趟</th><th>　</th></tr></thead><tbody id="routes-body"></tbody></table></div><div class="table-footer"><span id="result-count">—</span><span>點選路線進行編輯</span></div></div>
+      <div id="rate-view" class="hide" data-route-finance><div class="tariff-panel"><p class="tariff-intro">依「配送地區 × 溫層」決定每趟配送費用；月度報表使用此費率計算已結案趟次的司機計酬。</p><div class="tariff-actions"><button type="button" class="quiet-btn" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增地區</button><button type="button" class="quiet-btn" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增溫層</button></div><div class="tariff-scroller"><table class="tariff-table"><thead id="rates-head"></thead><tbody id="rates-body"></tbody></table></div><p class="tariff-hint">費率同時作為月報趟次計酬來源；新增地區或溫層後，新組合顯示「待設定」。</p></div></div>
       <div id="manage-view" class="hide"><div class="catalog-intro">自由新增配送地區與溫層。新增的名稱會立即出現在路線編輯與費率表中；新組合的費率需另外設定。</div><div class="catalog-grid"><section class="catalog-card"><div class="catalog-top"><div><h3>配送地區</h3><p id="region-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="region-list" class="catalog-list"></div></section><section class="catalog-card"><div class="catalog-top"><div><h3>配送溫層</h3><p id="zone-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="zone-list" class="catalog-list"></div></section></div></div>
-      </section><div class="table-note">費用由地區與溫層組合帶入，不是每條路線各自輸入。正式開發時，原有路線固定時段及歷史派車紀錄保留。</div>
+      </section><div class="table-note">新增或編輯路線後，即可在每日出勤表選用。</div>
       </div>
     </main>
     <nav class="mobile-navbar" aria-label="行動版導覽"><a href="ui-attendance.html">每日出勤</a><a class="active" href="ui-routes.html" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav>
     <div class="overlay" id="overlay"></div><aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true"><div class="drawer-top"><div><div class="drawer-kicker" id="drawer-kicker">路線資料</div><h2 id="drawer-title">編輯路線</h2></div><button class="icon-btn" id="dismiss" title="關閉" aria-label="關閉"><svg><use href="#i-x"></use></svg></button></div>
-      <form class="drawer-form" id="route-form"><div class="field"><label for="f-code">路線編號</label><input id="f-code" maxlength="50" disabled><div class="field-tip">編號用於識別路線，編輯時不可修改。</div></div><div class="field"><label for="f-name">路線名稱</label><input id="f-name" maxlength="60" placeholder="例如 全家台北早班 A 線" required></div><div class="field-grid"><div class="field"><div class="field-head"><label for="f-region">配送地區</label><button class="field-add" data-create-kind="region" data-origin="route" type="button">＋新增</button></div><select id="f-region" required></select></div><div class="field"><div class="field-head"><label for="f-zone">配送溫層</label><button class="field-add" data-create-kind="zone" data-origin="route" type="button">＋新增</button></div><select id="f-zone" required></select></div></div><div class="preview-cost"><div><span class="small">配送費用／趟</span><strong id="fee-preview">NT$ —</strong></div><div class="cost-meta" id="fee-caption">依地區 × 溫層<br>自動帶入</div></div><div class="field-grid" id="fixed-time-field"><div class="field"><label for="f-start">固定開始時間</label><input id="f-start" type="time" required></div><div class="field"><label for="f-end">固定結束時間</label><input id="f-end" type="time" required></div></div><div class="divider"></div><div class="drawer-note">更改地區或溫層會更新這條路線的配送費用。當期費率與歷史派車資料分開保存；既有派車快照不會由此畫面改寫。</div><div class="error" id="form-error" role="alert"></div><div class="drawer-actions"><button class="ghost" id="cancel-form" type="button">取消</button><button class="primary" id="save-form" type="submit">儲存變更</button></div><button id="toggle-active" class="link-danger" type="button">停用此路線</button></form>
-    </aside><section class="rate-modal" id="rate-modal" role="dialog" aria-modal="true" aria-labelledby="rate-modal-title" aria-hidden="true"><h3 id="rate-modal-title">修改配送費率</h3><p id="rate-modal-desc"></p><form id="rate-form"><label for="rate-amount">路線費用／趟 (NT$)</label><input id="rate-amount" type="number" inputmode="numeric" min="0" max="10000000" step="1" required><div class="error" id="rate-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="rate-cancel">取消</button><button class="primary" type="submit">儲存費率</button></div></form></section><section class="rate-modal entity-modal" id="entity-modal" role="dialog" aria-modal="true" aria-labelledby="entity-modal-title" aria-hidden="true"><h3 id="entity-modal-title">新增配送地區</h3><p id="entity-modal-desc">新增後可在路線與費率表中使用。</p><form id="entity-form"><label for="entity-name" id="entity-label">配送地區名稱</label><input id="entity-name" type="text" maxlength="30" autocomplete="off" placeholder="請輸入名稱" required><div class="error" id="entity-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="entity-cancel">取消</button><button class="primary" type="submit" id="entity-submit">新增</button></div></form></section><div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <form class="drawer-form" id="route-form"><div class="field"><label for="f-code">路線編號</label><input id="f-code" maxlength="50" disabled><div class="field-tip">編號用於識別路線，編輯時不可修改。</div></div><div class="field"><label for="f-name">路線名稱</label><input id="f-name" maxlength="60" placeholder="例如 全家台北早班 A 線" required></div><div class="field-grid"><div class="field"><div class="field-head"><label for="f-region">配送地區</label><button class="field-add" data-create-kind="region" data-origin="route" type="button">＋新增</button></div><select id="f-region" required></select></div><div class="field"><div class="field-head"><label for="f-zone">配送溫層</label><button class="field-add" data-create-kind="zone" data-origin="route" type="button">＋新增</button></div><select id="f-zone" required></select></div></div><div class="error" id="form-error" role="alert"></div><div class="drawer-actions"><button class="ghost" id="cancel-form" type="button">取消</button><button class="primary" id="save-form" type="submit">儲存變更</button></div><button id="toggle-active" class="link-danger" type="button">停用此路線</button></form>
+    </aside><section class="rate-modal" id="rate-modal" data-route-finance role="dialog" aria-modal="true" aria-labelledby="rate-modal-title" aria-hidden="true"><h3 id="rate-modal-title">修改配送費率</h3><p id="rate-modal-desc"></p><form id="rate-form"><label for="rate-amount">路線費用／趟 (NT$)</label><input id="rate-amount" type="number" inputmode="numeric" min="0" max="10000000" step="1" required><div class="error" id="rate-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="rate-cancel">取消</button><button class="primary" type="submit">儲存費率</button></div></form></section><section class="rate-modal entity-modal" id="entity-modal" role="dialog" aria-modal="true" aria-labelledby="entity-modal-title" aria-hidden="true"><h3 id="entity-modal-title">新增配送地區</h3><p id="entity-modal-desc">新增後可在路線與費率表中使用。</p><form id="entity-form"><label for="entity-name" id="entity-label">配送地區名稱</label><input id="entity-name" type="text" maxlength="30" autocomplete="off" placeholder="請輸入名稱" required><div class="error" id="entity-error" role="alert"></div><div class="drawer-actions"><button type="button" class="ghost" id="entity-cancel">取消</button><button class="primary" type="submit" id="entity-submit">新增</button></div></form></section><div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div></div>
 </div>
 <script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
@@ -772,6 +780,7 @@ let regions=[],zones=[],routes=[],tariffs=[],tab='routes',editing=null,rateEditi
 const rt=id=>regions.find(v=>v.id===Number(id))?.name||'未設定';
 const regionId=name=>regions.find(v=>v.name===name)?.id||null;
 const isEdit=(p)=>p&&p.role==='dispatcher'&&p.active;
+const finance=()=>typeof DashboardAccess146!=='undefined'&&DashboardAccess146.finance();
 const money=v=>v==null?'待設定':'NT$ '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
 const nameKey=v=>String(v??'').normalize('NFKC').trim().replace(/\s+/g,' ');
 const validName=v=>v.length>0&&v.length<=50;
@@ -783,12 +792,12 @@ async function load(){
  const [r,z,t,c]=await Promise.all([
   client.from('delivery_regions').select('id,name').order('name'),
   client.from('delivery_temperature_zones').select('name').order('name'),
-  client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'),
-  client.from('routes').select('id,route_code,route_name,active,temperature_zone,default_start_time,default_end_time,delivery_region_id').order('route_code')
+  finance()?client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'):Promise.resolve({data:[],error:null}),
+  client.from('routes').select('id,route_code,route_name,active,temperature_zone,delivery_region_id').order('route_code')
  ]);
  for(const res of [r,z,t,c])if(res.error)throw res.error;
  regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];
- routes=(c.data||[]).map(x=>({...x,code:x.route_code,name:x.route_name||x.route_code,region:rt(x.delivery_region_id),zone:x.temperature_zone||'',start:(x.default_start_time||'').slice(0,5),end:(x.default_end_time||'').slice(0,5),time:x.default_start_time&&x.default_end_time?`${x.default_start_time.slice(0,5)}–${x.default_end_time.slice(0,5)}`:'—'}));
+ routes=(c.data||[]).map(x=>({...x,code:x.route_code,name:x.route_name||x.route_code,region:rt(x.delivery_region_id),zone:x.temperature_zone||''}));
  buildSelects();render();
 }
 const rate=(region,zone)=>tariffs.find(t=>t.region_id===regionId(region)&&t.zone_name===zone)?.delivery_fee??null;
@@ -803,15 +812,16 @@ function buildSelects(){
  fz.value=zones.includes(filterZone)?filterZone:'';
 }
 function render(){
+ if(tab==='rates'&&!finance())tab='routes';
  const visible=routes.filter(r=>([r.code,r.name,r.region,r.zone].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()))&&(!filterRegion||filterRegion===r.region)&&(!filterZone||filterZone===r.zone));
  $('stat-routes').textContent=routes.filter(x=>x.active).length;
  $('stat-regions').textContent=regions.length;$('stat-zones').textContent=zones.length;
  const prices=routes.filter(x=>x.active).map(x=>rate(x.region,x.zone)).filter(x=>x!==null);
  $('stat-avg').textContent=prices.length?money(prices.reduce((a,b)=>a+Number(b),0)/prices.length):'—';
- $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}<span class="route-code">${esc(r.code)}${r.active?'':' · 已停用'}</span></td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td><td class="cost">${money(rate(r.region,r.zone))}</td><td class="dim">${esc(r.time)}</td><td class="row-arrow">›</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>';
+ $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}<span class="route-code">${esc(r.code)}${r.active?'':' · 已停用'}</span></td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td>${finance()?`<td class="cost">${money(rate(r.region,r.zone))}</td>`:''}<td class="row-arrow">›</td></tr>`).join('')||`<tr><td colspan="${finance()?5:4}" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>`;
  $('result-count').textContent=`顯示 ${visible.length} / ${routes.length} 條路線`;
- $('rates-head').innerHTML=`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`;
- $('rates-body').innerHTML=regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join('');
+ $('rates-head').innerHTML=finance()?`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`:'';
+ $('rates-body').innerHTML=finance()?regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join(''):'';
  $('rates-head').parentElement.style.minWidth=Math.max(510,137*(zones.length+1))+'px';
  for(const [kind,names,target] of [['region',regions.map(r=>r.name),'region-list'],['zone',zones,'zone-list']]){
   $(target).innerHTML=names.map(n=>{const used=routes.filter(r=>r[kind]===n).length;return `<div class="catalog-item"><span class="catalog-name">${esc(n)}</span><span class="catalog-meta">${used} 條路線</span><button class="catalog-control" data-kind="${kind}" data-name="${esc(n)}" data-action="rename" type="button">編輯</button><button class="catalog-control delete" data-kind="${kind}" data-name="${esc(n)}" data-action="remove" type="button">移除</button></div>`}).join('');
@@ -829,25 +839,23 @@ function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id)
  $('f-name').value=row?row.route_name||row.name:'';
  $('f-region').value=row&&regions.some(r=>r.name===row.region)?row.region:'';
  $('f-zone').value=row&&zones.includes(row.zone)?row.zone:'';
- $('f-start').value=row?.start||'';$('f-end').value=row?.end||'';
  $('toggle-active').classList.toggle('hide',!row);$('toggle-active').textContent=row?.active?'停用此路線':'啟用此路線';
- $('save-form').textContent=row?'儲存變更':'建立路線';$('form-error').textContent='';updateFee();openLayer('drawer');
+ $('save-form').textContent=row?'儲存變更':'建立路線';$('form-error').textContent='';openLayer('drawer');
 }
-function updateFee(){const r=$('f-region').value,z=$('f-zone').value;$('fee-preview').textContent=money(rate(r,z));$('fee-caption').textContent=`${r||'未選地區'} · ${z||'未選溫層'}`}
 async function submitRoute(e){e.preventDefault();if(waiting)return;
- const region=$('f-region').value,zone=$('f-zone').value,code=nameKey($('f-code').value).toUpperCase(),name=nameKey($('f-name').value),start=$('f-start').value,end=$('f-end').value;
- if(!code||!name||!regionId(region)||!zone||!start||!end||start===end){$('form-error').textContent='請填寫路線編號、名稱、地區、溫層與不同的固定起迄時間。';return}
- const payload={route_name:name,temperature_zone:zone,delivery_region_id:regionId(region),default_start_time:start,default_end_time:end};
+ const region=$('f-region').value,zone=$('f-zone').value,code=nameKey($('f-code').value).toUpperCase(),name=nameKey($('f-name').value);
+ if(!code||!name||!regionId(region)||!zone){$('form-error').textContent='請填寫路線編號、名稱、配送地區與溫層。';return}
+ const payload={route_name:name,temperature_zone:zone,delivery_region_id:regionId(region)};
  busy(true);
  try{
   const r=editing==='new'?await client.from('routes').insert({...payload,route_code:code,active:true}):await client.from('routes').update(payload).eq('id',editing.id);
   if(r.error)throw r.error;dismiss();await load();notice('路線資料已儲存至 Supabase');
  }catch(err){$('form-error').textContent=`儲存失敗：${errorText(err)}`}finally{busy(false)}
 }
-function openRate(regionIdValue,zone){const region=regions.find(r=>r.id===Number(regionIdValue));if(!region)return;
- rateEditing={region,zone};$('rate-modal-desc').textContent=`${region.name} × ${zone} 的配送費用（非司機薪資）。`;
+function openRate(regionIdValue,zone){if(!finance())return;const region=regions.find(r=>r.id===Number(regionIdValue));if(!region)return;
+ rateEditing={region,zone};$('rate-modal-desc').textContent=`${region.name} × ${zone} 的每趟配送費率。`;
  $('rate-amount').value=rate(region.name,zone)??'';$('rate-error').textContent='';openLayer('rate-modal');}
-async function submitRate(e){e.preventDefault();if(!rateEditing||waiting)return;const s=$('rate-amount').value.trim(),n=Number(s);
+async function submitRate(e){e.preventDefault();if(!finance()||!rateEditing||waiting)return;const s=$('rate-amount').value.trim(),n=Number(s);
  if(!s||!Number.isFinite(n)||n<0||n>10000000){$('rate-error').textContent='請輸入 0 至 10,000,000 的非負金額。';return}
  busy(true);try{const res=await client.from('delivery_region_zone_rates').upsert({region_id:rateEditing.region.id,zone_name:rateEditing.zone,delivery_fee:n},{onConflict:'region_id,zone_name'});if(res.error)throw res.error;dismiss();await load();notice('費率已儲存')}catch(err){$('rate-error').textContent=errorText(err)}finally{busy(false)} }
 function openEntity(kind,old=null,origin='catalog'){entityEditing={kind,old,origin};$('entity-modal-title').textContent=(old?'編輯':'新增')+(kind==='region'?'配送地區':'配送溫層');$('entity-modal-desc').textContent=old?'修改分類名稱，既有路線將同步採用新名稱。':'新分類加入後，新組合費率需另行設定。';$('entity-name').value=old||'';$('entity-label').textContent=kind==='region'?'配送地區名稱':'配送溫層名稱';$('entity-error').textContent='';$('entity-submit').textContent=old?'儲存變更':'新增';openLayer('entity-modal')}
@@ -857,8 +865,7 @@ async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)ret
  const routeDraft=origin==='route' && editing ? {
   id:editing==='new'?null:editing.id,
   code:$('f-code').value,name:$('f-name').value,
-  region:$('f-region').value,zone:$('f-zone').value,
-  start:$('f-start').value,end:$('f-end').value
+  region:$('f-region').value,zone:$('f-zone').value
  }:null;
  if(!validName(name)){$('entity-error').textContent='名稱應為 1–50 個字。';return}
  if((kind==='region'?regions.map(r=>r.name):zones).some(n=>n.toLocaleLowerCase()===name.toLocaleLowerCase()&&n!==old)){$('entity-error').textContent='已經有同名分類。';return}
@@ -874,10 +881,8 @@ async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)ret
   if(routeDraft){
     openRoute(routeDraft.id);
     $('f-code').value=routeDraft.code;$('f-name').value=routeDraft.name;
-    $('f-start').value=routeDraft.start;$('f-end').value=routeDraft.end;
     $('f-region').value=(kind==='region' && (old===routeDraft.region||!old))?name:routeDraft.region;
     $('f-zone').value=(kind==='zone' && (old===routeDraft.zone||!old))?name:routeDraft.zone;
-    updateFee();
   }
   notice(old?'分類名稱已更新':'已新增分類');
  }catch(err){$('entity-error').textContent=errorText(err)}finally{busy(false)} }
@@ -896,7 +901,7 @@ function bind(){
  }
  applyDevice();window.addEventListener('resize',applyDevice,{passive:true});
 
- ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>{tab=t;render()});
+ ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>{if(t==='rates'&&!finance())return;tab=t;render()});
  $('route-search').oninput=e=>{search=e.target.value.trim();render()};
  $('filter-region').onchange=e=>{filterRegion=e.target.value;render()};
  $('filter-zone').onchange=e=>{filterZone=e.target.value;render()};
@@ -910,7 +915,6 @@ function bind(){
  $('entity-form').onsubmit=submitEntity;
  $('routes-body').onclick=e=>{const tr=e.target.closest('tr[data-id]');if(tr)openRoute(tr.dataset.id)};
  $('routes-body').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr[data-id]');if(tr){e.preventDefault();openRoute(tr.dataset.id)}}};
- $('f-region').onchange=updateFee;$('f-zone').onchange=updateFee;
  $('toggle-active').onclick=toggleActive;
 
  document.addEventListener('keydown',e=>{if(e.key==='Escape')dismiss()});
@@ -920,10 +924,10 @@ async function init(){
  const result=await client.auth.getUser();if(result.error||!result.data?.user){location.href='index.html';return}
  const id=result.data.user.id,prof=await client.from('profiles').select('id,role,active,display_name').eq('id',id).single();
  if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
- myProfile=prof.data;bind();await load();
+ myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
  document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';
 }
-init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入正式資料：${errorText(e)}。請先執行資料庫遷移 131_01_route_catalog.sql。`});
+init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入路線資料：${errorText(e)}。請重新整理後再試，或聯絡管理員。`});
 })();
 </script>
 <script>/* Shared viewport management for the four approved interactive prototypes.

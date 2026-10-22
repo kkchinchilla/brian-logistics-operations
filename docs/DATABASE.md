@@ -2,9 +2,9 @@
 
 ## Existing project
 
-The connected Supabase project started from accepted 1.4.15. Increment 1.4.16 adds `20261022034314_increment_1416_preserve_reopened_monthly.sql` to retain confirmed monthly snapshots during reopening. Apply only this new migration to an existing 1.4.15 project; do not replay old migrations. Operational rows and Auth accounts are not included in this repository.
+The connected Supabase project already has the 1.4.16 migration that retains confirmed monthly snapshots during reopening. Increment 1.4.18 adds `20261022110304_increment_1418_optional_route_times_finance_rates.sql` for routes without times and finance-owner rate access. Apply only this new migration to the existing project; do not replay old migrations. Operational rows and Auth accounts are not included in this repository.
 
-`supabase/migrations/` preserves the delivered migration source. Earlier SQL is in `sql/`. Some source timestamps differ from installation timestamps: the 1.4.14 source was installed as `20261021095329`, and 1.4.15 as `20261021131300`. Do not run an indiscriminate `supabase db push` against the existing project; reconcile its installed migration history before introducing future migrations.
+`supabase/migrations/` preserves the delivered migration source. Earlier SQL is in `sql/`. Some source timestamps differ from installation timestamps: 1.4.14 was installed as `20261021095329`, 1.4.15 as `20261021131300`, 1.4.16 as `20261022034735`, and 1.4.18 as `20261022111521`. Do not run an indiscriminate `supabase db push` against the existing project; reconcile its installed migration history before introducing future migrations.
 
 ## Phone login rollout (1.4.17)
 
@@ -16,12 +16,12 @@ No SQL migration is required for phone login. Supabase Auth provider configurati
 
 The only deliberate portability change is `private.dashboard146_finance_owner()`: its return value is NULL in the snapshot, so a fresh project grants nobody finance access by default. The connected project retains its existing binding and was not modified.
 
-`npm run schema:generate` builds `supabase/schema/1.4.15.sql` from the catalog. `npm run test:schema` restores it into an isolated PGlite database using a minimal test-only Auth shim and applies the 1.4.16 migration and verifies the current function and basic access boundaries. The snapshot expects a real Supabase project to supply its managed Auth schema and platform roles. It is not a Supabase platform or data backup.
+`npm run schema:generate` builds `supabase/schema/1.4.15.sql` from the catalog. `npm run test:schema` restores it into an isolated PGlite database using a minimal test-only Auth shim, applies the 1.4.16 and 1.4.18 migrations, and verifies the current functions and basic access boundaries. The snapshot expects a real Supabase project to supply its managed Auth schema and platform roles. It is not a Supabase platform or data backup.
 
 ## A new empty Supabase project
 
-1. Create the project and configure email/password authentication through Supabase. Do not apply this snapshot over existing application tables.
-2. Review and apply `supabase/schema/1.4.15.sql` once as the database administrator. Then apply only `supabase/migrations/20261022034314_increment_1416_preserve_reopened_monthly.sql`. Do not replay the 1.4.15 or earlier migrations on top of the baseline snapshot.
+1. Create the project and configure phone/password authentication through Supabase, following `PHONE_LOGIN.md`. Do not apply this snapshot over existing application tables.
+2. Review and apply `supabase/schema/1.4.15.sql` once as the database administrator. Then apply the 1.4.16 and 1.4.18 migration files in order. Do not replay the 1.4.15 or earlier migrations on top of the baseline snapshot.
 3. Create real accounts using Supabase Auth. Add their matching `profiles` rows with accurate roles and `can_manage_finance=false` initially.
 4. Confirm Brian's actual Auth UUID with the owner. An administrator must bind `private.dashboard146_finance_owner()` to that UUID and grant finance on his active dispatcher profile. This is a privileged setup step; never infer identity from a display name or embed an arbitrary UUID.
 5. Enter approved route/rate/vehicle settings through the application and update browser configuration for the new project. Never import the synthetic test fixture into Supabase.

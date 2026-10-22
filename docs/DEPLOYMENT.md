@@ -2,7 +2,7 @@
 
 ## Current environment
 
-- Current release: Increment 1.4.17 phone/password login, extending accepted 1.4.16. The owner authorized deployment before the remaining accounts receive phone numbers; see `PHONE_LOGIN.md`.
+- Current release: Increment 1.4.18, extending deployed 1.4.17. Routes no longer require times and rates are finance-owner-only; see `INCREMENT_1_4_18.md`. Phone-account provisioning is documented in `PHONE_LOGIN.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
 - Access: public login page, followed by Supabase phone/password authentication and existing database permissions. Accounts need a confirmed phone number before using this login form.

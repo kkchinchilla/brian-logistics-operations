@@ -135,7 +135,7 @@ async function setPlanTab143(tab){
  plan143.draft=clone143(plan143.saved?.rows||[]);plan143.dirty=false;plan143.tab=tab;plan143.error='';
  if(tab==='apply')await loadCalendar143();renderPlan143();
 }
-function routeTime143(id){const r=rt(Number(id));return r?`${r.temperature_zone||'未設定'} · ${(r.default_start_time||'').slice(0,5)}–${(r.default_end_time||'').slice(0,5)}（固定時段）`:'選擇路線後帶入固定時段';}
+function routeTime143(id){const r=rt(Number(id));return r?`溫層：${r.temperature_zone||'未設定'}`:'選擇路線後帶入溫層';}
 function row143(x,i){
  const select=(key,content)=>`<select data-template-field="${key}" data-index="${i}" aria-label="第${i+1}筆${{category:'出勤類別',slot_index:'欄位',route_id:'路線',vehicle_id:'車號'}[key]}">${content}</select>`;
  const bound=FleetBinding144.valid(ownerBindings,plan143.driver,today(),vehicles);

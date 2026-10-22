@@ -18,3 +18,11 @@ body[data-dashboard="routes"] .route-view{min-width:0}
  body[data-dashboard="routes"] .stat{min-height:82px}
 }
 @media(max-width:360px){body[data-dashboard="routes"] .page-header{padding-inline:12px}body[data-dashboard="routes"] .workspace{padding-inline:10px}}
+/* Rates stay hidden until the server confirms the finance-owner capability. */
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) [data-route-finance]{display:none!important}
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+body[data-dashboard="routes"] .routes-table{min-width:620px}
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .routes-table{min-width:480px}
+body[data-dashboard="routes"] .routes-table th:last-child,
+body[data-dashboard="routes"] .routes-table td:last-child{width:38px;min-width:38px;text-align:center}
+@media(max-width:480px){body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .stat{padding:12px 9px}body[data-dashboard="routes"]:not([data-finance-access="allowed"]) .stat-label{font-size:11px}}
