@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Accepted live application: **Increment 1.4.16** (2026-10-22). This branch prepares **1.4.17 phone/password login**; complete [phone account setup](docs/PHONE_LOGIN.md) before merging or deploying.
+Current release: **Increment 1.4.17 — phone/password login** (2026-10-22), extending accepted 1.4.16. The owner authorized deployment with the finance owner's verified phone account ready; the remaining accounts will be configured separately. See [phone account setup and rollout status](docs/PHONE_LOGIN.md).
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
