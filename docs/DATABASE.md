@@ -6,6 +6,10 @@ The connected Supabase project started from accepted 1.4.15. Increment 1.4.16 ad
 
 `supabase/migrations/` preserves the delivered migration source. Earlier SQL is in `sql/`. Some source timestamps differ from installation timestamps: the 1.4.14 source was installed as `20261021095329`, and 1.4.15 as `20261021131300`. Do not run an indiscriminate `supabase db push` against the existing project; reconcile its installed migration history before introducing future migrations.
 
+## Phone login rollout (1.4.17)
+
+No SQL migration is required for phone login. Supabase Auth provider configuration and phone identifiers must be prepared before the phone-only frontend is deployed; see [PHONE_LOGIN.md](PHONE_LOGIN.md). Existing Auth UUIDs and profile associations must be preserved.
+
 ## Complete schema snapshot
 
 `supabase/schema/catalog-1.4.15.json` was read from the existing PostgreSQL catalogs on 2026-10-21. It contains 41 tables, 127 functions, 234 constraints, 38 additional indexes, 81 RLS policies, 100 triggers and explicit object grants. It contains no operational table rows, Auth identities, passwords or secret API keys.

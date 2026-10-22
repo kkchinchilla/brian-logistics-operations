@@ -1,6 +1,6 @@
 {
   "name": "brian-logistics-operations",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "private": true,
   "description": "Logistics attendance, dispatch, fleet and payroll reconciliation",
   "engines": {
@@ -9,10 +9,11 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
-    "test": "node tests/increment_1415/database.mjs && node tests/increment_1415/monthly-integration.cjs && node tests/increment_1415/vehicles.cjs && node tests/increment_1415/exports.cjs && node tests/increment_1416/database.mjs && node tests/increment_1416/monthly-integration.cjs",
+    "test": "node tests/increment_1415/database.mjs && node tests/increment_1415/monthly-integration.cjs && node tests/increment_1415/vehicles.cjs && node tests/increment_1415/exports.cjs && node tests/increment_1416/database.mjs && node tests/increment_1416/monthly-integration.cjs && npm run test:login",
     "test:demo": "python3 tests/increment_1415/build_demo.py && node tests/increment_1415/demo.cjs",
     "schema:generate": "node scripts/schema.mjs",
-    "test:schema": "node scripts/test-schema.mjs"
+    "test:schema": "node scripts/test-schema.mjs",
+    "test:login": "node tests/increment_1417/login.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",

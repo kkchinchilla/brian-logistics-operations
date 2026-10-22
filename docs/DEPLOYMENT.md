@@ -2,10 +2,10 @@
 
 ## Current environment
 
-- Accepted application: Increment 1.4.15.
+- Current release: Increment 1.4.17 phone/password login, extending accepted 1.4.16. The owner authorized deployment before the remaining accounts receive phone numbers; see `PHONE_LOGIN.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
-- Access: public login page, followed by existing Supabase email/password authentication and database permissions.
+- Access: public login page, followed by Supabase phone/password authentication and existing database permissions. Accounts need a confirmed phone number before using this login form.
 - Public source repository: `kkchinchilla/brian-logistics-operations`, approved by the owner. The separate `kkchinchilla/dispatch-system` repository is unchanged.
 - GitHub Pages login URL: https://kkchinchilla.github.io/brian-logistics-operations/ (live after the first successful `deploy` job).
 
