@@ -471,7 +471,7 @@ function closeOrReopen(){
  const editingDate=boardDate,closed=!!closeout?.closed_at;
  const pending=attendanceRequests146.filter(q=>q.status==='pending'&&q.service_date<=editingDate).length;
  modal(closed?'重新開啟 '+editingDate:'結案至 '+editingDate,
-  `<p class="note">${closed?'只重新開啟此日期，原結案紀錄會保留。':`將鎖定 ${esc(editingDate)} 及之前所有尚未結案日期，保留按下結案時的紀錄。之後若需修改，須填寫原因重新開啟。`}</p>`+
+  `<p class="note">${closed?'只重新開啟此日期。月度報表會保留上次結案資料；修改後再次「確認結案」，才會取代報表中的舊資料。':`將鎖定 ${esc(editingDate)} 及之前所有尚未結案日期，保留按下結案時的紀錄。月度報表將以本次資料取代這些日期的上次結案資料，不重複計入。之後若需修改，須填寫原因重新開啟。`}</p>`+
   (!closed&&pending?`<p class="note">有 ${pending} 筆待審變更。結案將保留目前紀錄，這些申請不會套用，重新開啟後須重新送審。</p>`:'')+
   field(closed?'重新開啟原因（必填）':'主管備註','close-note',''),async()=>{
    if(boardDate!==editingDate)throw Error('日期已變更，請重新開啟視窗');

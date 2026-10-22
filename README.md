@@ -1,12 +1,14 @@
 # Brian Logistics Operations
 
-Accepted application: **Increment 1.4.15**, confirmed 2026-10-21.
+Current application: **Increment 1.4.16** (2026-10-22), extending the accepted 1.4.15 payroll contract.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
 **應計薪資 = 配送計酬 − 租車費用 + 加給／獎懲**
 
 底薪 is excluded. 值班、跟車、學習 are attendance records/counts only. Additional rules from 台11508.xls are outside the accepted scope. Company-layout Excel export and frozen paid-month amounts remain future work.
+
+Reopening an attendance date keeps its last confirmed records in monthly reporting. Draft edits remain on the attendance board until the next 「確認結案」 replaces that date’s report contents, including deletions. The monthly report labels dates awaiting reconfirmation. Dates never confirmed remain excluded.
 
 ## Run and build
 
@@ -39,7 +41,7 @@ Open `http://localhost:8080/` for the login page. Sign in with an existing activ
 | `supabase/migrations/` | Original incremental migration source; already installed in the connected project |
 | `supabase/schema/` | Portable schema-only snapshot of the complete accepted structure |
 | `sql/` | Historical changes and read-only verification queries |
-| `tests/` | Isolated synthetic tests; `increment_1415/` is the current contract |
+| `tests/` | Isolated synthetic tests; `increment_1415/` covers payroll; `increment_1416/` covers close/reopen replacement |
 | `examples/offline-1.4.15/` | Fictional, network-disabled demonstration generated from the app |
 | `docs/` | Current architecture, deployment and database instructions; historical handoffs |
 | `.github/workflows/verify.yml` | Build, regression checks, and GitHub Pages deployment from `main` |

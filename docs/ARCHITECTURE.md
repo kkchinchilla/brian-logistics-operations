@@ -9,8 +9,8 @@ Login checks `profiles.active` and routes dispatcher/driver accounts to daily at
 1. Dispatchers maintain drivers, vehicle bindings, routes, temperature zones, delivery areas and rates.
 2. Daily schedules and actual attendance record deliveries, rental use, leave, 值班、跟車、學習.
 3. Driver changes are submitted for dispatcher approval. Revisions prevent stale edits.
-4. Cumulative 結案 preserves final attendance snapshots. Reopening requires a reason; reopened dates leave finalized monthly totals until closed again.
-5. Monthly reporting aggregates finalized attendance. `dashboard_get_calculated_payroll(date)` returns calculation version 1415; the frontend validates and displays that result.
+4. Cumulative 結案 preserves final attendance snapshots. Reopening requires a reason; reopened dates retain their latest confirmed snapshot in monthly totals. Reclosing atomically replaces the entire date, including additions, edits and deletions; prior snapshots remain in the audit history.
+5. Monthly reporting aggregates each date’s latest confirmed attendance. Snapshot `status=finalized` means a saved version is included; separate `attendance_status` and `pending_reclose` fields indicate whether the attendance date is currently open for editing. `dashboard_get_calculated_payroll(date)` returns calculation version 1415; the frontend validates and displays that result.
 6. Brian manages rental rates and signed 加給／獎懲. CSV/legacy Excel export uses the same approved three-component payroll contract.
 
 ## Boundaries

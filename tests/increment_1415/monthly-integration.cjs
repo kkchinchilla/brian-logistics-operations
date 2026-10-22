@@ -25,7 +25,8 @@ function env(){
  };
  return {ctx,el,element,calls,notices,run:s=>vm.runInContext(s,ctx)};
 }
-(async()=>{
+module.exports={env};
+if(require.main===module)(async()=>{
  const e=env();
  for(const [i,kind] of ['follow_along','learning','learning'].entries())e.ctx.bundle.finalized.special_work.push({id:'duty:'+i,driver_id:'a',service_date:'2026-10-15',kind,note:'fictional',finalized:true,close_event_id:1});
  e.ctx.bundle.supplements=[{id:1,component:'follow_along',amount:120,effective_from:'2026-10-01'},{id:2,component:'learning',amount:60,effective_from:'2026-10-01'}];
@@ -44,7 +45,7 @@ function env(){
  ok('both CSVs carry the simplified total without removed amounts',!attendance.includes('跟車費用')&&!attendance.includes('學習費用')&&!attendance.includes('底薪')&&attendance.includes('100')&&pay.includes('應計薪資')&&!pay.includes('不等於應計薪資'));
  ok('exports refetch server authority',e.calls.length===3);
  e.ctx.bundle.finalized.deliveries=[];e.ctx.bundle.finalized.special_work=[];e.ctx.bundle.finalized.dates[0].status='reopened';await e.run('loadMonth()');
- ok('reopening clears attendance and its calculated pay',e.run('displayed[0].followAlong')===0&&e.run('displayed[0].learning')===0&&e.run('reconciliation.summaries[0].basicSubtotal')===0);
+ ok('date without any confirmed snapshot has no attendance or pay',e.run('displayed[0].followAlong')===0&&e.run('displayed[0].learning')===0&&e.run('reconciliation.summaries[0].basicSubtotal')===0);
  e.ctx.fail=true;const before=e.ctx.blobs.length;await e.ctx.PayrollSettings1491.exportCSV();ok('network failure prevents stale payroll exports',e.ctx.blobs.length===before&&e.run('reconciliation')===null&&e.element('#export').disabled);
  const m=env();m.ctx.omitCalculation=true;await m.run('loadMonth()');ok('missing server calculation never falls back to browser pricing',!m.run('monthlyReady')&&m.element('#export-reconciliation').disabled);
  const invalid=env();invalid.ctx.corrupt=b=>{b.calculation.summaries[0].followAlongCount=99};await invalid.run('loadMonth()');ok('inconsistent duty count is rejected',!invalid.run('monthlyReady'));
