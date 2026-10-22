@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Current application: **Increment 1.4.16** (2026-10-22), extending the accepted 1.4.15 payroll contract.
+Accepted live application: **Increment 1.4.16** (2026-10-22). This branch prepares **1.4.17 phone/password login**; complete [phone account setup](docs/PHONE_LOGIN.md) before merging or deploying.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 

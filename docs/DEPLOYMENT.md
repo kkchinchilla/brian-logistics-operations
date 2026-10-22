@@ -2,7 +2,7 @@
 
 ## Current environment
 
-- Accepted application: Increment 1.4.15.
+- Accepted live application: Increment 1.4.16. Proposed 1.4.17 phone login is gated on the account setup in `PHONE_LOGIN.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
 - Access: public login page, followed by existing Supabase email/password authentication and database permissions.
