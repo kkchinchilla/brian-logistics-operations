@@ -1,7 +1,7 @@
 /* Increment 1.4.2: only Daily Attendance empty-slot affordance and undo action. */
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual{color:#92969d;background:transparent;border:1px dashed #4c5055;min-width:34px;font-size:17px;padding:3px 8px;opacity:.85}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:hover,
-body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:#ffda36;border-color:#ffda36;background:#38382c;opacity:1}
+body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:var(--yellow);border-color:var(--yellow);background:#38382c;opacity:1}
 body[data-dashboard="attendance"] .dialog .secondary-action{width:100%;margin-top:19px;border:1px solid #69604d;background:#37332a;color:#f2d99d;white-space:normal}
-body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#ffda36;background:#44402c}
+body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:var(--yellow);background:#44402c}
 @media(max-width:800px){body[data-dashboard="attendance"] .dialog .secondary-action{min-height:44px}}

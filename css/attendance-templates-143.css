@@ -1,6 +1,6 @@
 /* === One-day driver schedule template and selected-date batch apply (Supabase integration from approved P5) === */
-.plan-open{background:#393830;border-color:#70612b;color:#ffe27a}
-.plan-open:hover{background:#46402b;border-color:#ffda36}
+.plan-open{background:#393830;border-color:#70612b;color:var(--yellow)}
+.plan-open:hover{background:#46402b;border-color:var(--yellow)}
 .plan-backdrop{display:none;position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.7)}
 .plan-backdrop.show{display:block}
 .plan-panel{display:none;position:absolute;inset:16px 18px;z-index:21;background:#292c30;border:1px solid #51545a;border-radius:18px;box-shadow:0 22px 75px #000b;flex-direction:column;overflow:hidden;min-width:0}
@@ -14,7 +14,7 @@
 .plan-topbar .plan-ref{color:#92969b;font-size:10px;margin-left:auto}
 .plan-tabs{display:flex;gap:5px;padding:9px 22px 0;border-bottom:1px solid #44474d;overflow-x:auto;flex:none}
 .plan-tabs button{background:transparent;border:0;color:#afb2b8;padding:10px 14px;white-space:nowrap;font-size:12px;font-weight:700;border-bottom:3px solid transparent}
-.plan-tabs button.active{color:#ffda36;border-bottom-color:#ffda36}
+.plan-tabs button.active{color:var(--yellow);border-bottom-color:var(--yellow)}
 .plan-scroll{padding:18px 22px 22px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;scrollbar-color:#666 #292c30}
 .plan-section-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap;margin:0 0 13px}
 .plan-section-head h3{margin:0;font-size:15px;font-weight:730}.plan-section-head p{font-size:11px;color:#a8abb0;margin:5px 0 0;line-height:1.6}
@@ -25,26 +25,26 @@
 .plan-route-row{display:grid;grid-template-columns:minmax(100px,1.15fr) minmax(90px,.85fr) minmax(120px,1fr) minmax(110px,1fr) 34px;align-items:end;gap:8px;background:#23262a;border:1px solid #414449;border-radius:11px;padding:12px}
 .plan-route-row label{font-size:10px;color:#9da1a8;display:flex;flex-direction:column;gap:6px;min-width:0}
 .plan-route-row input,.plan-route-row select{width:100%;min-width:0;background:#191c20;border:1px solid #4d5057;border-radius:8px;padding:9px 8px;color:#f5f5f3;font-size:12px}
-.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid #ffda36}
+.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid var(--yellow)}
 .plan-tiny-remove{height:35px;background:#35383d;border:1px solid #56595f;border-radius:8px;color:#f4d3d3;font-size:20px}
 .plan-foot-actions{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:15px;flex-wrap:wrap}
 .plan-btn{background:#3a3d42;color:#f5f5f4;border:1px solid #55585e;border-radius:9px;font-size:12px;font-weight:700;padding:10px 13px;cursor:pointer}
-.plan-btn:hover{border-color:#f7d23a}
-.plan-btn.primary{background:#ffda36;border-color:#ffda36;color:#18191b}
+.plan-btn:hover{border-color:var(--yellow)}
+.plan-btn.primary{background:var(--yellow);border-color:var(--yellow);color:#18191b}
 .plan-btn.danger{border-color:#815453;color:#f3b8b8}
-.plan-error{font-size:11px;color:#ffe274;margin:8px 0;min-height:13px}
+.plan-error{font-size:11px;color:var(--yellow);margin:8px 0;min-height:13px}
 .plan-success{display:inline-flex;color:#a9d0ab;font-size:11px}
 .plan-apply-grid{display:grid;grid-template-columns:minmax(170px,220px) 1fr;gap:14px;margin-bottom:12px}
 .plan-minicard{background:#23262a;border:1px solid #45484e;border-radius:12px;padding:16px;min-width:0}
 .plan-minicard h4{margin:0 0 9px;font-size:13px}.plan-minicard p{font-size:11px;color:#aeb1b6;line-height:1.65;margin:7px 0}
 .plan-month-picker{background:#191c20;border:1px solid #555960;border-radius:9px;padding:10px 9px;color:#f7f7f5;color-scheme:dark;width:100%;font-size:13px;max-width:210px}
 .plan-reapply{display:flex;align-items:flex-start;gap:8px;color:#b7b9be;font-size:11px;line-height:1.5;margin:14px 0}
-.plan-reapply input{accent-color:#ffda36;margin-top:2px}
+.plan-reapply input{accent-color:var(--yellow);margin-top:2px}
 .plan-apply-preview{max-height:152px;overflow:auto;border-top:1px solid #45484e;margin-top:10px;padding-top:8px;font-size:11px;color:#abb0b5;line-height:1.85}
 .plan-empty{padding:14px;background:#22252a;border:1px dashed #555960;border-radius:9px;color:#aeb2b8;line-height:1.6;font-size:12px}
 /* One route/vehicle/note editor; no pre-schedule/actual tabs. */
 .attendance-edit-help{font-size:11px;line-height:1.6;color:#acafb5;margin-top:11px}
-.plan-month-badge{margin-left:5px;font-size:9px;color:#ffe079;font-weight:550;white-space:nowrap}
+.plan-month-badge{margin-left:5px;font-size:9px;color:var(--yellow);font-weight:550;white-space:nowrap}
 @media(max-width:920px){.plan-route-row{grid-template-columns:repeat(2,minmax(0,1fr)) 34px}.plan-route-row label:nth-child(3){grid-column:1}.plan-route-row label:nth-child(4){grid-column:2}.plan-route-row .plan-tiny-remove{grid-column:3;grid-row:2}}@media(max-width:767px){
 .plan-panel{inset:0;border:0;border-radius:0;max-height:100%}}@media(max-width:767px){
 .plan-header{padding:15px 16px 10px}}@media(max-width:767px){
@@ -66,9 +66,9 @@
 .plan-calendar-head{margin-bottom:7px}.plan-calendar-head span{text-align:center;color:#8f939a;font-size:10px;padding:5px 0}
 .plan-calendar-grid>span{min-height:38px}
 .plan-calendar-day{min-width:0;min-height:38px;border:1px solid #42464b;border-radius:8px;color:#e8e8e5;background:#303338;font-size:12px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
-.plan-calendar-day:hover:not(:disabled){border-color:#ffda36}
-.plan-calendar-day.selected{background:#ffda36;color:#18191b;border-color:#ffda36;font-weight:800}
-.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#ffda36}
+.plan-calendar-day:hover:not(:disabled){border-color:var(--yellow)}
+.plan-calendar-day.selected{background:var(--yellow);color:#18191b;border-color:var(--yellow);font-weight:800}
+.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--yellow)}
 .plan-calendar-day:disabled{background:#26292d;color:#777b81;text-decoration:line-through;border-color:#33363b;cursor:not-allowed}
 .plan-pick-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 3px}
 .plan-pick-actions .plan-btn{font-size:11px;padding:8px 10px}
@@ -82,21 +82,21 @@
 
 /* P4: editable, date-specific leave; preserve the original matrix dimensions. */
 .matrix td .leave-toggle.empty{border:1px dashed #484c51;color:#8d9299}
-.matrix td .leave-toggle.empty:hover{border-color:#ffda36;color:#f5f5f3}
-.matrix td .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:-2px}
+.matrix td .leave-toggle.empty:hover{border-color:var(--yellow);color:#f5f5f3}
+.matrix td .leave-toggle:focus-visible{outline:2px solid var(--yellow);outline-offset:-2px}
 .matrix td button.cell:disabled,.matrix td button.cell:disabled:hover{cursor:not-allowed;border-color:transparent;background:transparent;color:#54575b}
 .matrix td button.cell:not(.empty):disabled{background:#32353a;color:#b3b7bd}
 .dialog.leave-dialog{max-height:calc(100% - 28px);overflow-y:auto;scrollbar-color:#676b70 #292c30}
 .leave-status-options{display:flex;flex-direction:column;gap:9px;margin-top:14px}
 .dialog label.leave-option{display:flex;align-items:center;gap:11px;margin:0;padding:13px 12px;border:1px solid #464a50;border-radius:12px;background:#22252a;cursor:pointer}
-.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:#ffda36}
+.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:var(--yellow)}
 .leave-option strong{display:block;font-size:13px;font-weight:700;color:#f5f5f3}
 .leave-option small{display:block;margin-top:4px;font-size:11px;color:#a5a9b0;line-height:1.5}
-.dialog .leave-option:has(input:checked){border-color:#ffda36}
-.dialog .leave-option:has(input:focus-visible){outline:2px solid #ffda36;outline-offset:2px}
+.dialog .leave-option:has(input:checked){border-color:var(--yellow)}
+.dialog .leave-option:has(input:focus-visible){outline:2px solid var(--yellow);outline-offset:2px}
 .dialog .leave-option:has(input:disabled){opacity:.5;cursor:not-allowed}
 .dialog .leave-help{font-size:11px;color:#afb3ba;line-height:1.65;margin:12px 0 0}
-.dialog .leave-help.is-blocked{color:#ffe174}
+.dialog .leave-help.is-blocked{color:var(--yellow)}
 .plan-calendar-day.is-off:disabled{text-decoration:none;border-style:dashed;flex-direction:column;gap:1px}
 .plan-calendar-day.is-off small{font-size:9px;line-height:1;color:#aaadb3}
 .toast{max-width:calc(100% - 28px);white-space:normal;width:max-content;line-height:1.6;text-align:center}@media(max-width:767px){
@@ -211,11 +211,11 @@
 .plan-route-row .plan-tiny-remove{grid-column:5;grid-row:1}
 .plan-status{font-size:12px;color:#c4c7cd;line-height:1.6;overflow-wrap:anywhere}
 .plan-error,.plan-summary-pill{overflow-wrap:anywhere}
-.plan-panel [aria-selected=true]{color:#ffda36;border-bottom-color:#ffda36}
+.plan-panel [aria-selected=true]{color:var(--yellow);border-bottom-color:var(--yellow)}
 .attendance-matrix .attendance-leave{width:53px;min-width:53px;padding:0 5px}
 .attendance-matrix .leave-toggle{width:100%;min-height:35px;border:1px dashed #484c51;border-radius:7px;background:transparent;color:#b5b9c0;font:inherit;cursor:pointer}
-.attendance-matrix .leave-toggle.is-leave{background:#ffda36;color:#1c1c1e;font-weight:750;border-color:#ffda36}
-.attendance-matrix .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:2px}
+.attendance-matrix .leave-toggle.is-leave{background:var(--yellow);color:#1c1c1e;font-weight:750;border-color:var(--yellow)}
+.attendance-matrix .leave-toggle:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 .attendance-edit-modes{margin-bottom:15px}.attendance-edit-modes button:disabled{opacity:.4;cursor:not-allowed}
 .dialog .leave-option input{min-height:0;height:17px;width:17px}
 .dialog .leave-option{line-height:1.5}.dialog .leave-status-options{margin:12px 0}

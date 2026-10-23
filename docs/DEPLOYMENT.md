@@ -2,7 +2,7 @@
 
 ## Current environment
 
-- Current release: Increment 1.4.21; see `INCREMENT_1_4_21.md`. Brian-only account administration continues to use the existing separately deployed Supabase Edge Function; see `INCREMENT_1_4_19.md`.
+- Current release: Increment 1.4.22; see `INCREMENT_1_4_22.md`. This release changes browser assets only; the 1.4.21 driver read-only database rules remain in place. Brian-only account administration continues to use the existing separately deployed Supabase Edge Function; see `INCREMENT_1_4_19.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
 - Access: public login page, followed by Supabase phone/password authentication and existing database permissions. Accounts need a confirmed phone number before using this login form.

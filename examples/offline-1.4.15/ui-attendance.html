@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant-TW"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>每日出勤 · 趟管家</title><style>/* Production parity system | approved charcoal / white / yellow, no gradients.
    All sizing derives from real viewport, never prototype device toggles. */
-:root{color-scheme:dark;--bg:#17191c;--nav:#1b1d20;--canvas:#202226;--panel:#26292d;--panel2:#303338;--panel3:#373a3f;--line:#3c3f44;--line2:#4b4e53;--fg:#f5f5f2;--secondary:#c3c5c8;--muted:#a1a4a9;--yellow:#ffda36;--ink:#191b1d;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-synthesis:none}
+:root{color-scheme:dark;--bg:#17191c;--nav:#1b1d20;--canvas:#202226;--panel:#26292d;--panel2:#303338;--panel3:#373a3f;--line:#3c3f44;--line2:#4b4e53;--fg:#f5f5f2;--secondary:#c3c5c8;--muted:#a1a4a9;--yellow:var(--brand-yellow,#ffc533);--ink:#191b1d;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-synthesis:none}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;min-width:0;min-height:100%;background:var(--bg);color:var(--fg)}
 body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.45;cursor:not-allowed}a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}[hidden]{display:none!important}
@@ -13,16 +13,16 @@ body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:poin
 .nav-symbol{width:19px;text-align:center;font-size:18px;font-weight:550;line-height:1}.side-bottom{margin-top:auto;border-top:1px solid #383b40;padding:14px 12px 5px;color:#a1a4a9;font-size:11px}.side-logout{width:100%;padding:10px 12px;text-align:left;border:0;background:none;color:#a1a4a9;font-size:12px;border-radius:9px}.side-logout:hover,.side-bottom:hover{color:#fff}
 .main{min-width:0;width:100%;padding:clamp(20px,2.3vw,34px);overflow:hidden}
 .head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:21px}.head h1{font-size:clamp(23px,2.25vw,29px);font-weight:780;letter-spacing:-.045em;margin:0;line-height:1.25}.head p{color:#93979d;font-size:12px;margin:8px 0 0}.eyebrow{color:#9ba0a5;font-size:11px;letter-spacing:.065em;margin-bottom:7px}.account{align-self:center;color:#b7b9bd;font-size:11px;padding:9px 12px;border:1px solid #404349;border-radius:9px;background:#292c31}
-#page{min-width:0}.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:17px 0 16px}.btn{background:var(--panel2);border:1px solid #4b4e53;color:var(--fg);padding:10px 14px;border-radius:10px;min-height:42px;white-space:nowrap;font-size:12px;font-weight:640}.btn:hover{background:#3a3e42}.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:780}.btn.primary:hover{background:#ffe469}
+#page{min-width:0}.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:17px 0 16px}.btn{background:var(--panel2);border:1px solid #4b4e53;color:var(--fg);padding:10px 14px;border-radius:10px;min-height:42px;white-space:nowrap;font-size:12px;font-weight:640}.btn:hover{background:#3a3e42}.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--ink);font-weight:780}.btn.primary:hover{background:var(--yellow-hover,#ffd15c)}
 .field{background:#303338;color:var(--fg);border:1px solid #505358;border-radius:10px;padding:10px 12px;min-height:42px;min-width:0;max-width:100%;font-size:13px}.search{flex:1;min-width:170px;max-width:360px}.field::placeholder{color:#93979c}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.kpis:empty{display:none}.kpi{min-width:0;min-height:95px;padding:16px 17px;background:#292c30;border:1px solid #393c40;border-radius:14px}.kpi small{font-size:11px;color:#a2a6aa}.kpi strong{display:block;font-size:27px;letter-spacing:-.045em;margin-top:10px;font-weight:780;font-variant-numeric:tabular-nums}.kpi:first-child strong{color:var(--yellow)}
-.panel{background:#26292d;border:1px solid #3d4045;border-radius:16px;overflow:hidden;min-width:0;margin:14px 0 0}.panel-title{font-size:16px;font-weight:750;padding:19px 20px 15px;letter-spacing:-.02em}.scroll{max-width:100%;max-height:min(620px,calc(100dvh - 268px));overflow:auto;scrollbar-color:#5c6064 #25282c;scrollbar-width:thin;overscroll-behavior-x:contain}.gridtable{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:12px;font-variant-numeric:tabular-nums;text-align:left}.gridtable th,.gridtable td{border-bottom:1px solid #383b40;padding:13px 14px;white-space:nowrap;text-align:left}.gridtable th{position:sticky;top:0;z-index:3;background:#35383d;color:#bec0c3;font-size:11px;font-weight:640}.gridtable td{background:#26292d}.gridtable tbody tr:nth-child(even) td{background:#2b2e32}.gridtable tbody tr:hover td{background:#35383d}.gridtable .sticky{position:sticky;left:0;z-index:4;background:#303338;box-shadow:1px 0 0 #43464b;font-weight:740}.gridtable tbody tr:nth-child(even) .sticky{background:#32353a}.gridtable tbody tr:hover .sticky{background:#3a3d42}.gridtable th.sticky{background:#383b40;z-index:6}.gridtable .changed{background:#e3c547!important;color:#181a1d;font-weight:780}.gridtable .cell{padding:7px 9px;border-radius:7px;border:1px solid transparent;background:#35383c;color:inherit;min-height:35px;min-width:37px}.gridtable .cell:hover{border-color:var(--yellow)}.gridtable .changed .cell{background:var(--yellow);color:var(--ink)}.gridtable .empty,.empty{padding:28px;color:#a1a4a9;font-size:12px}.gridtable .empty{text-align:center}
+.panel{background:#26292d;border:1px solid #3d4045;border-radius:16px;overflow:hidden;min-width:0;margin:14px 0 0}.panel-title{font-size:16px;font-weight:750;padding:19px 20px 15px;letter-spacing:-.02em}.scroll{max-width:100%;max-height:min(620px,calc(100dvh - 268px));overflow:auto;scrollbar-color:#5c6064 #25282c;scrollbar-width:thin;overscroll-behavior-x:contain}.gridtable{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:12px;font-variant-numeric:tabular-nums;text-align:left}.gridtable th,.gridtable td{border-bottom:1px solid #383b40;padding:13px 14px;white-space:nowrap;text-align:left}.gridtable th{position:sticky;top:0;z-index:3;background:#35383d;color:#bec0c3;font-size:11px;font-weight:640}.gridtable td{background:#26292d}.gridtable tbody tr:nth-child(even) td{background:#2b2e32}.gridtable tbody tr:hover td{background:#35383d}.gridtable .sticky{position:sticky;left:0;z-index:4;background:#303338;box-shadow:1px 0 0 #43464b;font-weight:740}.gridtable tbody tr:nth-child(even) .sticky{background:#32353a}.gridtable tbody tr:hover .sticky{background:#3a3d42}.gridtable th.sticky{background:#383b40;z-index:6}.gridtable .changed{background:var(--yellow)!important;color:#181a1d;font-weight:780}.gridtable .cell{padding:7px 9px;border-radius:7px;border:1px solid transparent;background:#35383c;color:inherit;min-height:35px;min-width:37px}.gridtable .cell:hover{border-color:var(--yellow)}.gridtable .changed .cell{background:var(--yellow);color:var(--ink)}.gridtable .empty,.empty{padding:28px;color:#a1a4a9;font-size:12px}.gridtable .empty{text-align:center}
 .note{font-size:11px;color:#9ea1a5;line-height:1.65;margin:14px 2px}.note.alert{border:1px solid #64593f;background:#353125;padding:12px 14px;border-radius:10px;color:#e9d18d;margin-bottom:14px}.rowlink{border:0;background:none;color:var(--yellow);font-weight:720;font-size:12px;padding:7px 0}.rowlink:hover{text-decoration:underline;text-underline-offset:3px}.tag{font-size:11px;color:#b9bbbf}.footer{border-top:1px solid #3d4045;font-size:11px;color:#a2a4a8;padding:13px 19px}
 /* Attendance: two-level grouped table based on real temperature categories. */
 body[data-dashboard="attendance"] .head{margin-bottom:18px}body[data-dashboard="attendance"] .head p{display:none}
 body[data-dashboard="attendance"] .tools{margin:0 0 16px}body[data-dashboard="attendance"] .tools input[type=date]{width:158px}body[data-dashboard="attendance"] .tools .search{margin-left:auto}
 body[data-dashboard="attendance"] .panel{margin-top:0}body[data-dashboard="attendance"] .scroll{max-height:min(900px,calc(100dvh - 248px))}
-.attendance-matrix{width:max-content;min-width:100%;table-layout:fixed}.attendance-matrix th,.attendance-matrix td{width:69px;min-width:69px;height:51px;padding:0 5px;text-align:center;border-right:1px solid #35383c}.attendance-matrix thead tr.category th{position:sticky;top:0;z-index:5;height:41px;background:#383b40;color:#f0f0ee;border-bottom:1px solid #4a4d51;font-size:12px}.attendance-matrix thead tr.subheading th{position:sticky;top:41px;z-index:5;height:37px;background:#303338;color:#b9babe;font-size:11px}.attendance-matrix thead .sticky{background:#383b40!important;top:0!important;z-index:9!important}.attendance-matrix td.sticky{position:sticky;left:0;width:112px;min-width:112px;padding-left:15px;text-align:left;background:#26292d;z-index:4;color:#f5f4f1;font-weight:750}.attendance-matrix thead .sticky{width:112px;min-width:112px;text-align:left;padding-left:15px}.attendance-matrix tbody tr:nth-child(even) td.sticky{background:#292c30}.attendance-matrix tbody tr.mine td{background:#302e25}.attendance-matrix tbody tr.mine td.sticky{background:#373325;color:#ffdc42;box-shadow:inset 3px 0 0 var(--yellow)}.attendance-matrix td.changed{background:#302e25!important;color:inherit}.attendance-matrix td.changed .cell{background:var(--yellow);color:var(--ink)}.attendance-matrix .group-start{border-left:2px solid #5a5c60}.attendance-matrix td:not(.changed) .cell{background:#35383c}.attendance-matrix td.empty-slot .cell{background:transparent}.attendance-matrix td.empty-slot{color:transparent}
+.attendance-matrix{width:max-content;min-width:100%;table-layout:fixed}.attendance-matrix th,.attendance-matrix td{width:69px;min-width:69px;height:51px;padding:0 5px;text-align:center;border-right:1px solid #35383c}.attendance-matrix thead tr.category th{position:sticky;top:0;z-index:5;height:41px;background:#383b40;color:#f0f0ee;border-bottom:1px solid #4a4d51;font-size:12px}.attendance-matrix thead tr.subheading th{position:sticky;top:41px;z-index:5;height:37px;background:#303338;color:#b9babe;font-size:11px}.attendance-matrix thead .sticky{background:#383b40!important;top:0!important;z-index:9!important}.attendance-matrix td.sticky{position:sticky;left:0;width:112px;min-width:112px;padding-left:15px;text-align:left;background:#26292d;z-index:4;color:#f5f4f1;font-weight:750}.attendance-matrix thead .sticky{width:112px;min-width:112px;text-align:left;padding-left:15px}.attendance-matrix tbody tr:nth-child(even) td.sticky{background:#292c30}.attendance-matrix tbody tr.mine td{background:#302e25}.attendance-matrix tbody tr.mine td.sticky{background:#373325;color:var(--yellow);box-shadow:inset 3px 0 0 var(--yellow)}.attendance-matrix td.changed{background:#302e25!important;color:inherit}.attendance-matrix td.changed .cell{background:var(--yellow);color:var(--ink)}.attendance-matrix .group-start{border-left:2px solid #5a5c60}.attendance-matrix td:not(.changed) .cell{background:#35383c}.attendance-matrix td.empty-slot .cell{background:transparent}.attendance-matrix td.empty-slot{color:transparent}
 /* Vehicle layout follows approved stats + two subviews. */
 .subtabs{display:flex;gap:21px;border-bottom:1px solid #42454a;margin:8px 0 0}.subtabs button{background:none;border:0;border-bottom:3px solid transparent;color:#a8abb0;padding:13px 3px;font-size:13px}.subtabs button.on{border-bottom-color:var(--yellow);color:#f5f5f3;font-weight:740}.fleet-filter{margin:0 0 12px}.fleet-section .scroll{max-height:630px}.fleet-section .gridtable th,.fleet-section .gridtable td{height:57px}.fleet-section .gridtable td:first-child{font-weight:750}.fleet-section .gridtable .rowlink{color:#f4f4f1}
 /* Monthly parity: clear KPI strip, horizontally scrollable ledger, detail drawer. */
@@ -30,7 +30,7 @@ body[data-dashboard="monthly"] .gridtable td:not(:first-child),body[data-dashboa
 body[data-dashboard="monthly"] .tools{margin:0 0 16px}body[data-dashboard="monthly"] .tools .search{margin-left:auto}body[data-dashboard="monthly"] .panel{margin-top:0}
 .monthly-summary{margin-top:12px}.monthly-detail-overlay{position:fixed;inset:0;background:#0b0c0de0;z-index:25;display:none}.monthly-detail-overlay.open{display:block}.monthly-detail{position:fixed;top:0;right:0;bottom:0;z-index:26;width:min(535px,100vw);background:#282b2f;border-left:1px solid #46494f;box-shadow:-16px 0 50px #0008;display:none;flex-direction:column}.monthly-detail.open{display:flex}.monthly-detail-header{flex:none;padding:23px 23px 17px;border-bottom:1px solid #42454a;display:flex;align-items:center;justify-content:space-between;gap:12px}.monthly-detail-header h2{margin:2px 0;font-size:24px;letter-spacing:-.04em}.monthly-detail-body{min-height:0;overflow:auto;padding:18px 22px 28px}.monthly-detail .panel{margin:0}.monthly-detail .scroll{max-height:420px}.monthly-detail .gridtable{min-width:440px}.monthly-detail .gridtable th,.monthly-detail .gridtable td{padding:10px 11px}.monthly-detail .tools{margin:0 0 16px!important;padding:0!important}.monthly-detail .panel-title{padding:16px}.icon-close{border:1px solid #4b4e53;background:#373a3f;border-radius:9px;width:37px;height:37px;display:grid;place-items:center;font-size:24px;color:#fff}
 /* Cross-device dialog/editor */
-.dialog-back{position:fixed;inset:0;background:#08090bd9;display:none;align-items:center;justify-content:center;z-index:40;padding:14px}.dialog-back.open{display:flex}.dialog{position:relative;width:min(430px,100%);max-height:90dvh;overflow:auto;padding:24px;background:#2b2e32;border:1px solid #55585e;border-radius:18px;box-shadow:0 18px 52px #0007}.dialog h2{font-size:19px;margin:0 0 15px;letter-spacing:-.025em}.dialog label{display:block;margin:13px 0 7px;color:#d9dade;font-size:12px}.dialog .field{width:100%;max-width:none}.dialog p.note{margin:5px 0 13px}.dialog .actions{display:flex;gap:10px;margin-top:18px}.dialog .actions button{flex:1}.dialog .error{color:#ffdc42;font-size:12px;min-height:16px;margin-top:10px}.dialog-handle{display:none}
+.dialog-back{position:fixed;inset:0;background:#08090bd9;display:none;align-items:center;justify-content:center;z-index:40;padding:14px}.dialog-back.open{display:flex}.dialog{position:relative;width:min(430px,100%);max-height:90dvh;overflow:auto;padding:24px;background:#2b2e32;border:1px solid #55585e;border-radius:18px;box-shadow:0 18px 52px #0007}.dialog h2{font-size:19px;margin:0 0 15px;letter-spacing:-.025em}.dialog label{display:block;margin:13px 0 7px;color:#d9dade;font-size:12px}.dialog .field{width:100%;max-width:none}.dialog p.note{margin:5px 0 13px}.dialog .actions{display:flex;gap:10px;margin-top:18px}.dialog .actions button{flex:1}.dialog .error{color:var(--yellow);font-size:12px;min-height:16px;margin-top:10px}.dialog-handle{display:none}
 .mobilebar{display:none}
 @media(min-width:1600px){.main{padding:34px 39px}.kpis{gap:14px}.gridtable th,.gridtable td{padding:16px 18px}}
 @media(max-width:1150px){.app-shell{grid-template-columns:156px minmax(0,1fr)}.side{padding:19px 8px}.sidelinks a{padding:12px 8px;gap:7px}.brand{font-size:13px;gap:7px;padding:2px 5px 23px}.brand-icon{width:32px;height:32px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:22px 17px}}
@@ -42,7 +42,7 @@ body[data-dashboard="monthly"] .tools{margin:0 0 16px}body[data-dashboard="month
 body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:800px){body[data-dashboard="vehicles"] .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style><style>/* UI parity pass 1 — visual only. No data, permissions or database changes. */
-:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:#ffdc42}
+:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:var(--brand-yellow,#ffc533)}
 html{min-width:0}body{font-size:13px;line-height:1.45}
 .app-shell{max-width:none;grid-template-columns:196px minmax(0,1fr);min-height:100dvh}
 .side{padding:23px 12px 18px;gap:5px}
@@ -60,7 +60,7 @@ html{min-width:0}body{font-size:13px;line-height:1.45}
 .tools{gap:9px;margin:17px 0;min-width:0}
 .btn{border-radius:10px;background:#303338;border-color:#494c52;font-size:12px;font-weight:630;min-height:42px;transition:background-color .12s ease,border-color .12s ease}
 .btn:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
-.btn.primary:not(:disabled):hover{background:#ffe66b;border-color:#ffe66b}
+.btn.primary:not(:disabled):hover{background:var(--yellow-hover,#ffd15c);border-color:var(--yellow-hover,#ffd15c)}
 .field{border-radius:10px;min-height:42px;background:#2e3135;border-color:#4b4e53;font-size:12px}
 .field:focus{outline:none;border-color:var(--yellow)}
 .panel{background:#25282c;border-radius:16px;margin:15px 0 18px}
@@ -111,7 +111,7 @@ html{min-width:0}body{font-size:13px;line-height:1.45}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
 </style><style>/* UI/UX 對版 v2 — based on four finalized standalone prototypes.
   Presentation only; formal dashboard JS retains Supabase queries and policies. */
-:root{--yellow:#ffda36;--fg:#f5f5f3}
+:root{--yellow:var(--brand-yellow,#ffc533);--fg:#f5f5f3}
 body[data-dashboard="attendance"],body[data-dashboard="vehicles"],body[data-dashboard="monthly"]{background:#1b1d20}
 body[data-dashboard="attendance"] .side .brand::before,
 body[data-dashboard="vehicles"] .side .brand::before,
@@ -136,7 +136,7 @@ body[data-dashboard="monthly"] .side .brand::before{display:none}
 .board-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px!important}
 .board-tools .search{margin-left:auto;order:0!important}
 .board-legend{font-size:11px;color:#b3b6bb;display:flex;align-items:center;gap:8px}
-.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:#ffda36;border-radius:3px}
+.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:var(--yellow);border-radius:3px}
 .attendance-panel .scroll{border-radius:0}
 .attendance-panel .footer{display:flex;justify-content:space-between;gap:10px}
 body[data-dashboard="attendance"] .kpis{display:none}
@@ -212,7 +212,7 @@ body[data-dashboard="attendance"] .attendance-slot-copy span{font-size:11px;colo
 body[data-dashboard="attendance"] .attendance-slot-steps{display:flex;align-items:center;gap:12px;flex:none}
 body[data-dashboard="attendance"] .attendance-slot-steps output{min-width:21px;text-align:center;font-size:17px;font-weight:780;font-variant-numeric:tabular-nums}
 body[data-dashboard="attendance"] .attendance-slot-steps button{display:grid;place-items:center;flex:none;width:43px;height:43px;border:0;border-radius:11px;background:#3a3d43;color:#f4f4f2;font-size:30px;line-height:1}
-body[data-dashboard="attendance"] .attendance-slot-steps button.increase{background:#ffda36;color:#17191c}
+body[data-dashboard="attendance"] .attendance-slot-steps button.increase{background:var(--yellow);color:#17191c}
 body[data-dashboard="attendance"] .attendance-slot-steps button:disabled{opacity:.28}
 body[data-dashboard="attendance"] .attendance-slot-footnote{color:#92969d;font-size:11px;line-height:1.7;margin:15px 0 0}
 body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list) .actions{margin-top:24px}
@@ -221,13 +221,13 @@ body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list) .actions{ma
 </style><style>/* Increment 1.4.2: only Daily Attendance empty-slot affordance and undo action. */
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual{color:#92969d;background:transparent;border:1px dashed #4c5055;min-width:34px;font-size:17px;padding:3px 8px;opacity:.85}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:hover,
-body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:#ffda36;border-color:#ffda36;background:#38382c;opacity:1}
+body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:var(--yellow);border-color:var(--yellow);background:#38382c;opacity:1}
 body[data-dashboard="attendance"] .dialog .secondary-action{width:100%;margin-top:19px;border:1px solid #69604d;background:#37332a;color:#f2d99d;white-space:normal}
-body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#ffda36;background:#44402c}
+body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:var(--yellow);background:#44402c}
 @media(max-width:800px){body[data-dashboard="attendance"] .dialog .secondary-action{min-height:44px}}
 </style><style>/* === One-day driver schedule template and selected-date batch apply (Supabase integration from approved P5) === */
-.plan-open{background:#393830;border-color:#70612b;color:#ffe27a}
-.plan-open:hover{background:#46402b;border-color:#ffda36}
+.plan-open{background:#393830;border-color:#70612b;color:var(--yellow)}
+.plan-open:hover{background:#46402b;border-color:var(--yellow)}
 .plan-backdrop{display:none;position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.7)}
 .plan-backdrop.show{display:block}
 .plan-panel{display:none;position:absolute;inset:16px 18px;z-index:21;background:#292c30;border:1px solid #51545a;border-radius:18px;box-shadow:0 22px 75px #000b;flex-direction:column;overflow:hidden;min-width:0}
@@ -241,7 +241,7 @@ body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#
 .plan-topbar .plan-ref{color:#92969b;font-size:10px;margin-left:auto}
 .plan-tabs{display:flex;gap:5px;padding:9px 22px 0;border-bottom:1px solid #44474d;overflow-x:auto;flex:none}
 .plan-tabs button{background:transparent;border:0;color:#afb2b8;padding:10px 14px;white-space:nowrap;font-size:12px;font-weight:700;border-bottom:3px solid transparent}
-.plan-tabs button.active{color:#ffda36;border-bottom-color:#ffda36}
+.plan-tabs button.active{color:var(--yellow);border-bottom-color:var(--yellow)}
 .plan-scroll{padding:18px 22px 22px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;scrollbar-color:#666 #292c30}
 .plan-section-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap;margin:0 0 13px}
 .plan-section-head h3{margin:0;font-size:15px;font-weight:730}.plan-section-head p{font-size:11px;color:#a8abb0;margin:5px 0 0;line-height:1.6}
@@ -252,26 +252,26 @@ body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#
 .plan-route-row{display:grid;grid-template-columns:minmax(100px,1.15fr) minmax(90px,.85fr) minmax(120px,1fr) minmax(110px,1fr) 34px;align-items:end;gap:8px;background:#23262a;border:1px solid #414449;border-radius:11px;padding:12px}
 .plan-route-row label{font-size:10px;color:#9da1a8;display:flex;flex-direction:column;gap:6px;min-width:0}
 .plan-route-row input,.plan-route-row select{width:100%;min-width:0;background:#191c20;border:1px solid #4d5057;border-radius:8px;padding:9px 8px;color:#f5f5f3;font-size:12px}
-.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid #ffda36}
+.plan-route-row input:focus,.plan-route-row select:focus,.plan-month-picker:focus{outline:1px solid var(--yellow)}
 .plan-tiny-remove{height:35px;background:#35383d;border:1px solid #56595f;border-radius:8px;color:#f4d3d3;font-size:20px}
 .plan-foot-actions{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:15px;flex-wrap:wrap}
 .plan-btn{background:#3a3d42;color:#f5f5f4;border:1px solid #55585e;border-radius:9px;font-size:12px;font-weight:700;padding:10px 13px;cursor:pointer}
-.plan-btn:hover{border-color:#f7d23a}
-.plan-btn.primary{background:#ffda36;border-color:#ffda36;color:#18191b}
+.plan-btn:hover{border-color:var(--yellow)}
+.plan-btn.primary{background:var(--yellow);border-color:var(--yellow);color:#18191b}
 .plan-btn.danger{border-color:#815453;color:#f3b8b8}
-.plan-error{font-size:11px;color:#ffe274;margin:8px 0;min-height:13px}
+.plan-error{font-size:11px;color:var(--yellow);margin:8px 0;min-height:13px}
 .plan-success{display:inline-flex;color:#a9d0ab;font-size:11px}
 .plan-apply-grid{display:grid;grid-template-columns:minmax(170px,220px) 1fr;gap:14px;margin-bottom:12px}
 .plan-minicard{background:#23262a;border:1px solid #45484e;border-radius:12px;padding:16px;min-width:0}
 .plan-minicard h4{margin:0 0 9px;font-size:13px}.plan-minicard p{font-size:11px;color:#aeb1b6;line-height:1.65;margin:7px 0}
 .plan-month-picker{background:#191c20;border:1px solid #555960;border-radius:9px;padding:10px 9px;color:#f7f7f5;color-scheme:dark;width:100%;font-size:13px;max-width:210px}
 .plan-reapply{display:flex;align-items:flex-start;gap:8px;color:#b7b9be;font-size:11px;line-height:1.5;margin:14px 0}
-.plan-reapply input{accent-color:#ffda36;margin-top:2px}
+.plan-reapply input{accent-color:var(--yellow);margin-top:2px}
 .plan-apply-preview{max-height:152px;overflow:auto;border-top:1px solid #45484e;margin-top:10px;padding-top:8px;font-size:11px;color:#abb0b5;line-height:1.85}
 .plan-empty{padding:14px;background:#22252a;border:1px dashed #555960;border-radius:9px;color:#aeb2b8;line-height:1.6;font-size:12px}
 /* One route/vehicle/note editor; no pre-schedule/actual tabs. */
 .attendance-edit-help{font-size:11px;line-height:1.6;color:#acafb5;margin-top:11px}
-.plan-month-badge{margin-left:5px;font-size:9px;color:#ffe079;font-weight:550;white-space:nowrap}
+.plan-month-badge{margin-left:5px;font-size:9px;color:var(--yellow);font-weight:550;white-space:nowrap}
 @media(max-width:920px){.plan-route-row{grid-template-columns:repeat(2,minmax(0,1fr)) 34px}.plan-route-row label:nth-child(3){grid-column:1}.plan-route-row label:nth-child(4){grid-column:2}.plan-route-row .plan-tiny-remove{grid-column:3;grid-row:2}}@media(max-width:767px){
 .plan-panel{inset:0;border:0;border-radius:0;max-height:100%}}@media(max-width:767px){
 .plan-header{padding:15px 16px 10px}}@media(max-width:767px){
@@ -293,9 +293,9 @@ body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#
 .plan-calendar-head{margin-bottom:7px}.plan-calendar-head span{text-align:center;color:#8f939a;font-size:10px;padding:5px 0}
 .plan-calendar-grid>span{min-height:38px}
 .plan-calendar-day{min-width:0;min-height:38px;border:1px solid #42464b;border-radius:8px;color:#e8e8e5;background:#303338;font-size:12px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
-.plan-calendar-day:hover:not(:disabled){border-color:#ffda36}
-.plan-calendar-day.selected{background:#ffda36;color:#18191b;border-color:#ffda36;font-weight:800}
-.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#ffda36}
+.plan-calendar-day:hover:not(:disabled){border-color:var(--yellow)}
+.plan-calendar-day.selected{background:var(--yellow);color:#18191b;border-color:var(--yellow);font-weight:800}
+.plan-calendar-day.has-plan:not(.selected):after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--yellow)}
 .plan-calendar-day:disabled{background:#26292d;color:#777b81;text-decoration:line-through;border-color:#33363b;cursor:not-allowed}
 .plan-pick-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 3px}
 .plan-pick-actions .plan-btn{font-size:11px;padding:8px 10px}
@@ -309,21 +309,21 @@ body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#
 
 /* P4: editable, date-specific leave; preserve the original matrix dimensions. */
 .matrix td .leave-toggle.empty{border:1px dashed #484c51;color:#8d9299}
-.matrix td .leave-toggle.empty:hover{border-color:#ffda36;color:#f5f5f3}
-.matrix td .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:-2px}
+.matrix td .leave-toggle.empty:hover{border-color:var(--yellow);color:#f5f5f3}
+.matrix td .leave-toggle:focus-visible{outline:2px solid var(--yellow);outline-offset:-2px}
 .matrix td button.cell:disabled,.matrix td button.cell:disabled:hover{cursor:not-allowed;border-color:transparent;background:transparent;color:#54575b}
 .matrix td button.cell:not(.empty):disabled{background:#32353a;color:#b3b7bd}
 .dialog.leave-dialog{max-height:calc(100% - 28px);overflow-y:auto;scrollbar-color:#676b70 #292c30}
 .leave-status-options{display:flex;flex-direction:column;gap:9px;margin-top:14px}
 .dialog label.leave-option{display:flex;align-items:center;gap:11px;margin:0;padding:13px 12px;border:1px solid #464a50;border-radius:12px;background:#22252a;cursor:pointer}
-.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:#ffda36}
+.dialog .leave-option input{flex:none;width:17px;height:17px;padding:0;margin:0;accent-color:var(--yellow)}
 .leave-option strong{display:block;font-size:13px;font-weight:700;color:#f5f5f3}
 .leave-option small{display:block;margin-top:4px;font-size:11px;color:#a5a9b0;line-height:1.5}
-.dialog .leave-option:has(input:checked){border-color:#ffda36}
-.dialog .leave-option:has(input:focus-visible){outline:2px solid #ffda36;outline-offset:2px}
+.dialog .leave-option:has(input:checked){border-color:var(--yellow)}
+.dialog .leave-option:has(input:focus-visible){outline:2px solid var(--yellow);outline-offset:2px}
 .dialog .leave-option:has(input:disabled){opacity:.5;cursor:not-allowed}
 .dialog .leave-help{font-size:11px;color:#afb3ba;line-height:1.65;margin:12px 0 0}
-.dialog .leave-help.is-blocked{color:#ffe174}
+.dialog .leave-help.is-blocked{color:var(--yellow)}
 .plan-calendar-day.is-off:disabled{text-decoration:none;border-style:dashed;flex-direction:column;gap:1px}
 .plan-calendar-day.is-off small{font-size:9px;line-height:1;color:#aaadb3}
 .toast{max-width:calc(100% - 28px);white-space:normal;width:max-content;line-height:1.6;text-align:center}@media(max-width:767px){
@@ -438,11 +438,11 @@ body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:#
 .plan-route-row .plan-tiny-remove{grid-column:5;grid-row:1}
 .plan-status{font-size:12px;color:#c4c7cd;line-height:1.6;overflow-wrap:anywhere}
 .plan-error,.plan-summary-pill{overflow-wrap:anywhere}
-.plan-panel [aria-selected=true]{color:#ffda36;border-bottom-color:#ffda36}
+.plan-panel [aria-selected=true]{color:var(--yellow);border-bottom-color:var(--yellow)}
 .attendance-matrix .attendance-leave{width:53px;min-width:53px;padding:0 5px}
 .attendance-matrix .leave-toggle{width:100%;min-height:35px;border:1px dashed #484c51;border-radius:7px;background:transparent;color:#b5b9c0;font:inherit;cursor:pointer}
-.attendance-matrix .leave-toggle.is-leave{background:#ffda36;color:#1c1c1e;font-weight:750;border-color:#ffda36}
-.attendance-matrix .leave-toggle:focus-visible{outline:2px solid #ffda36;outline-offset:2px}
+.attendance-matrix .leave-toggle.is-leave{background:var(--yellow);color:#1c1c1e;font-weight:750;border-color:var(--yellow)}
+.attendance-matrix .leave-toggle:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 .attendance-edit-modes{margin-bottom:15px}.attendance-edit-modes button:disabled{opacity:.4;cursor:not-allowed}
 .dialog .leave-option input{min-height:0;height:17px;width:17px}
 .dialog .leave-option{line-height:1.5}.dialog .leave-status-options{margin:12px 0}
@@ -470,15 +470,23 @@ body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!import
 body[data-finance-access="allowed"] .mobilebar,
 body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
-</style><link rel="icon" type="image/svg+xml" href="assets/tangguanjia-logo.svg?v=14201"><style>/* Approved 趟管家 SVG: white arrow on yellow, with transparent outer corners. */
+
+/* Management navigation is shown only after an active supervisor profile resolves. */
+body:not([data-account-role="dispatcher"]) a[href="ui-routes.html"],
+body:not([data-account-role="dispatcher"]) a[href="ui-vehicles.html"],
+body:not([data-account-role="dispatcher"]) a[href="index.html"]{display:none!important}
+body[data-account-role="driver"] .mobilebar,
+body[data-account-role="driver"] .mobile-navbar{grid-template-columns:1fr}
+</style><link rel="icon" type="image/svg+xml" href="assets/tangguanjia-logo.svg?v=1422"><style>/* Approved Illustrator SVG (3): white arrow/dot on #FFC533. */
+:root{--brand-yellow:#ffc533;--yellow:var(--brand-yellow);--yellow-hover:#ffd15c}
 .brand.tgj-brand::before{display:none}
 .tgj-logo{display:block;width:36px;height:36px;flex:0 0 36px;object-fit:contain;background:transparent;border:0;border-radius:0}
 .loginbox .tgj-login-brand{display:flex;align-items:center;gap:12px}
 </style><style>.mobile-logout{display:none}
-#logout-status{padding:12px 16px;border:1px solid #d39e45;border-radius:10px;color:#ffda36;overflow-wrap:anywhere}
+#logout-status{padding:12px 16px;border:1px solid #d39e45;border-radius:10px;color:var(--yellow);overflow-wrap:anywhere}
 @media(max-width:1024px){
  .head-actions>.mobile-logout,.header-actions>.mobile-logout{display:inline-flex;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:9px 14px;border:1px solid #565a60;border-radius:10px;background:#303338;color:#f5f5f3;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
- .mobile-logout:focus-visible{outline:2px solid #ffda36;outline-offset:3px}
+ .mobile-logout:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
  .head-actions,.header-actions{flex-wrap:wrap}
 }
 body[data-attendance-view="driver"] .main{min-width:0;overflow:visible}
@@ -498,11 +506,12 @@ body[data-attendance-view="driver"] #stats{display:none}
 .driver-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
 .driver-card{min-width:0;background:#292c31;border:1px solid #41454b;border-radius:14px;padding:20px;overflow-wrap:anywhere}
 .driver-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
-.driver-category{color:#ffda36;font-size:13px;font-weight:650}
+.driver-category{color:var(--yellow);font-size:13px;font-weight:650}
 .driver-kind{color:#c3c5c8;font-size:12px}
 .driver-card h3{font-size:23px;line-height:1.4;letter-spacing:.01em;margin:0;color:#f5f5f3}
 .driver-route-name{font-size:14px;line-height:1.6;color:#c3c5c8;margin:5px 0 0}
 .driver-details{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px 12px;margin:18px 0 0;font-size:15px;line-height:1.6}
+.driver-details .driver-temperature{color:var(--yellow)}
 .driver-details dt{color:#a1a4a9}.driver-details dd{margin:0;color:#f5f5f3;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
 .driver-empty{padding:38px 20px;text-align:center;border:1px solid #41454b;border-radius:14px;background:#292c31;line-height:1.8;color:#c3c5c8}
 .driver-empty strong{display:block;font-size:20px;color:#f5f5f3;margin-bottom:6px}
@@ -518,7 +527,7 @@ body[data-attendance-view="driver"] #stats{display:none}
  .driver-date-nav{flex-basis:100%}
  .driver-date-nav .field{max-width:none;flex:1}
 }
-</style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head><body data-dashboard="attendance"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div><div class="app-shell"><aside class="side"><div class="brand tgj-brand"><img class="tgj-logo" src="assets/tangguanjia-logo.svg?v=14201" width="36" height="36" alt="" aria-hidden="true"><span>趟管家<small>DISPATCH / 管理後台</small></span></div><div class="sidelinks"><a href="ui-attendance.html" class="active">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></div><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="btn" id="logout">登出</button></aside><main class="main"><div class="head"><div><div class="eyebrow">配送出勤 / DAILY ATTENDANCE</div><h1>每日出勤</h1><p>每日司機與配送趟次一覽</p></div><div class="head-actions" id="head-actions"><button type="button" class="btn mobile-logout" data-session-logout>登出</button><div class="account" id="account-name"></div></div></div><section id="stats" class="kpis"></section><div id="message" class="note" hidden></div><div id="page"></div></main></div><nav class="mobilebar"><a href="ui-attendance.html" class="active">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></nav><div id="modal" class="dialog-back"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title"><h2 id="modal-title"></h2><div id="modal-fields"></div><div id="modal-error" class="error"></div><div class="actions"><button id="modal-cancel" class="btn">取消</button><button id="modal-save" class="btn primary">儲存</button></div></div></div><script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
+</style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head><body data-dashboard="attendance"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div><div class="app-shell"><aside class="side"><div class="brand tgj-brand"><img class="tgj-logo" src="assets/tangguanjia-logo.svg?v=1422" width="36" height="36" alt="" aria-hidden="true"><span>趟管家<small>DISPATCH / 管理後台</small></span></div><div class="sidelinks"><a href="ui-attendance.html" class="active">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></div><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="btn" id="logout">登出</button></aside><main class="main"><div class="head"><div><div class="eyebrow">配送出勤 / DAILY ATTENDANCE</div><h1>每日出勤</h1><p>每日司機與配送趟次一覽</p></div><div class="head-actions" id="head-actions"><button type="button" class="btn mobile-logout" data-session-logout>登出</button><div class="account" id="account-name"></div></div></div><section id="stats" class="kpis"></section><div id="message" class="note" hidden></div><div id="page"></div></main></div><nav class="mobilebar"><a href="ui-attendance.html" class="active">每日出勤</a><a href="ui-routes.html" class="">路線管理</a><a href="ui-vehicles.html" class="">車輛管理</a><a href="ui-monthly.html" class="">月度報表</a></nav><div id="modal" class="dialog-back"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title"><h2 id="modal-title"></h2><div id="modal-fields"></div><div id="modal-error" class="error"></div><div class="actions"><button id="modal-cancel" class="btn">取消</button><button id="modal-save" class="btn primary">儲存</button></div></div></div><script>/* BROWSER TEST FIXTURE ONLY. Not loaded by any production page. */
 (()=>{
 const D='11111111-1111-4111-8111-111111111111',E='22222222-2222-4222-8222-222222222222',F='33333333-3333-4333-8333-333333333333',M='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -853,7 +862,7 @@ const fmt=n=>Number(n||0).toLocaleString('zh-TW');
 const today=()=> '2026-10-20';
 const notify=msg=>{const e=$('#message');if(e){e.textContent=msg;e.hidden=false;}else alert(msg)};
 let currentUser=null,currentProfile=null;
-async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
+async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;document.body.dataset.accountRole=p.role;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
 const supervisor=()=>currentProfile?.role==='dispatcher';
 const finance=()=>supervisor()&&DashboardAccess146.finance();
 async function rows(table,fields='*',q){let req=db.from(table).select(fields);if(q)req=q(req);const {data,error}=await req;if(error)throw error;return data||[]}
@@ -967,8 +976,8 @@ const DriverAttendance1421=(()=>{
   const cards=items.map(x=>{
    const route=routeList.find(r=>String(r.id)===String(x.route)),vehicle=vehicleList.find(v=>String(v.id)===String(x.vehicle));
    const code=route?.route_code||x.route_code_snapshot||'未指定路線';
-   const detail=(label,value)=>`<dt>${label}</dt><dd>${esc(value)}</dd>`;
-   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?code:x.kind)}</h3>${x.kind==='配送'&&route?.route_name?`<p class="driver-route-name">${esc(route.route_name)}</p>`:''}<dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
+   const detail=(label,value,cssClass='')=>`<dt>${label}</dt><dd${cssClass?` class="${cssClass}"`:''}>${esc(value)}</dd>`;
+   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?code:x.kind)}</h3>${x.kind==='配送'&&route?.route_name?`<p class="driver-route-name">${esc(route.route_name)}</p>`:''}<dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定','driver-temperature'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
   }).join('');
   $('#driver-content').innerHTML=`<h2 class="driver-day-heading">${esc(label)}${day===today()?' · 今天':''}</h2><div class="driver-summary" aria-label="當日出勤統計">${totals}</div>${items.length?`<ul class="driver-cards">${cards}</ul>`:`<div class="driver-empty"><strong>${onLeave?'當日休假':'當日尚無排班'}</strong>${onLeave?'這一天已由主管標示休假。':'有新的配送或勤務安排後，會顯示在這裡。'}</div>`}`;
  }

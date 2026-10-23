@@ -151,6 +151,7 @@ async function init(){
  if(!db)throw Error('找不到 Supabase 設定。請確認 js/config.js 已正確放置。');
  const result=await client.auth.getUser();if(result.error||!result.data?.user){location.href='index.html';return}
  const id=result.data.user.id,prof=await client.from('profiles').select('id,role,active,display_name').eq('id',id).single();
+ if(!prof.error&&prof.data?.active)document.body.dataset.accountRole=prof.data.role;
  if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
  myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
  document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';

@@ -1,5 +1,5 @@
 /* UI parity pass 1 — visual only. No data, permissions or database changes. */
-:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:#ffdc42}
+:root{--bg:#17191b;--nav:#1b1d20;--panel:#26292d;--panel2:#303338;--line:#393c40;--fg:#f5f5f2;--muted:#9da0a5;--yellow:var(--brand-yellow,#ffc533)}
 html{min-width:0}body{font-size:13px;line-height:1.45}
 .app-shell{max-width:none;grid-template-columns:196px minmax(0,1fr);min-height:100dvh}
 .side{padding:23px 12px 18px;gap:5px}
@@ -17,7 +17,7 @@ html{min-width:0}body{font-size:13px;line-height:1.45}
 .tools{gap:9px;margin:17px 0;min-width:0}
 .btn{border-radius:10px;background:#303338;border-color:#494c52;font-size:12px;font-weight:630;min-height:42px;transition:background-color .12s ease,border-color .12s ease}
 .btn:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
-.btn.primary:not(:disabled):hover{background:#ffe66b;border-color:#ffe66b}
+.btn.primary:not(:disabled):hover{background:var(--yellow-hover,#ffd15c);border-color:var(--yellow-hover,#ffd15c)}
 .field{border-radius:10px;min-height:42px;background:#2e3135;border-color:#4b4e53;font-size:12px}
 .field:focus{outline:none;border-color:var(--yellow)}
 .panel{background:#25282c;border-radius:16px;margin:15px 0 18px}

@@ -57,8 +57,8 @@ const DriverAttendance1421=(()=>{
   const cards=items.map(x=>{
    const route=routeList.find(r=>String(r.id)===String(x.route)),vehicle=vehicleList.find(v=>String(v.id)===String(x.vehicle));
    const code=route?.route_code||x.route_code_snapshot||'未指定路線';
-   const detail=(label,value)=>`<dt>${label}</dt><dd>${esc(value)}</dd>`;
-   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?code:x.kind)}</h3>${x.kind==='配送'&&route?.route_name?`<p class="driver-route-name">${esc(route.route_name)}</p>`:''}<dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
+   const detail=(label,value,cssClass='')=>`<dt>${label}</dt><dd${cssClass?` class="${cssClass}"`:''}>${esc(value)}</dd>`;
+   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?code:x.kind)}</h3>${x.kind==='配送'&&route?.route_name?`<p class="driver-route-name">${esc(route.route_name)}</p>`:''}<dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定','driver-temperature'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
   }).join('');
   $('#driver-content').innerHTML=`<h2 class="driver-day-heading">${esc(label)}${day===today()?' · 今天':''}</h2><div class="driver-summary" aria-label="當日出勤統計">${totals}</div>${items.length?`<ul class="driver-cards">${cards}</ul>`:`<div class="driver-empty"><strong>${onLeave?'當日休假':'當日尚無排班'}</strong>${onLeave?'這一天已由主管標示休假。':'有新的配送或勤務安排後，會顯示在這裡。'}</div>`}`;
  }

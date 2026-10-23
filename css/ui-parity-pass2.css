@@ -1,6 +1,6 @@
 /* UI/UX 對版 v2 — based on four finalized standalone prototypes.
   Presentation only; formal dashboard JS retains Supabase queries and policies. */
-:root{--yellow:#ffda36;--fg:#f5f5f3}
+:root{--yellow:var(--brand-yellow,#ffc533);--fg:#f5f5f3}
 body[data-dashboard="attendance"],body[data-dashboard="vehicles"],body[data-dashboard="monthly"]{background:#1b1d20}
 body[data-dashboard="attendance"] .side .brand::before,
 body[data-dashboard="vehicles"] .side .brand::before,
@@ -25,7 +25,7 @@ body[data-dashboard="monthly"] .side .brand::before{display:none}
 .board-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px!important}
 .board-tools .search{margin-left:auto;order:0!important}
 .board-legend{font-size:11px;color:#b3b6bb;display:flex;align-items:center;gap:8px}
-.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:#ffda36;border-radius:3px}
+.legend-dot{display:inline-block;height:11px;width:11px;flex:none;background:var(--yellow);border-radius:3px}
 .attendance-panel .scroll{border-radius:0}
 .attendance-panel .footer{display:flex;justify-content:space-between;gap:10px}
 body[data-dashboard="attendance"] .kpis{display:none}

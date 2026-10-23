@@ -4,7 +4,7 @@ const fmt=n=>Number(n||0).toLocaleString('zh-TW');
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Taipei'});
 const notify=msg=>{const e=$('#message');if(e){e.textContent=msg;e.hidden=false;}else alert(msg)};
 let currentUser=null,currentProfile=null;
-async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
+async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;document.body.dataset.accountRole=p.role;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
 const supervisor=()=>currentProfile?.role==='dispatcher';
 const finance=()=>supervisor()&&DashboardAccess146.finance();
 async function rows(table,fields='*',q){let req=db.from(table).select(fields);if(q)req=q(req);const {data,error}=await req;if(error)throw error;return data||[]}

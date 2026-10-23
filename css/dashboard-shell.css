@@ -1,6 +1,6 @@
 /* Increment 1.2 UI integration: responsive, flat charcoal / gray / white / yellow.
    Loaded AFTER the original approved page stylesheet. No gradients, no avatars. */
-:root { --inc-bg:#17191c; --inc-surface:#202226; --inc-line:#393c40; --inc-yellow:#ffda36; }
+:root { --inc-bg:#17191c; --inc-surface:#202226; --inc-line:#393c40; --inc-yellow:var(--yellow); }
 html { min-width:0; }
 body { min-width:0; max-width:100%; overflow-x:hidden; }
 .inc-bar,.inc-demo { font-family: Inter,"Noto Sans TC","PingFang TC",system-ui,sans-serif; box-sizing:border-box; }
@@ -13,7 +13,7 @@ body { min-width:0; max-width:100%; overflow-x:hidden; }
 .inc-nav::-webkit-scrollbar{display:none}
 .inc-nav a,.inc-old { color:#bcbec2;flex:none;white-space:nowrap;padding:9px 13px;font-size:12px;border-radius:9px;text-decoration:none; }
 .inc-nav a:hover,.inc-old:hover{background:#33363b;color:#fff}
-.inc-nav a[aria-current=page]{background:#ffda36;color:#191a1c;font-weight:750}
+.inc-nav a[aria-current=page]{background:var(--yellow);color:#191a1c;font-weight:750}
 .inc-old{border:1px solid #4a4d52;margin-left:auto}
 .inc-demo{padding:8px 18px;text-align:center;background:#26292d;color:#aeb1b5;font-size:11px;line-height:1.5;border-bottom:1px solid #393c40;}
 /* Prototype-only device selectors are no longer necessary; actual viewport is authoritative. */

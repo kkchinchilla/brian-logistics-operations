@@ -8,3 +8,10 @@ body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!import
 body[data-finance-access="allowed"] .mobilebar,
 body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
+
+/* Management navigation is shown only after an active supervisor profile resolves. */
+body:not([data-account-role="dispatcher"]) a[href="ui-routes.html"],
+body:not([data-account-role="dispatcher"]) a[href="ui-vehicles.html"],
+body:not([data-account-role="dispatcher"]) a[href="dispatcher.html"]{display:none!important}
+body[data-account-role="driver"] .mobilebar,
+body[data-account-role="driver"] .mobile-navbar{grid-template-columns:1fr}

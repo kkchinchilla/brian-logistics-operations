@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Current release: **Increment 1.4.21 — mobile logout and drivers’ own read-only attendance** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_21.md). Drivers see their own scheduled deliveries and duties in responsive cards. Supervisors retain scheduling and close/reopen controls; the driver approval workflow is retired. All five dashboards have mobile logout.
+Current release: **Increment 1.4.22 — approved logo, matching yellow and simplified driver navigation** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_22.md). Drivers see their own read-only attendance with yellow temperature values and attendance-only navigation. Supervisors retain route/fleet navigation, scheduling and close/reopen controls. All five dashboards have mobile logout.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
