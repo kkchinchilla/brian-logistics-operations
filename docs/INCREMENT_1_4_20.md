@@ -1,5 +1,7 @@
 # Increment 1.4.20 — 趟管家 branding
 
+Historical release record. The current app name is 貨易通 as of Increment 1.4.25; see `INCREMENT_1_4_25.md`.
+
 The user-approved Illustrator SVG is preserved byte-for-byte in `assets/tangguanjia-logo.svg`. The latest approved version has a white arrow on yellow with transparent outer corners. The login and five dashboards use this shared asset and the chosen 趟管家 name; their browser icons use the same SVG. A dedicated stylesheet preserves proportions and prevents the legacy sidebar pseudo-icon from appearing twice. The static build includes assets.
 
 No application logic or database changes. Android launcher and Google Play raster assets will be derived from this approved master during Android packaging; this web release is not an Android app build.
