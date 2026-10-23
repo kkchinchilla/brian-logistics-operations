@@ -11,7 +11,7 @@ const out=path.join(root,'dist');
 fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(out);
 const pages=fs.readdirSync(root).filter(f=>f.endsWith('.html'));
 for(const f of pages)fs.copyFileSync(path.join(root,f),path.join(out,f));
-for(const dir of ['css','js'])fs.cpSync(path.join(root,dir),path.join(out,dir),{recursive:true,filter:s=>!['config.js','config.example.js'].includes(path.basename(s))});
+for(const dir of ['css','js','assets'])fs.cpSync(path.join(root,dir),path.join(out,dir),{recursive:true,filter:s=>!['config.js','config.example.js'].includes(path.basename(s))});
 fs.writeFileSync(path.join(out,'js/config.js'),`// Public browser configuration; access is enforced by Supabase Auth and RLS.\nconst SUPABASE_URL = ${JSON.stringify(url)};\nconst SUPABASE_PUBLISHABLE_KEY = ${JSON.stringify(key)};\nconst { createClient } = supabase;\nconst db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);\n`);
 fs.writeFileSync(path.join(out,'.nojekyll'),'');
 console.log(`Built ${pages.length} application pages in dist/`);

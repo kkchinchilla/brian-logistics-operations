@@ -1,0 +1,4 @@
+/* Approved 趟管家 SVG: preserve its transparent arrow cutout. */
+.brand.tgj-brand::before{display:none}
+.tgj-logo{display:block;width:36px;height:36px;flex:0 0 36px;object-fit:contain;background:transparent;border:0;border-radius:0}
+.loginbox .tgj-login-brand{display:flex;align-items:center;gap:12px}
