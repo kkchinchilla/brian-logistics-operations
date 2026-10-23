@@ -153,7 +153,7 @@ async function init(){
  if(!prof.error&&prof.data?.active)document.body.dataset.accountRole=prof.data.role;
  if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
  myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
- document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';
+ $('account-name').textContent=myProfile.display_name;
 }
 init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入路線資料：${errorText(e)}。請重新整理後再試，或聯絡管理員。`});
 })();

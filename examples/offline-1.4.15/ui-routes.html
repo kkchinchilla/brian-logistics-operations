@@ -479,6 +479,80 @@ body[data-attendance-view="driver"] #stats{display:none}
  .driver-date-nav{flex-basis:100%}
  .driver-date-nav .field{max-width:none;flex:1}
 }
+</style><style>/* Match the shared production dashboard typography and spacing.
+   Route-only presentation: retain the existing scroll regions and editor layers. */
+body[data-dashboard="routes"]{line-height:1.45}
+#app .main{padding:29px clamp(18px,2.2vw,33px) 32px}
+#app .page-header{padding:0;flex-wrap:wrap;flex-shrink:0;align-items:center;margin:0 0 21px}
+#app .page-header h1{font-size:clamp(24px,2vw,28px);font-weight:780;line-height:1.2;letter-spacing:-.047em}
+#app .page-header p{margin:8px 0 0}
+#app .header-actions{justify-content:flex-end}
+#app .workspace{padding:0;scrollbar-gutter:stable}
+#app .route-status:empty{display:none}
+#app .route-status:not(:empty){margin:0 0 14px;padding:12px 14px;border:1px solid #64593f;background:#353125;border-radius:10px;color:#e9d18d;line-height:1.7}
+#app .summary{gap:11px;margin-bottom:20px}
+#app .stat{display:block;padding:17px 18px;min-height:90px;border-radius:14px}
+#app .stat-value{display:block;margin-top:10px;font-size:26px;font-weight:780;line-height:1.45;overflow-wrap:anywhere}
+#app .stat:first-child .stat-value{color:var(--yellow)}
+#app .tab-row{display:flex;justify-content:flex-start;gap:21px;padding:0;margin:3px 0 15px;background:transparent;border-radius:0;border-bottom:1px solid #42454a}
+#app .tab{padding:13px 3px;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:#a8abb0;font-size:13px;white-space:nowrap}
+#app .tab.active{border-bottom-color:var(--yellow);color:#f5f5f3;font-weight:740}
+#app .tab:focus-visible{outline:2px solid var(--yellow);outline-offset:-2px}
+#app .section-header{padding:18px 20px 16px}
+#app .section-title{font-size:16px;font-weight:770;letter-spacing:-.025em}
+#app .section-sub{color:#a5a8ad;margin-top:7px;line-height:1.5}
+#app .toolbar{gap:9px;padding:0 20px 18px}
+#app .search{max-width:360px;border-color:#4b4e53}
+#app .filter{border-color:#4b4e53;min-height:42px}
+#app .primary,#app .quiet-btn{min-height:42px;padding:10px 14px;font-size:12px;border-radius:10px;line-height:1.45}
+#app .primary{border:1px solid var(--yellow);font-weight:780}
+#app .quiet-btn{background:#303338;border-color:#494c52;font-weight:630;color:#f5f5f3}
+#app .quiet-btn:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
+#app .routes-table th,#app .routes-table td{height:53px;padding:12px 14px;border-bottom-color:#373a3e}
+#app .routes-table th{height:43px;background:#35383d;color:#b8bbc0;font-weight:610}
+#app .table-footer{padding:13px 19px;color:#a2a4a8;border-top:1px solid #3d4045;background:transparent}
+#app .table-note{color:#9ea2a8}
+@media(min-width:1600px){
+ #app .main{padding-inline:clamp(30px,3vw,64px)}
+ #app .routes-table th,#app .routes-table td{padding-inline:19px}
+}
+@media(max-width:1150px){#app .summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Like the fleet/accounts dashboards, three non-financial statistics stay in one row. */
+body[data-dashboard="routes"]:not([data-finance-access="allowed"]) #app .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:800px){
+ #app .page-header{align-items:flex-start}
+ #app .header-actions{width:100%;margin-left:0;justify-content:flex-start}
+ #app .main{padding:29px clamp(18px,2.2vw,33px) 20px}
+ #app .workspace{padding:0 0 calc(78px + env(safe-area-inset-bottom));scrollbar-gutter:auto}
+ #app .tab-row{gap:15px}
+ #app .toolbar{gap:8px;padding:0 14px 14px}
+ #app .search{max-width:none;height:42px}
+ #app .filter{height:42px}
+ #app .stat{padding:14px 12px;min-height:82px}
+ #app .stat-value{font-size:23px}
+ #app .section-header{padding:16px 15px 14px}
+ #app .section-title{font-size:15px}
+}
+@media(max-width:760px){
+ #app .main{padding:23px 14px 20px}
+ #app .page-header h1{font-size:24px}
+ #app .summary{gap:8px}
+ #app .section-shell{border-radius:14px}
+ #app .routes-table th,#app .routes-table td{padding:11px 10px}
+}
+@media(max-width:480px){
+ #app .header-actions{gap:6px}
+ #app .header-actions>.primary,#app .header-actions>.mobile-logout{min-height:39px;padding:10px 11px}
+ #app .section-header{padding:15px 13px}
+}
+@media(max-width:360px){
+ #app .main{padding-inline:10px}
+ #app .page-header h1{font-size:22px}
+ #app .header-actions{gap:5px}
+ #app .header-actions>.primary,#app .header-actions>.mobile-logout{padding:8px 9px}
+ #app .stat{padding:11px 10px}
+ #app .stat-value{font-size:21px}
+}
 </style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head>
 <body data-dashboard="routes"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div>
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs>
@@ -498,9 +572,10 @@ body[data-attendance-view="driver"] #stats{display:none}
     <aside class="nav route-side" aria-label="主選單"><div class="brand tgj-brand"><img class="tgj-logo" src="assets/tangguanjia-logo.svg?v=1422" width="36" height="36" alt="" aria-hidden="true"><span>貨易通<small>DISPATCH / 管理後台</small></span></div>
       <nav class="sidelinks" aria-label="Dashboard 導覽"><a href="ui-attendance.html">每日出勤</a><a href="ui-routes.html" class="active" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="route-side-logout" id="route-logout" type="button">登出</button>
     </aside>
-    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><div class="tgj-page-title"><img class="tgj-mobile-logo" src="assets/tangguanjia-logo.svg?v=1422" width="32" height="32" alt="貨易通"><h1>路線管理</h1></div><p>管理路線名稱、配送地區與溫層。</p></div><div class="header-actions"><button type="button" class="btn mobile-logout" data-session-logout>登出</button><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
+    <main class="main"><header class="page-header head"><div><div class="eyebrow">配送路線 / ROUTES</div><div class="tgj-page-title"><img class="tgj-mobile-logo" src="assets/tangguanjia-logo.svg?v=1422" width="32" height="32" alt="貨易通"><h1>路線管理</h1></div><p>管理路線名稱、配送地區與溫層。</p></div><div class="header-actions head-actions"><button type="button" class="btn mobile-logout" data-session-logout>登出</button><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button><div class="account" id="account-name"></div></div></header>
       <div class="workspace"><div id="route-status" class="route-status" role="status" aria-live="polite"></div><section class="summary" aria-label="路線統計"><div class="stat"><span class="stat-label">啟用路線</span><strong class="stat-value" id="stat-routes">—</strong></div><div class="stat"><span class="stat-label">配送地區</span><strong class="stat-value" id="stat-regions">—</strong></div><div class="stat"><span class="stat-label">配送溫層</span><strong class="stat-value" id="stat-zones">—</strong></div><div class="stat" data-route-finance><span class="stat-label">平均每趟費用</span><strong class="stat-value yellow" id="stat-avg">—</strong></div></section>
-      <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">查看路線名稱、配送地區與溫層</div></div><div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab" data-route-finance>費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div></div>
+      <div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab" data-route-finance>費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div>
+      <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">查看路線名稱、配送地區與溫層</div></div></div>
       <div id="route-view"><div class="toolbar"><label class="search"><svg><use href="#i-search"></use></svg><input id="route-search" placeholder="搜尋路線名稱、地區、溫層…" autocomplete="off" aria-label="搜尋路線"></label><select class="filter" id="filter-region" aria-label="篩選地區"></select><select class="filter" id="filter-zone" aria-label="篩選溫層"></select></div><div class="table-scroll" id="table-scroll"><table class="routes-table"><thead><tr><th>路線名稱</th><th>配送地區</th><th>溫層</th><th data-route-finance>路線費用／趟</th><th>　</th></tr></thead><tbody id="routes-body"></tbody></table></div><div class="table-footer"><span id="result-count">—</span><span>點選路線進行編輯</span></div></div>
       <div id="rate-view" class="hide" data-route-finance><div class="tariff-panel"><p class="tariff-intro">依「配送地區 × 溫層」決定每趟配送費用；月度報表使用此費率計算已結案趟次的司機計酬。</p><div class="tariff-actions"><button type="button" class="quiet-btn" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增地區</button><button type="button" class="quiet-btn" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增溫層</button></div><div class="tariff-scroller"><table class="tariff-table"><thead id="rates-head"></thead><tbody id="rates-body"></tbody></table></div><p class="tariff-hint">費率同時作為月報趟次計酬來源；新增地區或溫層後，新組合顯示「待設定」。</p></div></div>
       <div id="manage-view" class="hide"><div class="catalog-intro">自由新增配送地區與溫層。新增的名稱會立即出現在路線編輯與費率表中；新組合的費率需另外設定。</div><div class="catalog-grid"><section class="catalog-card"><div class="catalog-top"><div><h3>配送地區</h3><p id="region-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="region"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="region-list" class="catalog-list"></div></section><section class="catalog-card"><div class="catalog-top"><div><h3>配送溫層</h3><p id="zone-hint">—</p></div><button class="quiet-btn add-catalog" type="button" data-create-kind="zone"><svg><use href="#i-plus"></use></svg>新增</button></div><div id="zone-list" class="catalog-list"></div></section></div></div>
@@ -1004,7 +1079,7 @@ async function init(){
  if(!prof.error&&prof.data?.active)document.body.dataset.accountRole=prof.data.role;
  if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
  myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
- document.querySelector('#route-status').textContent='正式資料模式 · 已登入主管 · 路線管理修改會儲存至 Supabase';
+ $('account-name').textContent=myProfile.display_name;
 }
 init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入路線資料：${errorText(e)}。請重新整理後再試，或聯絡管理員。`});
 })();
