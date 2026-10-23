@@ -119,14 +119,13 @@ async function loadDriverRuns() {
                 service_date,
                 scheduled_time,
                 temperature_zone_snapshot,
-                route_code_snapshot,
+                route_name_snapshot,
                 is_rental,
                 status,
                 driver_notes,
                 dispatcher_notes,
 
                 routes (
-                    route_code,
                     route_name
                 ),
 
@@ -198,7 +197,7 @@ function createRunCard(run) {
 
     const routeName =
         run.routes?.route_name
-        || run.route_code_snapshot || run.routes?.route_code
+        || run.route_name_snapshot
         || '—';
 
 
@@ -616,11 +615,11 @@ function createSpecialWorkCard(work) {
     card.innerHTML = `
         <div class="run-card-header">
           <div><span class="run-time">${escapeHtml(start)}–${escapeHtml(end)}</span>
-            <h3>${escapeHtml(specialKindLabel(work.kind))} · ${escapeHtml(work.route_code || '—')}</h3></div>
+            <h3>${escapeHtml(specialKindLabel(work.kind))} · ${escapeHtml(work.route_name || '—')}</h3></div>
           <span class="status-badge">${escapeHtml(specialReviewLabel(work))}</span>
         </div>
         <div class="run-details">
-          <p><strong>主線：</strong>${escapeHtml(work.route_name || work.route_code || '—')}</p>
+          <p><strong>主線：</strong>${escapeHtml(work.route_name || '—')}</p>
           <p><strong>車輛：</strong>${escapeHtml(vehicle)}</p>
           <p><strong>溫層：</strong>${escapeHtml(work.temperature_zone || '未設定')}</p>
           ${work.support_reference ? `<p><strong>支援識別：</strong>${escapeHtml(work.support_reference)}</p>` : ''}

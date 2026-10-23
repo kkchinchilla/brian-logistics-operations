@@ -12,6 +12,9 @@ const ok=(s,v)=>{assert.ok(v,s);console.log('PASS:',s);count++};
  ok('Excel salary preserves exact formula total',sheet.getCell('F5').value===1025.15);
  ok('Excel missing rate salary is not exported as zero',sheet.getCell('F6').value==='待設定');
  ok('Excel unresolved record remains pending',sheet.getCell('F7').value==='待確認');
+ const named=await template.exportTemplate({ExcelJS,month:'2026-10',data:{drivers:[driver],runs:[],routes:[],executions:[{id:'run:1',driver_id:driver.id,service_date:'2026-10-01',route_id:1,route_name_snapshot:'北區門市配送',route_temperature_zone:'常溫',plate_snapshot:'TEST',is_rental:false,finalized:true}]},display:{driver:()=>driver.display_name,route:()=>{throw Error('Finalized exports must use saved names');},plate:()=>''}});
+ const namedBook=new ExcelJS.Workbook();await namedBook.xlsx.load(named.buffer);
+ ok('Excel attendance uses saved route names and a matching heading',namedBook.getWorksheet('出勤明細').getCell('D4').value==='路線名稱'&&namedBook.getWorksheet('出勤明細').getCell('D5').value==='北區門市配送');
  // Execute the actual legacy preview row expressions against the same fixture.
  const src=fs.readFileSync(__dirname+'/../../js/monthly.js','utf8');
  const line=src.split('\n').find(l=>l.includes("renderRows('payroll-preview-body'"));let rendered;

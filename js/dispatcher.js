@@ -184,10 +184,10 @@ async function loadRoutes() {
         await db
             .from('routes')
             .select(
-                'id, route_code, route_name, temperature_zone, default_start_time, default_end_time'
+                'id, route_name, temperature_zone, default_start_time, default_end_time'
             )
             .eq('active', true)
-            .order('route_code');
+            .order('route_name');
 
 
     if (error) {
@@ -215,10 +215,7 @@ async function loadRoutes() {
         option.value =
             route.id;
 
-        option.textContent =
-            route.route_name
-                ? `${route.route_code} — ${route.route_name}`
-                : route.route_code;
+        option.textContent = route.route_name || '未設定路線名稱';
 
         routeSelect.appendChild(option);
 
@@ -563,7 +560,7 @@ async function loadRuns() {
                         planned_start_time,
                         planned_end_time,
                         temperature_zone_snapshot,
-                        route_code_snapshot,
+                        route_name_snapshot,
                         is_rental,
                         status,
                         route_id,
@@ -572,7 +569,6 @@ async function loadRuns() {
                         dispatcher_notes,
 
                         routes (
-                            route_code,
                             route_name
                         ),
 
@@ -637,7 +633,7 @@ async function loadRuns() {
     </td>
 
     <td>
-        ${escapeHtml(run.route_code_snapshot || run.routes?.route_code || '—')}
+        ${escapeHtml(run.route_name_snapshot || run.routes?.route_name || '—')}
     </td>
 
     <td>

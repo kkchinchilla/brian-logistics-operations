@@ -14,6 +14,11 @@
   if(fn!=='dashboard_get_calculated_payroll')return base(fn,p);
   const response=await base('dashboard_get_route_payroll',p);if(response.error)return response;
   const b=response.data,drivers=mock143.tables.profiles.filter(x=>x.role==='driver');
+  // Adapt historical synthetic fixtures to the current name-only report shape.
+  for(const row of [...b.finalized.deliveries,...b.finalized.original_runs]){
+   row.route_name_snapshot=mock143.tables.routes.find(r=>String(r.id)===String(row.route_id))?.route_name||null;
+   delete row.route_code_snapshot;
+  }
   const report=PayrollReconciliation1491.build({...b,month:p.p_month.slice(0,7),drivers});
   for(const x of report.summaries){
    const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);

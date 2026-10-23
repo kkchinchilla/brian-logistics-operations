@@ -10,7 +10,7 @@ function openApprovalInbox146(){
  const list=[...attendanceRequests146].sort((a,b)=>(a.status==='pending'?0:1)-(b.status==='pending'?0:1)||b.id-a.id);
  modal(supervisor()?'變更審核':'我的變更申請',
   '<p class="note">列出所有日期的待審申請，以及目前出勤日期的審核結果。核准前，出勤表保留原紀錄。</p>'+
-  `<div class="approval-list">${list.map(q=>`<button type="button" class="approval-item" data-request-id="${q.id}"><span><strong>${esc(name(q.driver_id))}</strong> · ${esc(q.service_date)} · ${esc(requestKind148(q))}<small>${esc(q.base_record?.source?.kind==='duty'?dutyLabel1411(q.base_record.kind):q.base_record?.source?.kind==='standby'?'值班':rt(q.base_record.route_id)?.route_code||'—')} → ${q.proposed_void?'申請刪除':esc(isDuty1411(q.proposed_cell?.kind)?dutyLabel1411(q.proposed_cell.kind):q.proposed_cell?.kind==='standby'?'值班':rt(q.proposed_route_id)?.route_code||'—')}</small></span><span>${esc(requestStatus146[q.status]||q.status)} ›</span></button>`).join('')||'<p class="empty">目前沒有變更申請</p>'}</div>`,async()=>{});
+  `<div class="approval-list">${list.map(q=>`<button type="button" class="approval-item" data-request-id="${q.id}"><span><strong>${esc(name(q.driver_id))}</strong> · ${esc(q.service_date)} · ${esc(requestKind148(q))}<small>${esc(q.base_record?.source?.kind==='duty'?dutyLabel1411(q.base_record.kind):q.base_record?.source?.kind==='standby'?'值班':rt(q.base_record.route_id)?.route_name||'—')} → ${q.proposed_void?'申請刪除':esc(isDuty1411(q.proposed_cell?.kind)?dutyLabel1411(q.proposed_cell.kind):q.proposed_cell?.kind==='standby'?'值班':rt(q.proposed_route_id)?.route_name||'—')}</small></span><span>${esc(requestStatus146[q.status]||q.status)} ›</span></button>`).join('')||'<p class="empty">目前沒有變更申請</p>'}</div>`,async()=>{});
  $('#modal-save').hidden=true;
  document.querySelectorAll('[data-request-id]').forEach(b=>b.onclick=()=>{
   const q=list.find(q=>String(q.id)===b.dataset.requestId);if(q)openApprovalRequest146(q);
@@ -22,7 +22,7 @@ function openApprovalRequest146(q){
  const row=(label,before,after)=>`<tr><th>${esc(label)}</th><td>${esc(before||'—')}</td><td>${esc(after||'—')}</td></tr>`;
  const beforeStandby=b.source?.kind==='standby',afterStandby=q.proposed_cell?.kind==='standby';
  const beforeDuty=b.source?.kind==='duty',afterDuty=isDuty1411(q.proposed_cell?.kind);
- const comparison=row('路線',beforeDuty?dutyLabel1411(b.kind):beforeStandby?'值班':rt(b.route_id)?.route_code,afterDuty?dutyLabel1411(q.proposed_cell.kind):afterStandby?'值班':rt(q.proposed_route_id)?.route_code)+
+ const comparison=row('路線',beforeDuty?dutyLabel1411(b.kind):beforeStandby?'值班':rt(b.route_id)?.route_name,afterDuty?dutyLabel1411(q.proposed_cell.kind):afterStandby?'值班':rt(q.proposed_route_id)?.route_name)+
   (!(beforeDuty||beforeStandby)||!(afterDuty||afterStandby)?row('車號',beforeDuty||beforeStandby?'不指定':plate(b.vehicle_id),afterDuty||afterStandby?'不指定':plate(q.proposed_vehicle_id)):'')+
   (q.request_kind==='duty'?row('計酬單位',beforeDuty?'每筆紀錄':'',afterDuty?'每筆紀錄':''):'')+
   (['standby','duty'].includes(q.request_kind)?row('出勤欄位',q.attendance_category+q.attendance_slot_index,q.attendance_category+q.attendance_slot_index):'')+

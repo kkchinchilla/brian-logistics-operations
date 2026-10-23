@@ -16,7 +16,7 @@ if(!supervisor())return DriverAttendance1421.init();
 [drivers,vehicles,routes,ownerBindings]=await Promise.all([
  allPagedRows('profiles','id,display_name,role,active',q=>q.eq('role','driver')),
  allPagedRows('vehicles','id,plate_number,active'),
- allPagedRows('routes','id,route_code,route_name,temperature_zone,active,default_start_time,default_end_time'),
+ allPagedRows('routes','id,route_name,temperature_zone,active,default_start_time,default_end_time'),
  allPagedRows('vehicle_owner_bindings','id,driver_id,vehicle_id,effective_from,effective_to')
 ]);
 $('#head-actions').insertAdjacentHTML('afterbegin',`<div class="date-navigation"><button class="btn icon-nav" id="previous" aria-label="前一天">‹</button><input class="field" type="date" id="service-date" value="${boardDate}" aria-label="出勤日期"><button class="btn icon-nav" id="following" aria-label="後一天">›</button></div><button id="new-run" class="btn primary" ${supervisor()?'':'hidden'}>＋ 新增配送趟次</button><button id="close" class="btn" ${supervisor()?'':'hidden'}>結案</button>`);
@@ -38,12 +38,12 @@ async function fetchBoard(){
  let nextRuns, nextSlots, newSlotReady=true, nextError='';
  try{
   [nextRuns,nextSlots]=await Promise.all([
-   allPagedRows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,route_code_snapshot,temperature_zone_snapshot,attendance_category,attendance_slot_index,dashboard_schedule_revision',q=>q.eq('service_date',date).order('id')),
+   allPagedRows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,temperature_zone_snapshot,attendance_category,attendance_slot_index,dashboard_schedule_revision',q=>q.eq('service_date',date).order('id')),
    rows('daily_attendance_slot_counts','service_date,category,slot_count',q=>q.eq('service_date',date))
   ]);
  }catch(e){
   newSlotReady=false;nextError=e.message||'欄位設定尚未安裝';
-  nextRuns=await rows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,route_code_snapshot,temperature_zone_snapshot',q=>q.eq('service_date',date).order('id'));
+  nextRuns=await rows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,temperature_zone_snapshot',q=>q.eq('service_date',date).order('id'));
   nextSlots=[];
  }
  let nextObservations=[],nextExtras=[],ready=true,detailError='';
@@ -94,16 +94,17 @@ async function fetchBoard(){
  paintBoard();
 }
 const name=id=>drivers.find(d=>d.id===id)?.display_name||'—';const plate=id=>vehicles.find(v=>String(v.id)===String(id))?.plate_number||'';const rt=id=>routes.find(r=>r.id===id);
+const routeLabel1424=id=>rt(id)?.route_name?.trim()||'未設定路線名稱';
 function paintLegacyBoard(){
  const term=($('#filter')?.value||'').toLocaleLowerCase();
  const zones=[...new Set([...buckets,...runs.map(r=>rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')])];
  const max={};
  zones.forEach(z=>max[z]=Math.max(1,...drivers.map(d=>runs.filter(r=>r.driver_id===d.id&&(rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')===z).length)));
- const matching=drivers.filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[rt(r.route_id)?.route_code||r.route_code_snapshot,plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
+ const matching=drivers.filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
  let thead='<thead><tr class="category"><th class="sticky" rowspan="2">司機</th>';
  for(const zone of zones)thead+=`<th colspan="${max[zone]*2}">${esc(zone)}</th>`;
  thead+='</tr><tr class="subheading">';
- for(const zone of zones)for(let i=0;i<max[zone];i++)thead+=`<th class="${i===0?'group-start':''}">${esc(zone)}${i+1}</th><th>車號</th>`;
+ for(const zone of zones)for(let i=0;i<max[zone];i++)thead+=`<th class="attendance-route ${i===0?'group-start':''}">${esc(zone)}${i+1}</th><th>車號</th>`;
  thead+='</tr></thead>';
  let body='';
  for(const d of matching){
@@ -113,12 +114,12 @@ function paintLegacyBoard(){
    for(let i=0;i<max[zone];i++){
     const r=zoneRuns[i];const obs=r&&observations.find(o=>o.run_id===r.id);
     const editable=r&&['assigned','in_progress','completed'].includes(r.status)&&actualWriteReady&&!closeout?.closed_at&&supervisor();
-    const route=r?(rt(obs?.actual_route_id||r.route_id)?.route_code||r.route_code_snapshot||''):'';
+    const route=r?(routeLabel1424(obs?.actual_route_id??r.route_id)):'';
     const effective=obs?.actual_vehicle_id??r?.vehicle_id;
     for(let idx=0;idx<2;idx++){
      const value=idx===0?route:(r?plate(effective):'');
      const changed=!!(obs&&(idx===0?(obs.actual_route_id&&String(obs.actual_route_id)!==String(r.route_id)):(obs.actual_vehicle_id&&String(obs.actual_vehicle_id)!==String(r.vehicle_id))));
-     cells+=`<td class="${i===0&&idx===0?'group-start ':''}${!r?'empty-slot ':''}${changed?'changed':''}">`;
+     cells+=`<td class="${idx===0?'attendance-route ':''}${i===0&&idx===0?'group-start ':''}${!r?'empty-slot ':''}${changed?'changed':''}">`;
      if(editable)cells+=`<button type="button" class="cell" data-run="${r.id}" aria-label="編輯${esc(d.display_name)}${esc(zone)}${i+1}">${esc(value||'')}</button>`;
      else cells+=esc(value||'');
      cells+='</td>';
@@ -167,12 +168,12 @@ function paintBoard(){
  const matching=drivers.filter(d=>{
   const mine=runs.filter(r=>r.driver_id===d.id);
   const extras=activeExtras.filter(x=>x.driver_id===d.id);
-  return !term||[d.display_name,...mine.flatMap(r=>[rt(r.route_id)?.route_code||r.route_code_snapshot,plate(r.vehicle_id),r.attendance_category]),...extras.flatMap(x=>[rt(x.actual_route_id)?.route_code,plate(x.actual_vehicle_id),x.attendance_category]),...dutyEntries.filter(x=>x.driver_id===d.id).flatMap(x=>[dutyLabel1411(x.kind),'不指定',x.note]),...standbyShifts.filter(x=>x.driver_id===d.id).flatMap(x=>['值班','不指定',x.note])].join(' ').toLocaleLowerCase().includes(term);
+  return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id),r.attendance_category]),...extras.flatMap(x=>[routeLabel1424(x.actual_route_id),plate(x.actual_vehicle_id),x.attendance_category]),...dutyEntries.filter(x=>x.driver_id===d.id).flatMap(x=>[dutyLabel1411(x.kind),'不指定',x.note]),...standbyShifts.filter(x=>x.driver_id===d.id).flatMap(x=>['值班','不指定',x.note])].join(' ').toLocaleLowerCase().includes(term);
  });
  let thead='<thead><tr class="category"><th class="sticky" rowspan="2">司機</th><th class="attendance-leave" rowspan="2">休假</th>';
  for(const group of groups)thead+=`<th colspan="${group.count*2}">${esc(group.name)}</th>`;
  thead+='</tr><tr class="subheading">';
- for(const group of groups)for(let i=1;i<=group.count;i++)thead+=`<th class="${i===1?'group-start':''}">${esc(group.prefix+i)}</th><th>車號</th>`;
+ for(const group of groups)for(let i=1;i<=group.count;i++)thead+=`<th class="attendance-route ${i===1?'group-start':''}">${esc(group.prefix+i)}</th><th>車號</th>`;
  thead+='</tr></thead>';
  let body='';
  for(const d of matching){
@@ -186,13 +187,13 @@ function paintBoard(){
     const obs=r&&observations.find(o=>o.run_id===r.id);
     const editable=actualWriteReady&&scheduleReady&&!onLeave143(d.id)&&!isClosed&&(!r||['assigned','in_progress','completed'].includes(r.status))&&supervisor();
     const isExtra=!r&&!!extra;
-    const route=r?(rt(obs?.actual_route_id??r.route_id)?.route_code||r.route_code_snapshot||''):(extra?rt(extra.actual_route_id)?.route_code||'':'');
+    const route=r?(routeLabel1424(obs?.actual_route_id??r.route_id)):(extra?routeLabel1424(extra.actual_route_id):'');
     const effective=r?(obs?.actual_vehicle_id??r.vehicle_id):extra?.actual_vehicle_id;
     for(let idx=0;idx<2;idx++){
      const value=duty?(idx===0?dutyLabel1411(duty.kind):'不指定'):standby?(idx===0?'值班':'不指定'):(idx===0?route:plate(effective));
      const changed=!!(duty||standby||isExtra||!r&&!extra&&emptyPlanChanged143(d.id,group.name,i)||r&&planCellChanged143(r,idx)||r&&obs&&(idx===0?(obs.actual_route_id&&String(obs.actual_route_id)!==String(r.route_id)):(obs.actual_vehicle_id&&String(obs.actual_vehicle_id)!==String(r.vehicle_id))));
      const empty=!r&&!extra&&!standby&&!duty;
-     cells+=`<td class="${i===1&&idx===0?'group-start ':''}${empty?'empty-slot ':''}${changed?'changed':''}">`;
+     cells+=`<td class="${idx===0?'attendance-route ':''}${i===1&&idx===0?'group-start ':''}${empty?'empty-slot ':''}${changed?'changed':''}">`;
      if(editable&&(r||!['其他路線','其他值班'].includes(group.name))){
       const attr=duty?`data-duty="${duty.id}"`:standby?`data-standby="${standby.id}"`:r?`data-run="${r.id}"`:extra?`data-extra="${extra.id}"`:`data-add="1" data-driver="${esc(d.id)}" data-category="${esc(group.name)}" data-slot="${i}"`;
       const desc=duty?'編輯'+dutyLabel1411(duty.kind):standby?'編輯值班':r?'編輯':extra?'編輯臨時趟次':supervisor()?'新增勤務':'申請新增勤務';
@@ -278,7 +279,7 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
  const currentVehicle=run?(observation?.actual_vehicle_id??run.vehicle_id):extra?.actual_vehicle_id;
  const currentNote=duty?duty.note:standby?standby.note:run?(observation?.actual_note??run.dispatcher_notes??''):(extra?.actual_note||'');
  const routeOptions=routes.filter(x=>x.active||String(x.id)===String(currentRoute))
-   .map(x=>option(x.id,`${x.route_code} · ${x.route_name||x.temperature_zone||''}`,currentRoute)).join('');
+   .map(x=>option(x.id,`${x.route_name||'未設定路線名稱'} · ${x.temperature_zone||''}`,currentRoute)).join('');
  const vehicleOptions=vehicles.filter(x=>x.active||String(x.id)===String(currentVehicle))
    .map(x=>option(x.id,x.plate_number,currentVehicle)).join('');
  const canCancelRun=!!(run&&run.status==='assigned');
@@ -409,7 +410,7 @@ function scheduleEditor(run=null){
  const eligibleRoutes=routes.filter(r=>r.active&&r.temperature_zone&&r.default_start_time&&r.default_end_time);
  if(!activeDrivers.length||!activeVehicles.length||!eligibleRoutes.length){notify('請先建立啟用中的司機、車輛，以及有固定溫層和起迄時間的路線。');return}
  const choice=(id,title,items,key,label,value)=>`<label for="${id}">${title}</label><select class="field" id="${id}">${option('','請選擇',value)}${items.map(x=>option(x[key],label(x),value)).join('')}</select>`;
- const routeSelect=choice('plan-route','配送路線',eligibleRoutes,'id',x=>`${x.route_code} · ${x.temperature_zone} · ${(x.default_start_time||'').slice(0,5)}–${(x.default_end_time||'').slice(0,5)}`,run?.route_id);
+ const routeSelect=choice('plan-route','配送路線',eligibleRoutes,'id',x=>`${x.route_name||'未設定路線名稱'} · ${x.temperature_zone||''}`,run?.route_id);
  const driverSelect=choice('plan-driver','司機',activeDrivers,'id',x=>x.display_name,run?.driver_id);
  const vehicleSelect=choice('plan-vehicle','車輛',activeVehicles,'id',x=>x.plate_number,run?.vehicle_id);
 

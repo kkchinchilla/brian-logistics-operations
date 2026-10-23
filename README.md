@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Current release: **Increment 1.4.23 — route-name card titles and consistent logout buttons** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_23.md). Drivers see their own read-only attendance with route names as card headings, yellow temperature values and attendance-only navigation. Supervisors retain route/fleet navigation, scheduling and close/reopen controls. All five dashboards have mobile logout styled like 結案.
+Current release: **Increment 1.4.24 — route names throughout the system** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_24.md). Attendance, route management and reports use route names; obsolete route codes are removed. Internal IDs preserve all record links. Drivers retain their own responsive read-only attendance, and supervisors retain scheduling and close/reopen controls.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 

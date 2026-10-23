@@ -1,6 +1,6 @@
 /* v0.5 dynamic month-grid Excel export: no manual driver/route/template mapping.
- * Dates are paired (route code / plate); temperature rows expand per driver.
- * Route code is NOT asserted to be an approved payroll/attendance work code.
+ * Dates are paired (route name / plate); temperature rows expand per driver.
+ * Route name is NOT asserted to be an approved payroll/attendance work code.
  * Old 45-slot fixed template is intentionally NOT used by this new exporter.
  */
 (function(root,factory){
@@ -17,7 +17,7 @@
   function styleTitle(ws,title,month,end){
     ws.mergeCells(1,1,1,end);const c=ws.getCell(1,1);c.value=safe(title);c.font={bold:true,color:{argb:'FFFFFFFF'},size:14};
     c.fill={type:'pattern',pattern:'solid',fgColor:{argb:teal}};ws.getRow(1).height=30;
-    ws.mergeCells(2,1,2,end);const info=ws.getCell(2,1);info.value=`${month} · 試算草稿（未月結） · 路線編號不等於正式出勤／計酬代碼`;
+    ws.mergeCells(2,1,2,end);const info=ws.getCell(2,1);info.value=`${month} · 試算草稿（未月結） · 依結案路線名稱呈現`;
     info.font={italic:true,color:{argb:amber},size:11};ws.getRow(2).height=22;
   }
   function header(cell){cell.font={bold:true,color:{argb:ink}};cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:light}};
@@ -78,8 +78,8 @@
       const col=4+(day-1)*2,date=new Date(Date.UTC(year,mo-1,day));
       d.mergeCells(3,col,3,col+1);
       const c=d.getCell(3,col);c.value=day<=numDays?`${day}日（${wd[date.getUTCDay()]}）`:'—';header(c);
-      for(const [offset,v] of [['0','路線編號'],['1','車號']]){const x=d.getCell(4,col+Number(offset));x.value=v;header(x);}
-      d.getColumn(col).width=14;d.getColumn(col+1).width=14;
+      for(const [offset,v] of [['0','路線名稱'],['1','車號']]){const x=d.getCell(4,col+Number(offset));x.value=v;header(x);}
+      d.getColumn(col).width=20;d.getColumn(col+1).width=14;
     }
     d.mergeCells(3,66,4,66);d.getCell(3,66).value='已結案趟次';header(d.getCell(3,66));
     d.getColumn(1).width=20;d.getColumn(2).width=15;d.getColumn(3).width=13;d.getColumn(66).width=16;
@@ -97,7 +97,7 @@
           const date=monthPrefix+String(day).padStart(2,'0'),run=g.dateMap.get(date)?.[line];
           if(!run)continue;
           const col=4+2*(day-1);
-          row.getCell(col).value=safe(run.route_code_snapshot||(run.finalized?'未保存':display.route(run.route_id)));
+          row.getCell(col).value=safe(run.route_name_snapshot||(run.finalized?'未保存':display.route(run.route_id)));
           row.getCell(col+1).value=safe(run.finalized?(run.plate_snapshot||'未保存'):display.plate(run.vehicle_id));
           subtotal++;mapped++;
         }

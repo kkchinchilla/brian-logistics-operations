@@ -15,6 +15,7 @@ async function setup({finance=false,role='dispatcher',capabilityError=false}={})
 }
 (async()=>{
  ok('route dialog has no price preview or time inputs',!/(fee-preview|fee-caption|f-start|f-end|fixed-time-field|preview-cost)/.test(html));
+ ok('route code field and column are removed',!html.includes('f-code')&&!html.includes('編號'));
  ok('time column is removed',!html.includes('固定時段'));
  const css=fs.readFileSync(root+'/css/ui-routes-parity.css','utf8');ok('rates are hidden until the server allows finance access',css.includes(':not([data-finance-access="allowed"]) [data-route-finance]{display:none!important}'));
  for(const finance of [false,true]){
@@ -23,10 +24,10 @@ async function setup({finance=false,role='dispatcher',capabilityError=false}={})
   ok('rate reads follow the finance capability',e.calls.some(x=>x.table==='delivery_region_zone_rates')===finance);
   ok('rate amounts only render for Brian',e.el('routes-body').innerHTML.includes('9,876')===finance);
   e.el('tab-rates').onclick();ok('rate tab cannot be forced open without capability',e.el('section-title').textContent===(finance?'地區 × 溫層費率表':'路線列表'));
-  e.el('add-route').onclick();e.el('f-code').value='NEW';e.el('f-name').value='New route';e.el('f-region').value='Test region';e.el('f-zone').value='常溫';
+  e.el('add-route').onclick();e.el('f-name').value='New route';e.el('f-region').value='Test region';e.el('f-zone').value='常溫';
   await e.el('route-form').onsubmit({preventDefault(){}});
   const create=e.calls.find(x=>x.action==='insert'&&x.table==='routes');
-  assert.deepEqual(create.payload,{route_name:'New route',temperature_zone:'常溫',delivery_region_id:1,route_code:'NEW',active:true});ok('route creation sends operational fields only');
+  assert.deepEqual(create.payload,{route_name:'New route',temperature_zone:'常溫',delivery_region_id:1,active:true});ok('route creation sends operational fields only');
   e.el('routes-body').onclick({target:{closest:()=>({dataset:{id:'1'}})}});e.el('f-name').value='Edited route';
   await e.el('route-form').onsubmit({preventDefault(){}});
   const edit=e.calls.find(x=>x.action==='update'&&x.table==='routes');ok('editing does not overwrite historical times',edit.payload.route_name==='Edited route'&&!Object.hasOwn(edit.payload,'default_start_time')&&!Object.hasOwn(edit.payload,'default_end_time'));

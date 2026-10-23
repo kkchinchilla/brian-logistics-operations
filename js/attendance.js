@@ -34,11 +34,11 @@
     const columns = `
         id, run_id, service_date, driver_id, vehicle_id, route_id,
         route_temperature_zone, route_start_time, route_end_time,
-        route_code_snapshot, is_rental, driver_notes,
+        route_name_snapshot, is_rental, driver_notes,
         review_status, review_note,
         driver:profiles!trip_executions_driver_id_fkey(display_name),
         vehicle:vehicles!trip_executions_vehicle_id_fkey(plate_number),
-        route:routes!trip_executions_route_id_fkey(route_code,route_name),
+        route:routes!trip_executions_route_id_fkey(route_name),
         assignment:runs!trip_executions_run_id_fkey(status,scheduled_time,dispatcher_notes)
     `;
 
@@ -127,7 +127,7 @@
         for (const item of needsReview) {
             const tr = document.createElement('tr');
             makeCell(tr, item.service_date);
-            makeCell(tr, item.route_code_snapshot || item.route?.route_code || '未知路線');
+            makeCell(tr, item.route_name_snapshot || item.route?.route_name || '未知路線');
             makeCell(tr, item.route_temperature_zone || '待設定');
             makeCell(tr, safeName(item.driver, '未知司機'));
             makeCell(tr, item.vehicle?.plate_number || '未知車輛');
@@ -248,7 +248,7 @@
                 window.alert('本月沒有已確認的實際配送趟次。');
                 return;
             }
-            const headers = ['配送日期','預定出發時間','司機','車牌號碼','路線代碼','路線名稱',
+            const headers = ['配送日期','預定出發時間','司機','車牌號碼','路線名稱',
                 '溫層','路線固定開始時間','路線固定結束時間','是否租車',
                 '審核狀態','司機備註','調度備註','來源趟次 ID'];
             const rows = approved.map(item => [
@@ -256,8 +256,7 @@
                 item.assignment?.scheduled_time?.slice(0,5) || '',
                 item.driver?.display_name || '',
                 item.vehicle?.plate_number || '',
-                item.route_code_snapshot || item.route?.route_code || '',
-                item.route?.route_name || '',
+                item.route_name_snapshot || item.route?.route_name || '',
                 item.route_temperature_zone || '',
                 item.route_start_time?.slice(0, 5) || '',
                 item.route_end_time?.slice(0, 5) || '',

@@ -5,7 +5,7 @@
  const engine=()=>root.PayrollReconciliation149;
  const amount=n=>n===null||n===undefined?'待設定':Number(n).toLocaleString('zh-TW',{maximumFractionDigits:2});
  const person=id=>state.drivers.find(d=>d.id===id)?.display_name||'未列於司機名冊';
- const route=id=>state.routes.find(r=>String(r.id)===String(id))?.route_code||'路線 #'+id;
+ const route=id=>state.routes.find(r=>String(r.id)===String(id))?.route_name||'路線 #'+id;
  const select=(label,id,body)=>`<label for="${id}">${label}</label><select class="field" id="${id}">${body}</select>`;
  const reason=(value='')=>`<label for="pricing-reason">依據／原因（必填）</label><textarea class="field" id="pricing-reason" maxlength="2000" rows="3">${esc(value)}</textarea>`;
  function checkedReason(){const v=chosen('pricing-reason').trim();if(!v||v.length>2000)throw Error('請填寫 1 至 2000 字的依據／原因');return v;}
@@ -43,7 +43,7 @@
   modal(old?'設定新費率（保留前期）':'新增計薪費率',
    select('司機','pricing-driver',option('','請選擇',selectedDriver)+drivers.map(d=>option(d.id,d.display_name,selectedDriver)).join(''))+
    select('計薪項目','pricing-component',Object.entries(engine().componentLabels).map(([v,t])=>option(v,t,selectedComponent)).join(''))+
-   select('路線','pricing-route',option('','請選擇',old?.route_id)+routes.map(r=>option(r.id,r.route_code,old?.route_id)).join(''))+
+   select('路線','pricing-route',option('','請選擇',old?.route_id)+routes.map(r=>option(r.id,r.route_name,old?.route_id)).join(''))+
    field('金額（NT$，0 表示明確設定為零）','pricing-amount',old?.amount??'','number')+
    field('生效日','pricing-from',state.month+'-01','date')+field('結束日（可留空）','pricing-to',old?.effective_to||'','date')+reason()+
    (old?`<p class="note">原費率 NT$${amount(old.amount)}，自 ${esc(old.effective_from)} 生效。新費率儲存後，原費率結束日會設為新生效日前一天。</p>`:''),async()=>{
@@ -67,7 +67,7 @@
  }
  function detailHTML(id){
   const x=state?.report.summaries.find(x=>x.driverId===id);if(!x)return '';
-  const lineRows=state.report.lines.filter(l=>l.driverId===id).map(l=>`<tr><td class="sticky">${esc(l.date)}</td><td>${esc(l.routeCode||engine().componentLabels[l.kind]||l.kind)}</td><td>${esc(l.source)}</td><td>${l.closeEventId||'—'}</td><td>${l.ruleId||'—'}</td><td>${l.notApplicable?'不適用':amount(l.amount)}</td></tr>`).join('');
+  const lineRows=state.report.lines.filter(l=>l.driverId===id).map(l=>`<tr><td class="sticky">${esc(l.date)}</td><td>${esc(l.routeName||engine().componentLabels[l.kind]||l.kind)}</td><td>${esc(l.source)}</td><td>${l.closeEventId||'—'}</td><td>${l.ruleId||'—'}</td><td>${l.notApplicable?'不適用':amount(l.amount)}</td></tr>`).join('');
   return `<section class="pricing-detail"><h3>基本項目對帳</h3><p class="note">依目前設定試算；應計薪資仍待完整規則確認。</p>${wrapTable(['固定月薪','路線計酬','人工調整','基本項目小計'],`<tr><td>${amount(x.fixed)}</td><td>${amount(x.variable)}</td><td>${amount(x.adjustment)}</td><td>${amount(x.basicSubtotal)}</td></tr>`)}<details><summary>查看 ${state.report.lines.filter(l=>l.driverId===id).length} 筆計薪依據</summary>${wrapTable(['日期','項目／路線','來源','結案紀錄','費率','基本項目金額'],lineRows)}</details><details open><summary>${x.issues.length} 項待確認</summary><ul class="pricing-issues">${x.issues.map(i=>`<li>${esc([i.date,i.source,i.message].filter(Boolean).join(' · '))}</li>`).join('')}</ul></details></section>`;
  }
  async function exportCSV(){

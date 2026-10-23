@@ -21,11 +21,11 @@ async function load(){
   client.from('delivery_regions').select('id,name').order('name'),
   client.from('delivery_temperature_zones').select('name').order('name'),
   finance()?client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'):Promise.resolve({data:[],error:null}),
-  client.from('routes').select('id,route_code,route_name,active,temperature_zone,delivery_region_id').order('route_code')
+  client.from('routes').select('id,route_name,active,temperature_zone,delivery_region_id').order('route_name')
  ]);
  for(const res of [r,z,t,c])if(res.error)throw res.error;
  regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];
- routes=(c.data||[]).map(x=>({...x,code:x.route_code,name:x.route_name||x.route_code,region:rt(x.delivery_region_id),zone:x.temperature_zone||''}));
+ routes=(c.data||[]).map(x=>({...x,name:x.route_name||'未設定路線名稱',region:rt(x.delivery_region_id),zone:x.temperature_zone||''}));
  buildSelects();render();
 }
 const rate=(region,zone)=>tariffs.find(t=>t.region_id===regionId(region)&&t.zone_name===zone)?.delivery_fee??null;
@@ -41,12 +41,12 @@ function buildSelects(){
 }
 function render(){
  if(tab==='rates'&&!finance())tab='routes';
- const visible=routes.filter(r=>([r.code,r.name,r.region,r.zone].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()))&&(!filterRegion||filterRegion===r.region)&&(!filterZone||filterZone===r.zone));
+ const visible=routes.filter(r=>([r.name,r.region,r.zone].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()))&&(!filterRegion||filterRegion===r.region)&&(!filterZone||filterZone===r.zone));
  $('stat-routes').textContent=routes.filter(x=>x.active).length;
  $('stat-regions').textContent=regions.length;$('stat-zones').textContent=zones.length;
  const prices=routes.filter(x=>x.active).map(x=>rate(x.region,x.zone)).filter(x=>x!==null);
  $('stat-avg').textContent=prices.length?money(prices.reduce((a,b)=>a+Number(b),0)/prices.length):'—';
- $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}<span class="route-code">${esc(r.code)}${r.active?'':' · 已停用'}</span></td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td>${finance()?`<td class="cost">${money(rate(r.region,r.zone))}</td>`:''}<td class="row-arrow">›</td></tr>`).join('')||`<tr><td colspan="${finance()?5:4}" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>`;
+ $('routes-body').innerHTML=visible.map(r=>`<tr tabindex="0" role="button" data-id="${r.id}" aria-label="編輯 ${esc(r.name)}"><td>${esc(r.name)}${r.active?'':'<span class="route-code">已停用</span>'}</td><td><span class="region">${esc(r.region)}</span></td><td><span class="zone">${esc(r.zone||'未設定')}</span></td>${finance()?`<td class="cost">${money(rate(r.region,r.zone))}</td>`:''}<td class="row-arrow">›</td></tr>`).join('')||`<tr><td colspan="${finance()?5:4}" style="text-align:center;height:105px;position:static">目前沒有符合條件的路線</td></tr>`;
  $('result-count').textContent=`顯示 ${visible.length} / ${routes.length} 條路線`;
  $('rates-head').innerHTML=finance()?`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`:'';
  $('rates-body').innerHTML=finance()?regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join(''):'';
@@ -63,7 +63,6 @@ function openLayer(id){$('overlay').classList.add('open');$(id).classList.add('o
 function dismiss(){editing=rateEditing=entityEditing=null;['drawer','rate-modal','entity-modal'].forEach(id=>{$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')});$('overlay').classList.remove('open')}
 function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id));if(id!==null&&!row)return;
  editing=row||'new';$('drawer-kicker').textContent=row?'編輯配送路線':'建立新路線';$('drawer-title').textContent=row?'編輯路線':'新增路線';
- $('f-code').disabled=!!row;$('f-code').value=row?row.code:'';$('f-code').placeholder='例如 FM-101';
  $('f-name').value=row?row.route_name||row.name:'';
  $('f-region').value=row&&regions.some(r=>r.name===row.region)?row.region:'';
  $('f-zone').value=row&&zones.includes(row.zone)?row.zone:'';
@@ -71,12 +70,12 @@ function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id)
  $('save-form').textContent=row?'儲存變更':'建立路線';$('form-error').textContent='';openLayer('drawer');
 }
 async function submitRoute(e){e.preventDefault();if(waiting)return;
- const region=$('f-region').value,zone=$('f-zone').value,code=nameKey($('f-code').value).toUpperCase(),name=nameKey($('f-name').value);
- if(!code||!name||!regionId(region)||!zone){$('form-error').textContent='請填寫路線編號、名稱、配送地區與溫層。';return}
+ const region=$('f-region').value,zone=$('f-zone').value,name=nameKey($('f-name').value);
+ if(!name||name.length>60||!regionId(region)||!zone){$('form-error').textContent='請填寫 1–60 字的路線名稱、配送地區與溫層。';return}
  const payload={route_name:name,temperature_zone:zone,delivery_region_id:regionId(region)};
  busy(true);
  try{
-  const r=editing==='new'?await client.from('routes').insert({...payload,route_code:code,active:true}):await client.from('routes').update(payload).eq('id',editing.id);
+  const r=editing==='new'?await client.from('routes').insert({...payload,active:true}):await client.from('routes').update(payload).eq('id',editing.id);
   if(r.error)throw r.error;dismiss();await load();notice('路線資料已儲存至 Supabase');
  }catch(err){$('form-error').textContent=`儲存失敗：${errorText(err)}`}finally{busy(false)}
 }
@@ -92,7 +91,7 @@ async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)ret
  // A category can be added from an unsaved route editor. Preserve its entire form.
  const routeDraft=origin==='route' && editing ? {
   id:editing==='new'?null:editing.id,
-  code:$('f-code').value,name:$('f-name').value,
+  name:$('f-name').value,
   region:$('f-region').value,zone:$('f-zone').value
  }:null;
  if(!validName(name)){$('entity-error').textContent='名稱應為 1–50 個字。';return}
@@ -108,7 +107,7 @@ async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)ret
   dismiss();await load();
   if(routeDraft){
     openRoute(routeDraft.id);
-    $('f-code').value=routeDraft.code;$('f-name').value=routeDraft.name;
+    $('f-name').value=routeDraft.name;
     $('f-region').value=(kind==='region' && (old===routeDraft.region||!old))?name:routeDraft.region;
     $('f-zone').value=(kind==='zone' && (old===routeDraft.zone||!old))?name:routeDraft.zone;
   }
@@ -120,7 +119,7 @@ async function removeEntity(kind,name){const used=routes.filter(r=>r[kind]===nam
   if(res.error)throw res.error;await load();notice('分類已移除');
  }catch(err){notice(`移除失敗：${errorText(err)}`)} }
 async function toggleActive(){if(!editing||editing==='new'||waiting)return;
- const row=editing;if(!confirm(`確定${row.active?'停用':'啟用'}路線 ${row.code}？`))return;
+ const row=editing;if(!confirm(`確定${row.active?'停用':'啟用'}路線 ${row.name}？`))return;
  busy(true);try{const res=await client.from('routes').update({active:!row.active}).eq('id',row.id);if(res.error)throw res.error;dismiss();await load();notice('路線狀態已更新')}catch(err){$('form-error').textContent=errorText(err)}finally{busy(false)} }
 function bind(){
  function applyDevice(){const mobile=window.matchMedia('(max-width: 800px)').matches;

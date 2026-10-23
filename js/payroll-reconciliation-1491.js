@@ -59,7 +59,7 @@
     const valid=value!==null&&value>=0&&!!rate.region_id&&!!run.route_temperature_zone&&rate.zone_name===run.route_temperature_zone;
     if(!valid){variable=null;issue('route_rate_missing',driverId,run.service_date,run.id,'路線管理費率未設定，或目前溫層與結案紀錄不符');}
     else if(variable!==null)variable+=value;
-    lines.push({driverId,date:run.service_date,source:run.id,kind:'per_run',routeId:run.route_id,routeCode:run.route_code_snapshot||'',temperatureZone:run.route_temperature_zone||'',quantity:1,ruleId:valid?'route:'+rate.region_id+':'+rate.zone_name:null,rateUpdatedAt:rate?.updated_at||null,amount:valid?money(value):null,closeEventId:run.close_event_id,status:valid?'路線管理目前費率（試算）':'待設定'});
+    lines.push({driverId,date:run.service_date,source:run.id,kind:'per_run',routeId:run.route_id,routeName:run.route_name_snapshot||'',temperatureZone:run.route_temperature_zone||'',quantity:1,ruleId:valid?'route:'+rate.region_id+':'+rate.zone_name:null,rateUpdatedAt:rate?.updated_at||null,amount:valid?money(value):null,closeEventId:run.close_event_id,status:valid?'路線管理目前費率（試算）':'待設定'});
     if(run.is_rental===true){const cost=supplement('rental',run.service_date,run.id,run.close_event_id);rentalCost=rentalCost===null||cost===null?null:rentalCost+cost;}
     else if(run.is_rental!==false){rentalCost=null;issue('rental_unknown',driverId,run.service_date,run.id,'結案快照的租車狀態未確認，扣款待確認');}
    }

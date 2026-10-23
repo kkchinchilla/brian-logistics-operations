@@ -219,6 +219,10 @@ body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list) .actions{ma
 @media(max-width:800px){body[data-dashboard="attendance"] .board-tools{align-items:stretch}body[data-dashboard="attendance"] .attendance-operations{width:100%;justify-content:space-between;gap:10px}body[data-dashboard="attendance"] .dialog:has(#attendance-slot-list){padding:27px 19px max(25px,env(safe-area-inset-bottom))}}
 @media(max-width:380px){body[data-dashboard="attendance"] .attendance-slot-item{padding:10px 9px;gap:5px}body[data-dashboard="attendance"] .attendance-slot-steps{gap:7px}body[data-dashboard="attendance"] .attendance-slot-steps button{width:37px;height:39px}body[data-dashboard="attendance"] .attendance-slot-copy strong{font-size:13px}}
 </style><style>/* Increment 1.4.2: only Daily Attendance empty-slot affordance and undo action. */
+/* Route names wrap in a wider route column; vehicle columns remain compact. */
+body[data-dashboard="attendance"] .attendance-matrix th.attendance-route,
+body[data-dashboard="attendance"] .attendance-matrix td.attendance-route{width:128px;min-width:128px;max-width:128px;white-space:normal;overflow-wrap:anywhere;padding:6px}
+body[data-dashboard="attendance"] .attendance-matrix td.attendance-route .cell{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual{color:#92969d;background:transparent;border:1px dashed #4c5055;min-width:34px;font-size:17px;padding:3px 8px;opacity:.85}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:hover,
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:var(--yellow);border-color:var(--yellow);background:#38382c;opacity:1}
@@ -834,6 +838,11 @@ window._testDB143={auth:{async getUser(){return {data:{user:{id:mock143.role==='
   if(fn!=='dashboard_get_calculated_payroll')return base(fn,p);
   const response=await base('dashboard_get_route_payroll',p);if(response.error)return response;
   const b=response.data,drivers=mock143.tables.profiles.filter(x=>x.role==='driver');
+  // Adapt historical synthetic fixtures to the current name-only report shape.
+  for(const row of [...b.finalized.deliveries,...b.finalized.original_runs]){
+   row.route_name_snapshot=mock143.tables.routes.find(r=>String(r.id)===String(row.route_id))?.route_name||null;
+   delete row.route_code_snapshot;
+  }
   const report=PayrollReconciliation1491.build({...b,month:p.p_month.slice(0,7),drivers});
   for(const x of report.summaries){
    const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);
@@ -1006,7 +1015,7 @@ if(!supervisor())return DriverAttendance1421.init();
 [drivers,vehicles,routes,ownerBindings]=await Promise.all([
  allPagedRows('profiles','id,display_name,role,active',q=>q.eq('role','driver')),
  allPagedRows('vehicles','id,plate_number,active'),
- allPagedRows('routes','id,route_code,route_name,temperature_zone,active,default_start_time,default_end_time'),
+ allPagedRows('routes','id,route_name,temperature_zone,active,default_start_time,default_end_time'),
  allPagedRows('vehicle_owner_bindings','id,driver_id,vehicle_id,effective_from,effective_to')
 ]);
 $('#head-actions').insertAdjacentHTML('afterbegin',`<div class="date-navigation"><button class="btn icon-nav" id="previous" aria-label="前一天">‹</button><input class="field" type="date" id="service-date" value="${boardDate}" aria-label="出勤日期"><button class="btn icon-nav" id="following" aria-label="後一天">›</button></div><button id="new-run" class="btn primary" ${supervisor()?'':'hidden'}>＋ 新增配送趟次</button><button id="close" class="btn" ${supervisor()?'':'hidden'}>結案</button>`);
@@ -1028,12 +1037,12 @@ async function fetchBoard(){
  let nextRuns, nextSlots, newSlotReady=true, nextError='';
  try{
   [nextRuns,nextSlots]=await Promise.all([
-   allPagedRows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,route_code_snapshot,temperature_zone_snapshot,attendance_category,attendance_slot_index,dashboard_schedule_revision',q=>q.eq('service_date',date).order('id')),
+   allPagedRows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,temperature_zone_snapshot,attendance_category,attendance_slot_index,dashboard_schedule_revision',q=>q.eq('service_date',date).order('id')),
    rows('daily_attendance_slot_counts','service_date,category,slot_count',q=>q.eq('service_date',date))
   ]);
  }catch(e){
   newSlotReady=false;nextError=e.message||'欄位設定尚未安裝';
-  nextRuns=await rows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,route_code_snapshot,temperature_zone_snapshot',q=>q.eq('service_date',date).order('id'));
+  nextRuns=await rows('runs','id,service_date,route_id,driver_id,vehicle_id,status,is_rental,dispatcher_notes,temperature_zone_snapshot',q=>q.eq('service_date',date).order('id'));
   nextSlots=[];
  }
  let nextObservations=[],nextExtras=[],ready=true,detailError='';
@@ -1084,16 +1093,17 @@ async function fetchBoard(){
  paintBoard();
 }
 const name=id=>drivers.find(d=>d.id===id)?.display_name||'—';const plate=id=>vehicles.find(v=>String(v.id)===String(id))?.plate_number||'';const rt=id=>routes.find(r=>r.id===id);
+const routeLabel1424=id=>rt(id)?.route_name?.trim()||'未設定路線名稱';
 function paintLegacyBoard(){
  const term=($('#filter')?.value||'').toLocaleLowerCase();
  const zones=[...new Set([...buckets,...runs.map(r=>rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')])];
  const max={};
  zones.forEach(z=>max[z]=Math.max(1,...drivers.map(d=>runs.filter(r=>r.driver_id===d.id&&(rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')===z).length)));
- const matching=drivers.filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[rt(r.route_id)?.route_code||r.route_code_snapshot,plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
+ const matching=drivers.filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
  let thead='<thead><tr class="category"><th class="sticky" rowspan="2">司機</th>';
  for(const zone of zones)thead+=`<th colspan="${max[zone]*2}">${esc(zone)}</th>`;
  thead+='</tr><tr class="subheading">';
- for(const zone of zones)for(let i=0;i<max[zone];i++)thead+=`<th class="${i===0?'group-start':''}">${esc(zone)}${i+1}</th><th>車號</th>`;
+ for(const zone of zones)for(let i=0;i<max[zone];i++)thead+=`<th class="attendance-route ${i===0?'group-start':''}">${esc(zone)}${i+1}</th><th>車號</th>`;
  thead+='</tr></thead>';
  let body='';
  for(const d of matching){
@@ -1103,12 +1113,12 @@ function paintLegacyBoard(){
    for(let i=0;i<max[zone];i++){
     const r=zoneRuns[i];const obs=r&&observations.find(o=>o.run_id===r.id);
     const editable=r&&['assigned','in_progress','completed'].includes(r.status)&&actualWriteReady&&!closeout?.closed_at&&supervisor();
-    const route=r?(rt(obs?.actual_route_id||r.route_id)?.route_code||r.route_code_snapshot||''):'';
+    const route=r?(routeLabel1424(obs?.actual_route_id??r.route_id)):'';
     const effective=obs?.actual_vehicle_id??r?.vehicle_id;
     for(let idx=0;idx<2;idx++){
      const value=idx===0?route:(r?plate(effective):'');
      const changed=!!(obs&&(idx===0?(obs.actual_route_id&&String(obs.actual_route_id)!==String(r.route_id)):(obs.actual_vehicle_id&&String(obs.actual_vehicle_id)!==String(r.vehicle_id))));
-     cells+=`<td class="${i===0&&idx===0?'group-start ':''}${!r?'empty-slot ':''}${changed?'changed':''}">`;
+     cells+=`<td class="${idx===0?'attendance-route ':''}${i===0&&idx===0?'group-start ':''}${!r?'empty-slot ':''}${changed?'changed':''}">`;
      if(editable)cells+=`<button type="button" class="cell" data-run="${r.id}" aria-label="編輯${esc(d.display_name)}${esc(zone)}${i+1}">${esc(value||'')}</button>`;
      else cells+=esc(value||'');
      cells+='</td>';
@@ -1157,12 +1167,12 @@ function paintBoard(){
  const matching=drivers.filter(d=>{
   const mine=runs.filter(r=>r.driver_id===d.id);
   const extras=activeExtras.filter(x=>x.driver_id===d.id);
-  return !term||[d.display_name,...mine.flatMap(r=>[rt(r.route_id)?.route_code||r.route_code_snapshot,plate(r.vehicle_id),r.attendance_category]),...extras.flatMap(x=>[rt(x.actual_route_id)?.route_code,plate(x.actual_vehicle_id),x.attendance_category]),...dutyEntries.filter(x=>x.driver_id===d.id).flatMap(x=>[dutyLabel1411(x.kind),'不指定',x.note]),...standbyShifts.filter(x=>x.driver_id===d.id).flatMap(x=>['值班','不指定',x.note])].join(' ').toLocaleLowerCase().includes(term);
+  return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id),r.attendance_category]),...extras.flatMap(x=>[routeLabel1424(x.actual_route_id),plate(x.actual_vehicle_id),x.attendance_category]),...dutyEntries.filter(x=>x.driver_id===d.id).flatMap(x=>[dutyLabel1411(x.kind),'不指定',x.note]),...standbyShifts.filter(x=>x.driver_id===d.id).flatMap(x=>['值班','不指定',x.note])].join(' ').toLocaleLowerCase().includes(term);
  });
  let thead='<thead><tr class="category"><th class="sticky" rowspan="2">司機</th><th class="attendance-leave" rowspan="2">休假</th>';
  for(const group of groups)thead+=`<th colspan="${group.count*2}">${esc(group.name)}</th>`;
  thead+='</tr><tr class="subheading">';
- for(const group of groups)for(let i=1;i<=group.count;i++)thead+=`<th class="${i===1?'group-start':''}">${esc(group.prefix+i)}</th><th>車號</th>`;
+ for(const group of groups)for(let i=1;i<=group.count;i++)thead+=`<th class="attendance-route ${i===1?'group-start':''}">${esc(group.prefix+i)}</th><th>車號</th>`;
  thead+='</tr></thead>';
  let body='';
  for(const d of matching){
@@ -1176,13 +1186,13 @@ function paintBoard(){
     const obs=r&&observations.find(o=>o.run_id===r.id);
     const editable=actualWriteReady&&scheduleReady&&!onLeave143(d.id)&&!isClosed&&(!r||['assigned','in_progress','completed'].includes(r.status))&&supervisor();
     const isExtra=!r&&!!extra;
-    const route=r?(rt(obs?.actual_route_id??r.route_id)?.route_code||r.route_code_snapshot||''):(extra?rt(extra.actual_route_id)?.route_code||'':'');
+    const route=r?(routeLabel1424(obs?.actual_route_id??r.route_id)):(extra?routeLabel1424(extra.actual_route_id):'');
     const effective=r?(obs?.actual_vehicle_id??r.vehicle_id):extra?.actual_vehicle_id;
     for(let idx=0;idx<2;idx++){
      const value=duty?(idx===0?dutyLabel1411(duty.kind):'不指定'):standby?(idx===0?'值班':'不指定'):(idx===0?route:plate(effective));
      const changed=!!(duty||standby||isExtra||!r&&!extra&&emptyPlanChanged143(d.id,group.name,i)||r&&planCellChanged143(r,idx)||r&&obs&&(idx===0?(obs.actual_route_id&&String(obs.actual_route_id)!==String(r.route_id)):(obs.actual_vehicle_id&&String(obs.actual_vehicle_id)!==String(r.vehicle_id))));
      const empty=!r&&!extra&&!standby&&!duty;
-     cells+=`<td class="${i===1&&idx===0?'group-start ':''}${empty?'empty-slot ':''}${changed?'changed':''}">`;
+     cells+=`<td class="${idx===0?'attendance-route ':''}${i===1&&idx===0?'group-start ':''}${empty?'empty-slot ':''}${changed?'changed':''}">`;
      if(editable&&(r||!['其他路線','其他值班'].includes(group.name))){
       const attr=duty?`data-duty="${duty.id}"`:standby?`data-standby="${standby.id}"`:r?`data-run="${r.id}"`:extra?`data-extra="${extra.id}"`:`data-add="1" data-driver="${esc(d.id)}" data-category="${esc(group.name)}" data-slot="${i}"`;
       const desc=duty?'編輯'+dutyLabel1411(duty.kind):standby?'編輯值班':r?'編輯':extra?'編輯臨時趟次':supervisor()?'新增勤務':'申請新增勤務';
@@ -1268,7 +1278,7 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
  const currentVehicle=run?(observation?.actual_vehicle_id??run.vehicle_id):extra?.actual_vehicle_id;
  const currentNote=duty?duty.note:standby?standby.note:run?(observation?.actual_note??run.dispatcher_notes??''):(extra?.actual_note||'');
  const routeOptions=routes.filter(x=>x.active||String(x.id)===String(currentRoute))
-   .map(x=>option(x.id,`${x.route_code} · ${x.route_name||x.temperature_zone||''}`,currentRoute)).join('');
+   .map(x=>option(x.id,`${x.route_name||'未設定路線名稱'} · ${x.temperature_zone||''}`,currentRoute)).join('');
  const vehicleOptions=vehicles.filter(x=>x.active||String(x.id)===String(currentVehicle))
    .map(x=>option(x.id,x.plate_number,currentVehicle)).join('');
  const canCancelRun=!!(run&&run.status==='assigned');
@@ -1399,7 +1409,7 @@ function scheduleEditor(run=null){
  const eligibleRoutes=routes.filter(r=>r.active&&r.temperature_zone&&r.default_start_time&&r.default_end_time);
  if(!activeDrivers.length||!activeVehicles.length||!eligibleRoutes.length){notify('請先建立啟用中的司機、車輛，以及有固定溫層和起迄時間的路線。');return}
  const choice=(id,title,items,key,label,value)=>`<label for="${id}">${title}</label><select class="field" id="${id}">${option('','請選擇',value)}${items.map(x=>option(x[key],label(x),value)).join('')}</select>`;
- const routeSelect=choice('plan-route','配送路線',eligibleRoutes,'id',x=>`${x.route_code} · ${x.temperature_zone} · ${(x.default_start_time||'').slice(0,5)}–${(x.default_end_time||'').slice(0,5)}`,run?.route_id);
+ const routeSelect=choice('plan-route','配送路線',eligibleRoutes,'id',x=>`${x.route_name||'未設定路線名稱'} · ${x.temperature_zone||''}`,run?.route_id);
  const driverSelect=choice('plan-driver','司機',activeDrivers,'id',x=>x.display_name,run?.driver_id);
  const vehicleSelect=choice('plan-vehicle','車輛',activeVehicles,'id',x=>x.plate_number,run?.vehicle_id);
 
@@ -1605,7 +1615,7 @@ function row143(x,i){
  const select=(key,content)=>`<select data-template-field="${key}" data-index="${i}" aria-label="第${i+1}筆${{category:'出勤類別',slot_index:'欄位',route_id:'路線',vehicle_id:'車號'}[key]}">${content}</select>`;
  const bound=FleetBinding144.valid(ownerBindings,plan143.driver,today(),vehicles);
  const note=FleetBinding144.hint(ownerBindings,plan143.driver,x.vehicle_id,today(),vehicles);
- return `<div class="plan-route-row"><label>出勤類別${select('category',attendanceGroups.map(g=>option(g.name,g.name,x.category)).join(''))}</label><label>欄位${select('slot_index',Array.from({length:30},(_,n)=>option(n+1,`第 ${n+1} 趟`,x.slot_index)).join(''))}</label><label>路線${select('route_id',option('','請選擇路線',x.route_id||'')+routes.filter(r=>r.active||r.id===x.route_id).map(r=>option(r.id,`${r.route_code}${r.active?'':'（停用）'}`,x.route_id)).join(''))}</label><label>車號${select('vehicle_id',option('','請選擇車號',x.vehicle_id||'')+vehicles.filter(v=>v.active||v.id===x.vehicle_id).map(v=>option(v.id,`${v.plate_number}${v.active?'':'（停用）'}`,x.vehicle_id)).join(''))}</label><button class="plan-tiny-remove" type="button" data-plan-action="remove" data-index="${i}" aria-label="移除第 ${i+1} 趟">×</button><div class="plan-run-meta"><span class="fixed-time">${esc(routeTime143(x.route_id))}</span><span class="plan-rental-caption">${esc(note)}${bound.length>1?' · 可自由改車':''}</span></div></div>`;
+ return `<div class="plan-route-row"><label>出勤類別${select('category',attendanceGroups.map(g=>option(g.name,g.name,x.category)).join(''))}</label><label>欄位${select('slot_index',Array.from({length:30},(_,n)=>option(n+1,`第 ${n+1} 趟`,x.slot_index)).join(''))}</label><label>路線${select('route_id',option('','請選擇路線',x.route_id||'')+routes.filter(r=>r.active||r.id===x.route_id).map(r=>option(r.id,`${r.route_name||'未設定路線名稱'}${r.active?'':'（停用）'}`,x.route_id)).join(''))}</label><label>車號${select('vehicle_id',option('','請選擇車號',x.vehicle_id||'')+vehicles.filter(v=>v.active||v.id===x.vehicle_id).map(v=>option(v.id,`${v.plate_number}${v.active?'':'（停用）'}`,x.vehicle_id)).join(''))}</label><button class="plan-tiny-remove" type="button" data-plan-action="remove" data-index="${i}" aria-label="移除第 ${i+1} 趟">×</button><div class="plan-run-meta"><span class="fixed-time">${esc(routeTime143(x.route_id))}</span><span class="plan-rental-caption">${esc(note)}${bound.length>1?' · 可自由改車':''}</span></div></div>`;
 }
 
 function renderPlan143(){
@@ -1626,7 +1636,7 @@ function renderApply143(){
  const exceptions=[...plan143.selected].filter(d=>plan143.calendar[d]?.has_plan_exception).length;
  // The change handler owns this flag; do not resurrect a previously unchecked value.
  plan143.overwrite=!!plan143.overwrite;
- $('#plan-content').innerHTML=`<div class="plan-section-head"><div><h3>挑選要複製班表的日期</h3><p>選取月曆中的具體日期，<b>可切換月份累積選取</b>。不會自動選滿全月或固定星期。</p></div></div><div class="plan-apply-grid"><div class="plan-minicard"><h4>選取日期</h4><div class="plan-datebar"><button class="plan-btn" data-plan-action="prev-month" aria-label="上個月">‹</button><input type="month" class="plan-month-picker" id="plan-month-picker" value="${month}" aria-label="套用月份"><button class="plan-btn" data-plan-action="next-month" aria-label="下個月">›</button></div><div class="plan-calendar"><div class="plan-calendar-head">${['日','一','二','三','四','五','六'].map(w=>`<span>週${w}</span>`).join('')}</div><div class="plan-calendar-grid">${'<span></span>'.repeat(first)}${cells}</div><p class="plan-summary-note">黃色：本次選取 · 小黃點：已排班 · 休：該司機休假 · 刪除線：已結案</p></div><div class="plan-pick-actions"><button class="plan-btn" data-plan-action="select-month">選取本月全部</button><button class="plan-btn" data-plan-action="select-weekdays">選取本月週一至週五</button><button class="plan-btn" data-plan-action="clear-month">清除本月選取</button></div><p class="plan-summary-note">快捷選取只是勾選日期，不代表司機固定週一至週五上班。休假及已結案日期不會被選取。</p></div><div class="plan-minicard"><h4>${esc(name(plan143.driver))} · 已儲存的單日範本</h4><p>${rows.length} 趟 · ${plan143.saved?`版本 ${plan143.saved.revision}`:'尚未儲存'}</p><p>${rows.map(x=>`${esc(x.category)}${x.slot_index} ${esc(rt(x.route_id)?.route_code||'#'+x.route_id)}／${esc(plate(x.vehicle_id))}`).join('、')||'請先到「編輯單日範本」建立趟次。'}</p><div class="plan-apply-preview">已選 <b>${plan143.selected.size}</b> 天，其中 ${exceptions} 天有單日調整。單日調整預設保留。</div><h4 style="margin-top:17px">本次選取的日期</h4><div class="plan-date-summary">${summary||'<span class="plan-empty">尚未選取任何日期</span>'}</div></div></div><label class="plan-reapply"><input type="checkbox" id="plan-overwrite" ${plan143.overwrite?'checked':''}><span>允許<b>覆蓋已做的單日預排調整</b>（預設保留；不影響實際出勤）</span></label><div class="plan-info">僅套用到已選日期；休假、結案、已執行、有值班、有特殊勤務關聯及有未處理臨時實際趟次的日期會保留。資料庫會再次檢查權限、版本及派車衝突；若可套用日期有衝突，整批不寫入。</div><div class="plan-foot-actions"><span class="plan-status">已選 ${plan143.selected.size} 天</span><button class="plan-btn" data-plan-action="refresh-dates">重新載入日期</button><button class="plan-btn primary" data-plan-action="apply" ${!rows.length||!plan143.selected.size?'disabled':''}>套用至選取日期</button></div><div class="plan-error" id="plan-error" role="alert">${esc(plan143.error)}</div>`;
+ $('#plan-content').innerHTML=`<div class="plan-section-head"><div><h3>挑選要複製班表的日期</h3><p>選取月曆中的具體日期，<b>可切換月份累積選取</b>。不會自動選滿全月或固定星期。</p></div></div><div class="plan-apply-grid"><div class="plan-minicard"><h4>選取日期</h4><div class="plan-datebar"><button class="plan-btn" data-plan-action="prev-month" aria-label="上個月">‹</button><input type="month" class="plan-month-picker" id="plan-month-picker" value="${month}" aria-label="套用月份"><button class="plan-btn" data-plan-action="next-month" aria-label="下個月">›</button></div><div class="plan-calendar"><div class="plan-calendar-head">${['日','一','二','三','四','五','六'].map(w=>`<span>週${w}</span>`).join('')}</div><div class="plan-calendar-grid">${'<span></span>'.repeat(first)}${cells}</div><p class="plan-summary-note">黃色：本次選取 · 小黃點：已排班 · 休：該司機休假 · 刪除線：已結案</p></div><div class="plan-pick-actions"><button class="plan-btn" data-plan-action="select-month">選取本月全部</button><button class="plan-btn" data-plan-action="select-weekdays">選取本月週一至週五</button><button class="plan-btn" data-plan-action="clear-month">清除本月選取</button></div><p class="plan-summary-note">快捷選取只是勾選日期，不代表司機固定週一至週五上班。休假及已結案日期不會被選取。</p></div><div class="plan-minicard"><h4>${esc(name(plan143.driver))} · 已儲存的單日範本</h4><p>${rows.length} 趟 · ${plan143.saved?`版本 ${plan143.saved.revision}`:'尚未儲存'}</p><p>${rows.map(x=>`${esc(x.category)}${x.slot_index} ${esc(rt(x.route_id)?.route_name||'未設定路線名稱')}／${esc(plate(x.vehicle_id))}`).join('、')||'請先到「編輯單日範本」建立趟次。'}</p><div class="plan-apply-preview">已選 <b>${plan143.selected.size}</b> 天，其中 ${exceptions} 天有單日調整。單日調整預設保留。</div><h4 style="margin-top:17px">本次選取的日期</h4><div class="plan-date-summary">${summary||'<span class="plan-empty">尚未選取任何日期</span>'}</div></div></div><label class="plan-reapply"><input type="checkbox" id="plan-overwrite" ${plan143.overwrite?'checked':''}><span>允許<b>覆蓋已做的單日預排調整</b>（預設保留；不影響實際出勤）</span></label><div class="plan-info">僅套用到已選日期；休假、結案、已執行、有值班、有特殊勤務關聯及有未處理臨時實際趟次的日期會保留。資料庫會再次檢查權限、版本及派車衝突；若可套用日期有衝突，整批不寫入。</div><div class="plan-foot-actions"><span class="plan-status">已選 ${plan143.selected.size} 天</span><button class="plan-btn" data-plan-action="refresh-dates">重新載入日期</button><button class="plan-btn primary" data-plan-action="apply" ${!rows.length||!plan143.selected.size?'disabled':''}>套用至選取日期</button></div><div class="plan-error" id="plan-error" role="alert">${esc(plan143.error)}</div>`;
  $('#plan-overwrite').onchange=e=>{plan143.overwrite=e.target.checked;plan143.pending=null;};
 }
 function validateTemplate143(){

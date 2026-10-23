@@ -341,12 +341,12 @@
       results[id]={};let n=0;
       const sorted=items.slice().sort((a,b)=>(a.scheduled_time||'').localeCompare(b.scheduled_time||'')||String(a.id).localeCompare(String(b.id)));
       for(const run of sorted){
-        const route=String(run.route_code_snapshot||run.routes?.route_code||'').trim();
+        const route=String(run.route_name_snapshot||run.routes?.route_name||'').trim();
         const vehicle=String(run.vehicles?.plate_number||'').trim();
         if(isCancelled(run)){extras.push(`${byId.get(id)?.name||''} · 已取消趟次 #${run.id} · ${route||'未設定路線'}`);continue;}
         if(!route||!vehicle){extras.push(`${byId.get(id)?.name||''} · 資料不完整 #${run.id}（${route||'無路線'} / ${vehicle||'無車輛'}）`);continue;}
         // Strict matching of spreadsheet column codes only; never infer a group from temperature_zone.
-        const candidate=normalizeSlot(route);
+        const candidate=normalizeSlot(`${run.attendance_category||''}${run.attendance_slot_index||''}`);
         if(candidate){const group=categoryOf(candidate);detectedCounts[group.name]=Math.max(detectedCounts[group.name]||0,group.index);}
         let slot=candidate && !results[id][candidate]?candidate:null;
         if(!slot){slot=`其他${++n}`;extraCount=Math.max(extraCount,n);}
@@ -361,7 +361,7 @@
     try{
       const [rosterResult,runResult]=await Promise.allSettled([
         getAllRows('profiles','id,display_name,role,active',q=>q.eq('role','driver').eq('active',true).order('display_name')),
-        getAllRows('runs','id,service_date,scheduled_time,driver_id,route_code_snapshot,status,profiles(display_name),vehicles(plate_number),routes(route_code,route_name)',q=>q.eq('service_date',model.date).order('scheduled_time',{ascending:true}))
+        getAllRows('runs','id,service_date,scheduled_time,driver_id,route_name_snapshot,attendance_category,attendance_slot_index,status,profiles(display_name),vehicles(plate_number),routes(route_name)',q=>q.eq('service_date',model.date).order('scheduled_time',{ascending:true}))
       ]);
       if(runResult.status==='rejected')throw runResult.reason;
       const runs=runResult.value;

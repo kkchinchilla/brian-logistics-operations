@@ -35,7 +35,7 @@
   };
   const lookup = (list, id, label, unknown='—') => list.find(v => String(v.id) === String(id))?.[label] || unknown;
   const driverName = id => lookup(state.drivers,id,'display_name','未知司機');
-  const routeCode = id => lookup(state.routes,id,'route_code','未知路線');
+  const routeName = id => lookup(state.routes,id,'route_name','未知路線');
   const plate = id => lookup(state.vehicles,id,'plate_number','—');
   function td(tr, value) { const cell = document.createElement('td'); cell.textContent = String(value ?? '—'); tr.appendChild(cell); return cell; }
   function renderRows(bodyId, values) {
@@ -68,7 +68,7 @@
   async function master() {
     const [profiles,routes,vehicles] = await Promise.all([
       db.from('profiles').select('id,display_name,role,active').order('display_name'),
-      db.from('routes').select('id,route_code,route_name,temperature_zone').order('route_code'),
+      db.from('routes').select('id,route_name,temperature_zone').order('route_name'),
       db.from('vehicles').select('id,plate_number,label').order('plate_number')
     ]);
     for(const item of [profiles,routes,vehicles]) if(item.error) throw item.error;
@@ -270,7 +270,7 @@
         data:{runs:state.runs,executions:state.executions,attendance:state.attendance,
           expenses:state.expenses,preview:state.preview,routes:state.routes,drivers:state.drivers,
           specialWork:state.specialWork,specialShifts:state.specialShifts},
-        display:{driver:driverName,route:routeCode,plate}});
+        display:{driver:driverName,route:routeName,plate}});
       const blob=new Blob([result.buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       const url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download=result.filename;document.body.appendChild(a);a.click();a.remove();
@@ -287,7 +287,7 @@
       const exportMonth=state.month;
       const wb=new ExcelJS.Workbook();wb.creator='配送趟次管理系統';wb.created=new Date();
       const daily=[
-        ...state.executions.map(x=>[x.service_date,driverName(x.driver_id),x.route_code_snapshot||'未保存',x.plate_snapshot||'未保存',
+        ...state.executions.map(x=>[x.service_date,driverName(x.driver_id),x.route_name_snapshot||'未保存',x.plate_snapshot||'未保存',
           x.route_temperature_zone||'', window.DispatchZoneReport.rentalLabel(x.is_rental), '結案配送','已結案',x.id,x.driver_notes||'']),
         ...state.attendance.map(x=>[x.service_date,driverName(x.driver_id),x.original_work_code||'',
           x.vehicle_id?plate(x.vehicle_id):'', '', '—',labels[x.entry_type],x.finalized?'已結案':labels[x.review_status], '',x.note||''])

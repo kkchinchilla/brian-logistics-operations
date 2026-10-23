@@ -5,7 +5,7 @@ const ok=(name,test=true)=>{assert.ok(test,name);console.log('PASS:',name);count
 function env(){
  const el=new Map(),created=[],calls=[],notices=[];
  function element(key){if(!el.has(key))el.set(key,{value:'',innerHTML:'',disabled:false,hidden:false,textContent:'',classList:{add(){},remove(){},toggle(){}},onclick:null,addEventListener(type,fn){this["on"+type]=fn;},remove(){},click(){},insertAdjacentHTML(where,s){this.innerHTML+=s;}});return el.get(key);}
- const f={version:147,month:'2026-10-01',deliveries:[{id:'run:1',run_id:1,driver_id:'a',service_date:'2026-10-15',route_id:1,route_code_snapshot:'FROZEN',route_temperature_zone:'常溫',is_rental:false,finalized:true,close_event_id:1}],standby:[],special_work:[],attendance_records:[],original_runs:[],dates:[{service_date:'2026-10-15',status:'finalized'}]};
+ const f={version:147,month:'2026-10-01',deliveries:[{id:'run:1',run_id:1,driver_id:'a',service_date:'2026-10-15',route_id:1,route_name_snapshot:'Frozen route name',route_temperature_zone:'常溫',is_rental:false,finalized:true,close_event_id:1}],standby:[],special_work:[],attendance_records:[],original_runs:[],dates:[{service_date:'2026-10-15',status:'finalized'}]};
  const bundle={base_salaries:[{id:1,driver_id:'a',amount:30000,effective_month:'2026-10-01'}],version:1491,month:'2026-10-01',finalized:f,route_rates:[{route_id:1,region_id:1,zone_name:'常溫',amount:100}],supplements:[],adjustments:[],expenses:[]};
  const ctx={console:{error(){}},Date,Intl,Set,Map,Number,String,Object,Array,JSON,RegExp,Promise,Blob,structuredClone,setTimeout:()=>{},clearTimeout(){},bundle,fail:false,delay:0,allowed:true,
   document:{querySelector:element,querySelectorAll:()=>[],createElement:tag=>{const e=element('created:'+created.length);e.tag=tag;created.push(e);return e;},body:{appendChild(){},append(){}}},
@@ -16,7 +16,7 @@ function env(){
   db:{rpc:async(fn,args)=>{calls.push({fn,args:structuredClone(args)});if(ctx.fail)return {data:null,error:{message:'network unavailable'}};if(fn!=='dashboard_get_calculated_payroll')return {data:{revision:1},error:null};const b=structuredClone(ctx.bundle);if(args.p_month!==b.month){b.month=args.p_month;b.finalized.month=args.p_month;for(const key of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])b.finalized[key]=[];}if(!ctx.omitCalculation)b.calculation=ctx.serverCalculation(b);if(ctx.corrupt)ctx.corrupt(b);if(ctx.delay)await new Promise(r=>setTimeout(r,ctx.delay));return {data:b,error:null};}},
  };
  vm.createContext(ctx);for(const f of ['payroll-reconciliation-1491.js','payroll-server-1412.js','payroll-settings-1491.js','production-monthly.js'])vm.runInContext(fs.readFileSync(root+'/js/'+f,'utf8'),ctx);
- vm.runInContext("drivers=[{id:'a',display_name:'A <img onerror=evil>',active:true}];routes=[{id:1,route_code:'LIVE',active:true}];",ctx);
+ vm.runInContext("drivers=[{id:'a',display_name:'A <img onerror=evil>',active:true}];routes=[{id:1,route_name:'Current route name',active:true}];",ctx);
  const referenceBuild=ctx.PayrollReconciliation1491.build;
  ctx.serverCalculation=b=>{const report=referenceBuild({...b,month:b.month.slice(0,7),drivers:[{id:'a',display_name:'A <img onerror=evil>'}]});
   for(const x of report.summaries){const rr=b.finalized.deliveries.filter(r=>r.driver_id===x.driverId),dw=b.finalized.special_work.filter(r=>r.driver_id===x.driverId);
@@ -40,6 +40,7 @@ if(require.main===module)(async()=>{
  ok('duty entries do not increase delivery count',e.run('displayed[0].rr.length')===1);
  ok('driver names remain escaped',!e.element('#monthly-body').innerHTML.includes('<img onerror=evil>'));
  ok('pay details contain only retained pay components',e.ctx.PayrollSettings1491.detailHTML('a').includes('依結案紀錄計算')&&!/底薪|值班津貼|跟車費用|學習費用/.test(e.ctx.PayrollSettings1491.detailHTML('a')));
+ ok('pay details use the confirmed route name',e.ctx.PayrollSettings1491.detailHTML('a').includes('Frozen route name')&&!e.ctx.PayrollSettings1491.detailHTML('a').includes('Current route name'));
  await e.run('exportCSV()');const attendance=await e.ctx.blobs.at(-1).text();ok('attendance CSV includes separate duty counts',attendance.includes('跟車筆數')&&attendance.includes('學習筆數')&&attendance.includes('"0","1","2","0"'));
  await e.ctx.PayrollSettings1491.exportCSV();const pay=await e.ctx.blobs.at(-1).text();ok('reconciliation CSV excludes attendance-only pay lines',!pay.includes('follow_along')&&!pay.includes('learning')&&!pay.includes('base:')&&pay.includes('100'));
  ok('both CSVs carry the simplified total without removed amounts',!attendance.includes('跟車費用')&&!attendance.includes('學習費用')&&!attendance.includes('底薪')&&attendance.includes('100')&&pay.includes('應計薪資')&&!pay.includes('不等於應計薪資'));

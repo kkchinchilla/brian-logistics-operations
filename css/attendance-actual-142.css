@@ -1,4 +1,8 @@
 /* Increment 1.4.2: only Daily Attendance empty-slot affordance and undo action. */
+/* Route names wrap in a wider route column; vehicle columns remain compact. */
+body[data-dashboard="attendance"] .attendance-matrix th.attendance-route,
+body[data-dashboard="attendance"] .attendance-matrix td.attendance-route{width:128px;min-width:128px;max-width:128px;white-space:normal;overflow-wrap:anywhere;padding:6px}
+body[data-dashboard="attendance"] .attendance-matrix td.attendance-route .cell{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual{color:#92969d;background:transparent;border:1px dashed #4c5055;min-width:34px;font-size:17px;padding:3px 8px;opacity:.85}
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:hover,
 body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-actual:focus-visible{color:var(--yellow);border-color:var(--yellow);background:#38382c;opacity:1}

@@ -11,7 +11,7 @@ async function setup(actor='driver-one'){
  vm.runInContext(read('tests/increment_1421/fixture.js'),ctx);
  const fixture=ctx.attendanceFixture1421;fixture.state.actor=actor;ctx.db=fixture.db;
  ctx.DashboardAccess146={load:async()=>false,finance:()=>false};
- for(const file of ['js/production-common.js','js/driver-attendance-1421.js','js/production-attendance.js','js/attendance-templates-143.js','js/session-controls-1421.js']){
+ for(const file of ['js/production-common.js','js/vehicle-bindings-144.js','js/driver-attendance-1421.js','js/production-attendance.js','js/attendance-templates-143.js','js/session-controls-1421.js']){
   vm.runInContext(read(file).replace("const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Taipei'});","const today=()=> '2026-10-25';"),ctx);
  }
  vm.runInContext('currentUser={id:attendanceFixture1421.state.actor};currentProfile=attendanceFixture1421.tables.profiles.find(x=>x.id===currentUser.id);',ctx);
@@ -40,6 +40,12 @@ e.fixture.state.logoutError=false;e.fixture.state.logoutHold=new Promise(r=>rele
 e=await setup('supervisor');
 ok('supervisor retains full attendance table and scheduling/close controls',!!e.doc.querySelector('table')&&!!e.el('new-run')&&!!e.el('template-open')&&!!e.el('close'));
 ok('supervisor sees both drivers',e.el('page').textContent.includes('測試司機甲')&&e.el('page').textContent.includes('測試司機乙'));
+ok('supervisor attendance cells show route names instead of old codes',e.el('page').textContent.includes('北區門市配送')&&e.el('page').textContent.includes('冷鏈補貨路線')&&!e.el('page').textContent.includes('北區 01')&&!e.el('page').textContent.includes('冷鏈 02'));
+e.el('filter').value='冷鏈補貨路線';e.el('filter').dispatchEvent(new e.dom.window.Event('input'));
+ok('attendance search finds the visible actual route name',e.el('page').textContent.includes('測試司機甲')&&!e.doc.querySelector('tbody').textContent.includes('測試司機乙'));
+e.el('filter').value='';e.el('filter').dispatchEvent(new e.dom.window.Event('input'));
+e.ctx.editAttendanceCell145('driver-one','日配',1,e.fixture.tables.runs[0]);
+ok('route editor offers name labels with ID values',e.el('modal-fields').textContent.includes('北區門市配送')&&!e.el('modal-fields').textContent.includes('北區 01')&&Array.from(e.el('modal-fields').querySelectorAll('option')).some(x=>x.value==='1'&&x.textContent.includes('北區門市配送')));
 ok('retired approval entry is removed for supervisors',!e.el('approval-open')&&!e.fixture.state.calls.some(x=>x.table==='attendance_change_requests'));
 e.ctx.closeOrReopen();ok('supervisor close dialog still opens',e.el('modal-save').textContent==='確認結案');e.dom.window.close();
 for(const page of ['attendance','routes','vehicles','monthly','accounts']){

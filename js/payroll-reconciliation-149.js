@@ -69,7 +69,7 @@
      if(rate===null||rate<0){issue(matches.length>1?'rate_overlap':'rate_missing',driverId,run.service_date,run.id,matches.length>1?'同日路線費率重疊':'缺少有效路線費率');variable=null;}
      else {ruleId=matches[0].id;amount=money(rate);if(variable!==null)variable+=rate;status='已設定基本項目';}
     }
-    lines.push({driverId,date:run.service_date,source:run.id,kind:'per_run',routeId:run.route_id,routeCode:run.route_code_snapshot||'',temperatureZone:run.route_temperature_zone||'',quantity:1,ruleId,amount,notApplicable:conf?.pay_basis==='fixed_only',closeEventId:run.close_event_id,status});
+    lines.push({driverId,date:run.service_date,source:run.id,kind:'per_run',routeId:run.route_id,routeName:run.route_name_snapshot||'',temperatureZone:run.route_temperature_zone||'',quantity:1,ruleId,amount,notApplicable:conf?.pay_basis==='fixed_only',closeEventId:run.close_event_id,status});
     if(run.is_rental===true)issue('rental_pay',driverId,run.service_date,run.id,'租車補貼金額及適用規則待確認');
     else if(run.is_rental!==false)issue('rental_unknown',driverId,run.service_date,run.id,'結案快照的租車狀態未確認');
     if(!run.route_temperature_zone)issue('temperature_unknown',driverId,run.service_date,run.id,'結案快照未保存溫層');

@@ -21,7 +21,7 @@
     if([...el.options].some(o=>o.value===selected)) el.value=selected;
   }
   function emptyRow(bodyId, text, cols){const tr=$(bodyId).insertRow();const el=cell(tr,text);el.colSpan=cols;}
-  function formatRun(r){return `#${r.id} ${r.route_code_snapshot||r.routes?.route_code||'—'} / ${person(r.driver_id)} / ${vehicle(r.vehicle_id)} / ${hhmm(r.planned_start_time)}–${hhmm(r.planned_end_time)} (${r.status})`;}
+  function formatRun(r){return `#${r.id} ${r.route_name_snapshot||r.routes?.route_name||'—'} / ${person(r.driver_id)} / ${vehicle(r.vehicle_id)} / ${hhmm(r.planned_start_time)}–${hhmm(r.planned_end_time)} (${r.status})`;}
   function findShiftResult(shift) {
     const matching=state.work.filter(w=>w.standby_shift_id===shift.id && ['attached_support','breakdown_replacement'].includes(w.kind));
     if(matching.some(w=>w.review_status==='confirmed')) return '已轉支援（本班不計值班）';
@@ -156,7 +156,7 @@
     const day=$('special-date').value;
     if(!/^\d{4}-\d\d-\d\d$/.test(day))throw Error('請先選擇管理日期。');
     const [runs,shifts,work,stages]=await Promise.all([
-      fetchAll('runs',db.from('runs').select('id,service_date,status,driver_id,vehicle_id,route_code_snapshot,planned_start_time,planned_end_time,routes(route_code)').eq('service_date',day).order('planned_start_time')),
+      fetchAll('runs',db.from('runs').select('id,service_date,status,driver_id,vehicle_id,route_name_snapshot,planned_start_time,planned_end_time,routes(route_name)').eq('service_date',day).order('planned_start_time')),
       fetchAll('v055_standby_shifts',db.from('v055_standby_shifts').select('*').eq('service_date',day).order('start_time')),
       fetchAll('v055_run_work',db.from('v055_run_work').select('*').eq('service_date',day).order('id')),
       fetchAll('v055_driver_stages',db.from('v055_driver_stages').select('*').order('effective_from',{ascending:false}).limit(2000))
