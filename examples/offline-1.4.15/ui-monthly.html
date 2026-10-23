@@ -201,6 +201,11 @@ body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!im
 body[data-finance-access="denied"] .mobilebar,
 body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
 body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+/* Account navigation is opt-in after the authoritative Brian capability loads. */
+body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!important}
+body[data-finance-access="allowed"] .mobilebar,
+body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
 </style><style>.pricing-section{margin-bottom:18px;min-width:0}.pricing-section .panel{border-radius:0;border-left:0;border-right:0;border-bottom:0}.pricing-section .panel-heading{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 16px;gap:12px;flex-wrap:wrap}.pricing-section h2{font-size:16px;margin:0}.pricing-section .panel-heading p{font-size:12px;line-height:1.7;max-width:680px}.pricing-section .pricing-note{white-space:normal;min-width:180px;max-width:320px;overflow-wrap:anywhere}.pricing-section .rowlink{display:inline-block;margin:3px 8px 3px 0}.pricing-detail{margin:16px 0 22px}.pricing-detail h3{font-size:15px}.pricing-detail details{margin:14px 0}.pricing-detail summary{cursor:pointer;font-size:13px;line-height:1.6}.pricing-issues{padding-left:22px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}.pricing-section .note{padding:12px 16px}.pricing-detail .gridtable{font-size:12px}#pricing-reason{resize:vertical;min-height:86px}@media(max-width:600px){.pricing-section .panel-heading{padding:14px}.pricing-section .panel-heading .btn{width:100%}.pricing-detail .gridtable{min-width:580px}}
 
 body[data-dashboard="monthly"] .pricing-section .pricing-note{text-align:left;color:#bec0c3;font-weight:400}

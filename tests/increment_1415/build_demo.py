@@ -15,6 +15,8 @@ def inline_script(match):
  return '<script>'+code.replace('</script','<\\/script')+'</script>'
 for page in ['ui-attendance.html','ui-routes.html','ui-vehicles.html','ui-monthly.html']:
  html=(root/page).read_text()
+ # Account credentials require the real server; do not offer this action offline.
+ html=re.sub(r'<a[^>]*data-account-nav[^>]*>.*?</a>','',html)
  html=html.replace('<head>', '<head><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\'; style-src \'unsafe-inline\'; img-src data:; connect-src \'none\'">')
  html=re.sub(r'<link rel="stylesheet" href="([^\"]+)"[^>]*>',lambda m:'<style>'+(root/m[1].split('?')[0]).read_text()+'</style>',html)
  html=re.sub(r'<script src="([^\"]+)"[^>]*></script>',inline_script,html)
