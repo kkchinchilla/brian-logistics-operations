@@ -25,7 +25,7 @@ const DriverAttendance1421=(()=>{
   try{
    const own=q=>q.eq('driver_id',id).eq('service_date',day);
    const [scheduled,extras,days,standbyResult,dutyResult]=await Promise.all([
-    allPagedRows('runs','id,driver_id,route_id,vehicle_id,status,is_rental,dispatcher_notes,route_code_snapshot,temperature_zone_snapshot,attendance_category,attendance_slot_index',own),
+    allPagedRows('runs','id,driver_id,route_id,vehicle_id,status,is_rental,dispatcher_notes,temperature_zone_snapshot,attendance_category,attendance_slot_index',own),
     allPagedRows('daily_attendance_extra_trips','id,driver_id,status,actual_route_id,actual_vehicle_id,is_rental,actual_note,attendance_category,attendance_slot_index',own),
     rows('attendance_driver_days','driver_id,is_leave',own),
     db.rpc('dashboard_get_attendance_standby',{p_date:day}),db.rpc('dashboard_get_attendance_duties',{p_date:day})
@@ -39,7 +39,7 @@ const DriverAttendance1421=(()=>{
    items.push(...standby.filter(x=>x.driver_id===id).map(x=>({...x,kind:'值班'})),...duties.filter(x=>x.driver_id===id).map(x=>({...x,kind:x.kind==='follow_along'?'跟車':'學習'})));
    const routeIds=[...new Set(items.map(x=>x.route).filter(Boolean))],vehicleIds=[...new Set(items.map(x=>x.vehicle).filter(Boolean))];
    const [routeList,vehicleList]=await Promise.all([
-    routeIds.length?allPagedRows('routes','id,route_code,route_name,temperature_zone',q=>q.in('id',routeIds)):[],
+    routeIds.length?allPagedRows('routes','id,route_name,temperature_zone',q=>q.in('id',routeIds)):[],
     vehicleIds.length?allPagedRows('vehicles','id,plate_number',q=>q.in('id',vehicleIds)):[]
    ]);
    if(request!==token||day!==date)return;
@@ -56,9 +56,9 @@ const DriverAttendance1421=(()=>{
   const totals=['配送','值班','跟車','學習'].map(kind=>`<span><strong>${items.filter(x=>x.kind===kind).length}</strong>${kind==='配送'?'趟':'筆'}${kind}</span>`).join('');
   const cards=items.map(x=>{
    const route=routeList.find(r=>String(r.id)===String(x.route)),vehicle=vehicleList.find(v=>String(v.id)===String(x.vehicle));
-   const code=route?.route_code||x.route_code_snapshot||'未指定路線';
+   const routeName=route?.route_name?.trim()||'未設定路線名稱';
    const detail=(label,value,cssClass='')=>`<dt>${label}</dt><dd${cssClass?` class="${cssClass}"`:''}>${esc(value)}</dd>`;
-   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?code:x.kind)}</h3>${x.kind==='配送'&&route?.route_name?`<p class="driver-route-name">${esc(route.route_name)}</p>`:''}<dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定','driver-temperature'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
+   return `<li class="driver-card"><div class="driver-card-top"><span class="driver-category">${esc(category(x))}</span><span class="driver-kind">${x.kind}</span></div><h3>${esc(x.kind==='配送'?routeName:x.kind)}</h3><dl class="driver-details">${x.kind==='配送'?detail('車號',vehicle?.plate_number||'未指定')+detail('溫層',route?.temperature_zone||x.temperature_zone_snapshot||'未設定','driver-temperature'):''}${x.note?detail('備註',x.note):''}</dl></li>`;
   }).join('');
   $('#driver-content').innerHTML=`<h2 class="driver-day-heading">${esc(label)}${day===today()?' · 今天':''}</h2><div class="driver-summary" aria-label="當日出勤統計">${totals}</div>${items.length?`<ul class="driver-cards">${cards}</ul>`:`<div class="driver-empty"><strong>${onLeave?'當日休假':'當日尚無排班'}</strong>${onLeave?'這一天已由主管標示休假。':'有新的配送或勤務安排後，會顯示在這裡。'}</div>`}`;
  }

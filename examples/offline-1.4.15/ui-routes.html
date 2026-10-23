@@ -423,12 +423,18 @@ body[data-account-role="driver"] .mobile-navbar{grid-template-columns:1fr}
 .tgj-logo{display:block;width:36px;height:36px;flex:0 0 36px;object-fit:contain;background:transparent;border:0;border-radius:0}
 .loginbox .tgj-login-brand{display:flex;align-items:center;gap:12px}
 </style><style>.mobile-logout{display:none}
+/* The route page has its own base styles; match the shared 結案 button. */
+#route-logout,.header-actions>.mobile-logout{background:#303338;border:1px solid #494c52;border-radius:10px;color:#f5f5f3;padding:10px 14px;min-height:42px;font:inherit;font-size:12px;font-weight:630;line-height:1.45;cursor:pointer;white-space:nowrap;transition:background-color .12s ease,border-color .12s ease}
+#route-logout:not(:disabled):hover,.header-actions>.mobile-logout:not(:disabled):hover{background:#3b3e43;border-color:#686b70}
+#route-logout:focus-visible,.header-actions>.mobile-logout:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+#route-logout:disabled,.header-actions>.mobile-logout:disabled{opacity:.45;cursor:not-allowed}
 #logout-status{padding:12px 16px;border:1px solid #d39e45;border-radius:10px;color:var(--yellow);overflow-wrap:anywhere}
 @media(max-width:1024px){
- .head-actions>.mobile-logout,.header-actions>.mobile-logout{display:inline-flex;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:9px 14px;border:1px solid #565a60;border-radius:10px;background:#303338;color:#f5f5f3;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
- .mobile-logout:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+ .head-actions>.mobile-logout,.header-actions>.mobile-logout{display:inline-flex;align-items:center;justify-content:center}
  .head-actions,.header-actions{flex-wrap:wrap}
 }
+@media(max-width:480px){.header-actions>.mobile-logout{min-height:39px;padding:10px 11px}}
+@media(max-width:360px){.header-actions>.mobile-logout{padding:8px 9px}}
 body[data-attendance-view="driver"] .main{min-width:0;overflow:visible}
 body[data-attendance-view="driver"] .side{position:sticky;top:0;height:100dvh;align-self:start}
 body[data-attendance-view="driver"] .head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start}
@@ -449,7 +455,6 @@ body[data-attendance-view="driver"] #stats{display:none}
 .driver-category{color:var(--yellow);font-size:13px;font-weight:650}
 .driver-kind{color:#c3c5c8;font-size:12px}
 .driver-card h3{font-size:23px;line-height:1.4;letter-spacing:.01em;margin:0;color:#f5f5f3}
-.driver-route-name{font-size:14px;line-height:1.6;color:#c3c5c8;margin:5px 0 0}
 .driver-details{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px 12px;margin:18px 0 0;font-size:15px;line-height:1.6}
 .driver-details .driver-temperature{color:var(--yellow)}
 .driver-details dt{color:#a1a4a9}.driver-details dd{margin:0;color:#f5f5f3;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
