@@ -1274,7 +1274,7 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
  if(canCancelRun)$('#cell-cancel-run').onclick=()=>{
    cancelIntent=true;
    $('#cell-route').disabled=true;$('#cell-vehicle').disabled=true;
-   $('#cell-fixed-time').textContent=needsApproval?'刪除申請須由調度員核准；核准前保留此趟配送。':'按下確認後將取消此趟配送，不影響其他日期。';
+   $('#cell-fixed-time').textContent=needsApproval?'刪除申請須由主管核准；核准前保留此趟配送。':'按下確認後將取消此趟配送，不影響其他日期。';
    $('#modal-save').textContent=needsApproval?'送出刪除申請':'確認取消趟次';
  };
  if(canVoid)$('#cell-void-trip').onclick=()=>{

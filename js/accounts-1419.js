@@ -1,6 +1,6 @@
 /* Brian-only account dashboard. Privileged mutations run in account-admin. */
 let accountUsers=[],accountActor='',accountBusy=false,accountReturnFocus=null;
-const accountRoles={driver:'司機',dispatcher:'調度員'};
+const accountRoles={driver:'司機',dispatcher:'主管'};
 function accountPhone(value){
  const phone=String(value??'').normalize('NFKC').trim().replace(/[\s()\-]/g,'');
  if(/^09\d{8}$/.test(phone))return '+886'+phone.slice(1);
@@ -24,7 +24,7 @@ async function loadPage(){
  if(!finance()){$('#page').innerHTML='<p class="empty">帳號管理僅限 Brian 使用。</p>';return;}
  $('#head-actions').insertAdjacentHTML('afterbegin','<button class="btn primary" id="account-add">＋ 新增使用者</button>');
  $('#account-add').onclick=()=>openAccountEditor('create');
- $('#page').innerHTML='<section class="panel"><div class="panel-title">使用者名單</div><div class="accounts-tools"><input class="field search" id="account-search" placeholder="搜尋姓名或手機號碼" aria-label="搜尋姓名或手機號碼"><select class="field" id="account-filter" aria-label="篩選角色與狀態"><option value="all">所有帳號</option><option value="driver">司機</option><option value="dispatcher">調度員</option><option value="deleted">已刪除帳號</option></select><button class="btn" id="account-refresh">重新整理</button></div><div id="account-list"><p class="empty">載入帳號中…</p></div><div class="footer">點選手機號碼可修改登入號碼。刪除帳號後仍會保留歷史出勤與報表。</div></section>';
+ $('#page').innerHTML='<section class="panel"><div class="panel-title">使用者名單</div><div class="accounts-tools"><input class="field search" id="account-search" placeholder="搜尋姓名或手機號碼" aria-label="搜尋姓名或手機號碼"><select class="field" id="account-filter" aria-label="篩選角色與狀態"><option value="all">所有帳號</option><option value="driver">司機</option><option value="dispatcher">主管</option><option value="deleted">已刪除帳號</option></select><button class="btn" id="account-refresh">重新整理</button></div><div id="account-list"><p class="empty">載入帳號中…</p></div><div class="footer">點選手機號碼可修改登入號碼。刪除帳號後仍會保留歷史出勤與報表。</div></section>';
  $('#account-search').oninput=renderAccounts;$('#account-filter').onchange=renderAccounts;
  $('#account-refresh').onclick=async()=>{try{await reloadAccounts();}catch(e){notify(e.message);}};
  $('#account-list').onclick=e=>{const b=e.target.closest('[data-account-action]');if(b)openAccountEditor(b.dataset.accountAction,b.dataset.id);};
@@ -37,7 +37,7 @@ async function reloadAccounts(){
 }
 function renderAccounts(){
  const live=accountUsers.filter(u=>!u.deleted),term=($('#account-search').value||'').toLowerCase().replace(/[\s()\-]/g,''),filter=$('#account-filter').value;
- $('#stats').innerHTML=[['使用者',live.length],['司機',live.filter(u=>u.role==='driver').length],['調度員',live.filter(u=>u.role==='dispatcher').length]].map(([label,n])=>`<div class="kpi"><small>${label}</small><strong>${n}</strong></div>`).join('');
+ $('#stats').innerHTML=[['使用者',live.length],['司機',live.filter(u=>u.role==='driver').length],['主管',live.filter(u=>u.role==='dispatcher').length]].map(([label,n])=>`<div class="kpi"><small>${label}</small><strong>${n}</strong></div>`).join('');
  const list=accountUsers.filter(u=>(filter==='deleted'?u.deleted:!u.deleted&&(filter==='all'||filter===u.role))&&[u.display_name,u.phone,phoneDisplay(u.phone)].some(v=>String(v).toLowerCase().replace(/[\s()\-]/g,'').includes(term)));
  const button=(u,action,label,extra='')=>`<button class="btn ${extra}" data-account-action="${action}" data-id="${esc(u.id)}">${label}</button>`;
  const body=list.map(u=>{
@@ -59,7 +59,7 @@ function openAccountEditor(action,id){
  accountReturnFocus=document.activeElement;
  const titles={create:'新增使用者',edit:'編輯帳號資料',phone:'修改手機號碼',password:'重設密碼',delete:'刪除帳號'};
  let fields=user?`<p class="account-dialog-description">${esc(user.display_name)} · ${esc(accountRoles[user.role])}${user.is_owner?'（自己的帳號）':''}</p>`:'';
- if(['create','edit'].includes(action))fields+=`<label for="account-name-input">姓名</label><input class="field" id="account-name-input" value="${esc(user?.display_name||'')}" maxlength="70" required autocomplete="off"><label for="account-role">角色</label><select class="field" id="account-role" ${user?.is_owner?'disabled':''}>${option('driver','司機',user?.role||'driver')}${option('dispatcher','調度員',user?.role||'driver')}</select>${user?.is_owner?'<p class="account-field-note">管理員角色保留，不可變更。</p>':''}`;
+ if(['create','edit'].includes(action))fields+=`<label for="account-name-input">姓名</label><input class="field" id="account-name-input" value="${esc(user?.display_name||'')}" maxlength="70" required autocomplete="off"><label for="account-role">角色</label><select class="field" id="account-role" ${user?.is_owner?'disabled':''}>${option('driver','司機',user?.role||'driver')}${option('dispatcher','主管',user?.role||'driver')}</select>${user?.is_owner?'<p class="account-field-note">管理員角色保留，不可變更。</p>':''}`;
  if(['create','phone'].includes(action))fields+=`<label for="account-phone-input">手機號碼</label><input class="field" id="account-phone-input" type="tel" inputmode="tel" autocomplete="off" placeholder="09xxxxxxxx" value="${esc(user?.phone?phoneDisplay(user.phone):'')}" required><p class="account-field-note">台灣手機填 09 開頭的 10 碼；其他國家請加國碼（+）。</p><label class="account-check"><input type="checkbox" id="account-phone-verified" required><span>已確認此手機號碼屬於使用者本人</span></label>`;
  if(['create','password'].includes(action))fields+=accountPasswordField('account-password','新密碼')+'<p class="account-field-note">至少 8 個字元。密碼不會顯示在帳號名單中。</p>'+accountPasswordField('account-password-confirm','確認新密碼');
  if(user?.is_owner&&['phone','password'].includes(action))fields+='<p class="account-field-note">儲存後會登出，請使用新的登入資料重新登入。</p>';
