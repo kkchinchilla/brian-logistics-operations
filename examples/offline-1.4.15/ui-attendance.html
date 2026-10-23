@@ -465,6 +465,11 @@ body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!im
 body[data-finance-access="denied"] .mobilebar,
 body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
 body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+/* Account navigation is opt-in after the authoritative Brian capability loads. */
+body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!important}
+body[data-finance-access="allowed"] .mobilebar,
+body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
 </style><style>.approval-list{display:grid;gap:8px;margin:16px 0;max-height:55vh;overflow:auto}
 .approval-item{display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;padding:14px;border:1px solid #41464e;border-radius:8px;background:#292c30;color:inherit;cursor:pointer;font:inherit}
 .approval-item:hover{background:#34383f}.approval-item small{display:block;margin-top:5px;color:#b4bbc5}

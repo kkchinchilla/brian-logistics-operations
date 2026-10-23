@@ -27,3 +27,9 @@ The only deliberate portability change is `private.dashboard146_finance_owner()`
 5. Enter approved route/rate/vehicle settings through the application and update browser configuration for the new project. Never import the synthetic test fixture into Supabase.
 
 The standalone test fixture `tests/increment_146/baseline_fixture.sql` creates fake users and mock Auth functions. It exists only for isolated tests and must never be used as the production bootstrap.
+
+## Increment 1.4.19
+
+After 1.4.16 and 1.4.18, apply `20261023011345_increment_1419_account_management.sql` once. It adds a private action-only account audit, a Brian/live-session permission RPC, service-only directory/profile RPCs, and restrictive active-account policies on existing public RLS tables. It makes no changes to existing users or operational records. Supabase Auth schema and session tables are read only; credentials are mutated only through the Admin API in `account-admin`.
+
+Portable restoration requires the normal Supabase Auth schema (including users and sessions). The baseline remains immutable; `test:schema` restores the baseline and then all three later migrations.

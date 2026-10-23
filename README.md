@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Current release: **Increment 1.4.18 — simplified route form and finance-owner rate access** (2026-10-22), extending deployed 1.4.17. See [release behavior and verification](docs/INCREMENT_1_4_18.md). Sign-in uses phone number and password; see [phone account setup](docs/PHONE_LOGIN.md) for provisioning remaining accounts.
+Current release: **Increment 1.4.19 — Brian-only account management** (2026-10-23), extending accepted 1.4.18. See [release behavior and verification](docs/INCREMENT_1_4_19.md). Brian can create phone-only users, edit names and roles, change phone numbers, reset passwords, and delete login accounts while retaining operational history.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
@@ -33,11 +33,12 @@ Open `http://localhost:8080/` for the login page. Sign in with an existing activ
 | Path | Purpose |
 | --- | --- |
 | `index.html` | System login |
-| `ui-attendance.html`, `ui-routes.html`, `ui-vehicles.html`, `ui-monthly.html` | Four accepted dashboards |
+| `ui-attendance.html`, `ui-routes.html`, `ui-vehicles.html`, `ui-monthly.html`, `ui-accounts.html` | Attendance, routes, fleet, monthly reports and account management |
 | Other root HTML files | Retained legacy tools linked from the dashboards |
 | `js/`, `css/` | Application code and styling |
 | `config/` | Public connection settings |
 | `scripts/` | Build, asset validation, schema generation and restore verification |
+| `supabase/functions/account-admin/` | Privileged account endpoint deployed separately to Supabase Edge Functions |
 | `supabase/migrations/` | Original incremental migration source; already installed in the connected project |
 | `supabase/schema/` | Portable schema-only snapshot of the complete accepted structure |
 | `sql/` | Historical changes and read-only verification queries |

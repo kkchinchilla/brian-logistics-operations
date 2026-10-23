@@ -2,7 +2,7 @@
 
 ## Current environment
 
-- Current release: Increment 1.4.18, extending deployed 1.4.17. Routes no longer require times and rates are finance-owner-only; see `INCREMENT_1_4_18.md`. Phone-account provisioning is documented in `PHONE_LOGIN.md`.
+- Current release: Increment 1.4.19, extending accepted 1.4.18. Brian-only account administration uses a separately deployed Supabase Edge Function; see `INCREMENT_1_4_19.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
 - Access: public login page, followed by Supabase phone/password authentication and existing database permissions. Accounts need a confirmed phone number before using this login form.
@@ -40,3 +40,9 @@ Revert the relevant source change on `main` and allow the workflow to deploy the
 ## Verification for this packaging
 
 The 113 accepted assertions passed after source organization. All application JavaScript passed syntax checks, every relative HTML asset/link resolves in `dist`, and internal development directories are excluded from deployment. The portable schema restored into an isolated PGlite database with 41 tables, no prebound finance owner, and anonymous payroll access denied. This is not proof of a full account/password sign-in or hosted business workflow test.
+
+## Account administration backend
+
+Deploy `supabase/functions/account-admin/index.ts` and `handler.mjs` together to the existing project as `account-admin`, with JWT verification enabled. Apply the 1.4.19 migration once before exposing the dashboard. The function reads Supabase-provided runtime keys; secrets never enter the static build or GitHub Actions. GitHub Pages deployment does not deploy Edge Functions or apply migrations.
+
+For another project, configure the finance-owner binding, change the allowed browser origin in `index.ts`, and deploy the function separately. Existing account IDs must be preserved. Deletion uses the supported Auth Admin soft-delete API, deactivating the profile first; never hard-delete a business-linked profile. A failed deletion remains disabled and the account dashboard offers a retry.

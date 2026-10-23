@@ -405,6 +405,11 @@ body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!im
 body[data-finance-access="denied"] .mobilebar,
 body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
 body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+/* Account navigation is opt-in after the authoritative Brian capability loads. */
+body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!important}
+body[data-finance-access="allowed"] .mobilebar,
+body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
 </style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head>
 <body data-dashboard="routes"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div>
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs>

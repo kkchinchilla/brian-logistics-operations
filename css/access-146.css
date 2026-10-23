@@ -3,3 +3,8 @@ body:not([data-finance-access="allowed"]) a[href="monthly.html"]{display:none!im
 body[data-finance-access="denied"] .mobilebar,
 body[data-finance-access="denied"] .mobile-navbar{grid-template-columns:repeat(3,1fr)}
 body.finance-page:not([data-finance-access="allowed"]) #finance-main{display:none!important}
+/* Account navigation is opt-in after the authoritative Brian capability loads. */
+body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!important}
+body[data-finance-access="allowed"] .mobilebar,
+body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}

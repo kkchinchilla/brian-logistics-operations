@@ -1,6 +1,6 @@
 {
   "name": "brian-logistics-operations",
-  "version": "1.4.18",
+  "version": "1.4.19",
   "private": true,
   "description": "Logistics attendance, dispatch, fleet and payroll reconciliation",
   "engines": {
@@ -9,15 +9,17 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
-    "test": "node tests/increment_1415/database.mjs && node tests/increment_1415/monthly-integration.cjs && node tests/increment_1415/vehicles.cjs && node tests/increment_1415/exports.cjs && node tests/increment_1416/database.mjs && node tests/increment_1416/monthly-integration.cjs && npm run test:login && npm run test:routes",
+    "test": "node tests/increment_1415/database.mjs && node tests/increment_1415/monthly-integration.cjs && node tests/increment_1415/vehicles.cjs && node tests/increment_1415/exports.cjs && node tests/increment_1416/database.mjs && node tests/increment_1416/monthly-integration.cjs && npm run test:login && npm run test:routes && npm run test:accounts",
     "test:demo": "python3 tests/increment_1415/build_demo.py && node tests/increment_1415/demo.cjs",
     "schema:generate": "node scripts/schema.mjs",
     "test:schema": "node scripts/test-schema.mjs",
     "test:login": "node tests/increment_1417/login.cjs",
-    "test:routes": "node tests/increment_1418/database.mjs && node tests/increment_1418/routes.cjs"
+    "test:routes": "node tests/increment_1418/database.mjs && node tests/increment_1418/routes.cjs",
+    "test:accounts": "node tests/increment_1419/database.mjs && node tests/increment_1419/edge.mjs && node tests/increment_1419/ui.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",
-    "exceljs": "4.4.0"
+    "exceljs": "4.4.0",
+    "jsdom": "26.1.0"
   }
 }

@@ -1,8 +1,14 @@
-# Phone number and password login — 1.4.17 rollout
+# Phone number and password login
 
 Release 1.4.17, authorized for GitHub Pages deployment on 2026-10-22, extending accepted 1.4.16.
 
-## Rollout status — 2026-10-22
+## Account management — 1.4.19
+
+Brian now provisions phone-only accounts and updates phone numbers/passwords in `ui-accounts.html`. The backend uses the supported Auth Admin API; no local secret-key command is needed for routine administration. Adding or changing a number requires Brian to confirm it belongs to the user. Brian can update his own credentials and then signs in again; he cannot delete himself or demote his role. If Brian cannot sign in, recovery still requires an authorized Supabase administrator.
+
+The original rollout notes below are historical and do not describe the current account inventory.
+
+## Original rollout status — 2026-10-22
 
 - Phone authentication is enabled. Email authentication remains enabled in Supabase, but the new application form accepts phone numbers only.
 - The finance owner's existing Auth account has a saved, confirmed phone number. Its UUID, active dispatcher profile, and password remain in place.
@@ -28,7 +34,7 @@ At the initial read-only preflight, phone authentication was disabled and none o
 
 The current Supabase Dashboard's standard Create User form requires an email and does not provide phone-only provisioning. Use the supported Auth Admin API to add phone numbers to existing accounts or create phone-only accounts. Run privileged administration from a trusted local tool or backend with a project secret key; never embed that key in the GitHub Pages application. No email alias is required.
 
-The current five-account phone mapping is intentionally not stored in source control. Do not publish phone lists or passwords in issues, PRs, fixtures or static assets. Auth account creation and password recovery remain administrator-managed; this change adds no public sign-up or recovery flow.
+The current five-account phone mapping is intentionally not stored in source control. Do not publish phone lists or passwords in issues, PRs, fixtures or static assets. Account creation and password resets are administrator-managed; there is no public sign-up or recovery flow.
 
 ## Validation
 
