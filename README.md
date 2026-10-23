@@ -1,6 +1,6 @@
 # 貨易通
 
-Current release: **Increment 1.4.25 — 貨易通 app name** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_25.md). Attendance, route management and reports use route names; obsolete route codes are removed. Internal IDs preserve all record links. Drivers retain their own responsive read-only attendance, and supervisors retain scheduling and close/reopen controls.
+Current release: **Increment 1.4.26 — Mobile dashboard logo** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_26.md). Attendance, route management and reports use route names; obsolete route codes are removed. Internal IDs preserve all record links. Drivers retain their own responsive read-only attendance, and supervisors retain scheduling and close/reopen controls.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 

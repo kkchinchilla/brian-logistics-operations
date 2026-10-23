@@ -3,3 +3,10 @@
 .brand.tgj-brand::before{display:none}
 .tgj-logo{display:block;width:36px;height:36px;flex:0 0 36px;object-fit:contain;background:transparent;border:0;border-radius:0}
 .loginbox .tgj-login-brand{display:flex;align-items:center;gap:12px}
+/* Keep the brand visible when the dashboard sidebar is hidden. */
+.tgj-mobile-logo{display:none}
+@media(max-width:800px){
+ .tgj-page-title{display:flex;align-items:center;gap:10px;min-width:0}
+ .tgj-mobile-logo{display:block;width:32px;height:32px;flex:0 0 32px;object-fit:contain}
+ body[data-dashboard="routes"] .page-header{flex-wrap:wrap}
+}
