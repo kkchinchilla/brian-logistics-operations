@@ -33,4 +33,4 @@ function field(label,id,value='',type='text'){return `<label for="${id}">${label
 function chosen(id){return $('#'+id).value}
 function wrapTable(headers,body){return `<div class="panel"><div class="scroll"><table class="gridtable"><thead><tr>${headers.map((h,i)=>`<th class="${i?'':'sticky'}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料</td></tr>`}</tbody></table></div></div>`}
 async function init(){if(!await requireLogin())return;try{await window.loadPage()}catch(e){console.error(e);notify('載入失敗：'+e.message)}}
-document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});$('#logout').onclick=async()=>{await db.auth.signOut();location.replace('index.html')};init()});
+document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});init()});

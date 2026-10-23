@@ -2,7 +2,7 @@
 <html lang="zh-Hant-TW">
 <head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>路線管理 · 調度系統</title>
+<title>路線管理 · 趟管家</title>
 <style>
 :root{color-scheme:dark;--page:#17191b;--rail:#1b1d20;--canvas:#202226;--surface:#26292d;--surface2:#2d3035;--surface3:#36393d;--line:#393c40;--strong-line:#4a4d51;--text:#f5f5f2;--soft:#c9cbce;--muted:#9a9da3;--yellow:#ffdc42;--yellowDark:#201d11;--warn:#f1c967;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;font-synthesis:none}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--page);color:var(--text)}body{font-size:13px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.hide{display:none!important}
@@ -410,6 +410,54 @@ body:not([data-finance-access="allowed"]) [data-account-nav]{display:none!import
 body[data-finance-access="allowed"] .mobilebar,
 body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:800px){[data-account-nav]{white-space:nowrap}.mobilebar a{min-width:0;padding-left:2px;padding-right:2px}}
+</style><link rel="icon" type="image/svg+xml" href="assets/tangguanjia-logo.svg?v=14201"><style>/* Approved 趟管家 SVG: white arrow on yellow, with transparent outer corners. */
+.brand.tgj-brand::before{display:none}
+.tgj-logo{display:block;width:36px;height:36px;flex:0 0 36px;object-fit:contain;background:transparent;border:0;border-radius:0}
+.loginbox .tgj-login-brand{display:flex;align-items:center;gap:12px}
+</style><style>.mobile-logout{display:none}
+#logout-status{padding:12px 16px;border:1px solid #d39e45;border-radius:10px;color:#ffda36;overflow-wrap:anywhere}
+@media(max-width:1024px){
+ .head-actions>.mobile-logout,.header-actions>.mobile-logout{display:inline-flex;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:9px 14px;border:1px solid #565a60;border-radius:10px;background:#303338;color:#f5f5f3;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+ .mobile-logout:focus-visible{outline:2px solid #ffda36;outline-offset:3px}
+ .head-actions,.header-actions{flex-wrap:wrap}
+}
+body[data-attendance-view="driver"] .main{min-width:0;overflow:visible}
+body[data-attendance-view="driver"] .side{position:sticky;top:0;height:100dvh;align-self:start}
+body[data-attendance-view="driver"] .head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:flex-start}
+body[data-attendance-view="driver"] .head p{display:block;line-height:1.7}
+body[data-attendance-view="driver"] .head-actions{width:auto;flex-wrap:wrap;justify-content:flex-end}
+body[data-attendance-view="driver"] #stats{display:none}
+.driver-schedule{width:100%;max-width:1040px;margin:0 auto;min-width:0}
+.driver-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:20px}
+.driver-date-nav{display:flex;align-items:center;min-width:0;gap:6px;flex:1 1 250px}
+.driver-date-nav .field{min-width:0;width:100%;max-width:220px;height:44px;font-size:16px}
+.driver-toolbar .btn{min-height:44px;min-width:44px}
+.driver-summary{display:flex;flex-wrap:wrap;gap:9px 20px;padding:15px 18px;background:#2a2d32;border:1px solid #41454b;border-radius:12px;color:#c3c5c8;margin-bottom:20px;line-height:1.7}
+.driver-summary strong{color:#f5f5f3;margin-right:5px}
+.driver-day-heading{font-size:18px;margin:0 0 14px;color:#f5f5f3;line-height:1.5}
+.driver-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+.driver-card{min-width:0;background:#292c31;border:1px solid #41454b;border-radius:14px;padding:20px;overflow-wrap:anywhere}
+.driver-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
+.driver-category{color:#ffda36;font-size:13px;font-weight:650}
+.driver-kind{color:#c3c5c8;font-size:12px}
+.driver-card h3{font-size:23px;line-height:1.4;letter-spacing:.01em;margin:0;color:#f5f5f3}
+.driver-route-name{font-size:14px;line-height:1.6;color:#c3c5c8;margin:5px 0 0}
+.driver-details{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px 12px;margin:18px 0 0;font-size:15px;line-height:1.6}
+.driver-details dt{color:#a1a4a9}.driver-details dd{margin:0;color:#f5f5f3;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.driver-empty{padding:38px 20px;text-align:center;border:1px solid #41454b;border-radius:14px;background:#292c31;line-height:1.8;color:#c3c5c8}
+.driver-empty strong{display:block;font-size:20px;color:#f5f5f3;margin-bottom:6px}
+.driver-schedule-help{color:#a1a4a9;font-size:13px;line-height:1.7;margin-top:18px}
+@media(max-width:700px){
+ body[data-attendance-view="driver"] .head{gap:12px}
+ body[data-attendance-view="driver"] .head h1{font-size:25px}
+ body[data-attendance-view="driver"] .head-actions{gap:8px}
+ body[data-attendance-view="driver"] #account-name{display:none}
+ .driver-cards{grid-template-columns:minmax(0,1fr)}
+ .driver-card{padding:18px}
+ .driver-toolbar{gap:8px}
+ .driver-date-nav{flex-basis:100%}
+ .driver-date-nav .field{max-width:none;flex:1}
+}
 </style><style>.demo-banner{position:relative;z-index:100;background:#f7da4c;color:#17191c;padding:10px 16px;font:12px/1.6 sans-serif}.demo-banner a{color:#17191c;font-weight:bold}</style></head>
 <body data-dashboard="routes"><div class="demo-banner">隔離展示 · 虛構資料及金額 · 值班、跟車與學習可試填，營運儲存請至開發系統驗收　<a href="index.html">說明／切換角色</a></div>
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs>
@@ -426,10 +474,10 @@ body[data-finance-access="allowed"] .mobile-navbar{grid-template-columns:repeat(
 <div class="prototype">
   <div class="demo-top"><div class="demo-caption">ROUTE MANAGEMENT</div><div class="switcher" aria-label="預覽裝置"><button id="device-desktop" class="active" type="button">Desktop preview</button><button id="device-mobile" type="button">Mobile preview</button></div></div>
   <div class="stage desktop" id="stage"><div class="app" id="app">
-    <aside class="nav route-side" aria-label="主選單"><div class="brand"><span class="brand-icon" aria-hidden="true">↗</span><span>物流調度<small>DISPATCH / 管理後台</small></span></div>
+    <aside class="nav route-side" aria-label="主選單"><div class="brand tgj-brand"><img class="tgj-logo" src="assets/tangguanjia-logo.svg?v=14201" width="36" height="36" alt="" aria-hidden="true"><span>趟管家<small>DISPATCH / 管理後台</small></span></div>
       <nav class="sidelinks" aria-label="Dashboard 導覽"><a href="ui-attendance.html">每日出勤</a><a href="ui-routes.html" class="active" aria-current="page">路線管理</a><a href="ui-vehicles.html">車輛管理</a><a href="ui-monthly.html">月度報表</a></nav><a class="side-bottom" href="index.html">舊版調度工具 ↗</a><button class="route-side-logout" id="route-logout" type="button">登出</button>
     </aside>
-    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><h1>路線管理</h1><p>管理路線編號、名稱、配送地區與溫層。</p></div><div class="header-actions"><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
+    <main class="main"><header class="page-header"><div><div class="eyebrow">配送路線 / ROUTES</div><h1>路線管理</h1><p>管理路線編號、名稱、配送地區與溫層。</p></div><div class="header-actions"><button type="button" class="btn mobile-logout" data-session-logout>登出</button><button class="quiet-btn" id="reset-btn" title="重設示範資料" type="button"><svg><use href="#i-settings"></use></svg>重設</button><button class="primary" id="add-route" type="button"><svg><use href="#i-plus"></use></svg>新增路線</button></div></header>
       <div class="workspace"><div id="route-status" class="route-status" role="status" aria-live="polite"></div><section class="summary" aria-label="路線統計"><div class="stat"><span class="stat-label">啟用路線</span><strong class="stat-value" id="stat-routes">—</strong></div><div class="stat"><span class="stat-label">配送地區</span><strong class="stat-value" id="stat-regions">—</strong></div><div class="stat"><span class="stat-label">配送溫層</span><strong class="stat-value" id="stat-zones">—</strong></div><div class="stat" data-route-finance><span class="stat-label">平均每趟費用</span><strong class="stat-value yellow" id="stat-avg">—</strong></div></section>
       <section class="section-shell"><div class="section-header"><div><div class="section-title" id="section-title">路線列表</div><div class="section-sub" id="section-sub">查看路線編號、配送地區與溫層</div></div><div class="tab-row"><button type="button" id="tab-routes" class="tab active">路線列表</button><button type="button" id="tab-rates" class="tab" data-route-finance>費率表</button><button type="button" id="tab-manage" class="tab">地區與溫層</button></div></div>
       <div id="route-view"><div class="toolbar"><label class="search"><svg><use href="#i-search"></use></svg><input id="route-search" placeholder="搜尋路線名稱、編號…" autocomplete="off" aria-label="搜尋路線"></label><select class="filter" id="filter-region" aria-label="篩選地區"></select><select class="filter" id="filter-zone" aria-label="篩選溫層"></select></div><div class="table-scroll" id="table-scroll"><table class="routes-table"><thead><tr><th>路線名稱 / 編號</th><th>配送地區</th><th>溫層</th><th data-route-finance>路線費用／趟</th><th>　</th></tr></thead><tbody id="routes-body"></tbody></table></div><div class="table-footer"><span id="result-count">—</span><span>點選路線進行編輯</span></div></div>
@@ -959,27 +1007,30 @@ init().catch(e=>{console.error('routes live error',e);document.querySelector('#r
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-<script>/* Route navigation: identical logout behavior to the three production dashboard pages. */
+
+<script>/* One logout path for desktop and mobile, including the route dashboard. */
 (()=>{'use strict';
- const button=document.getElementById('route-logout');
- if(!button)return;
- button.addEventListener('click',async()=>{
-   if(button.disabled)return;
-   button.disabled=true;
-   const label=button.textContent;button.textContent='登出中…';
-   try{
-     const client=(typeof db!=='undefined'?db:window.db);
-     if(!client?.auth?.signOut)throw new Error('無法取得登入服務');
-     const {error}=await client.auth.signOut();
-     if(error)throw error;
-     location.replace('index.html');
-   }catch(e){
-     button.disabled=false;button.textContent=label;
-     const status=document.getElementById('route-status');
-     if(status)status.textContent='登出失敗，請重試：'+String(e?.message||e);
-   }
- });
+ let busy=false;
+ async function logout(){
+  if(busy)return;
+  busy=true;
+  const buttons=[...document.querySelectorAll('[data-session-logout],#logout,#route-logout')];
+  const labels=buttons.map(b=>b.textContent);
+  buttons.forEach(b=>{b.disabled=true;b.textContent='登出中…';});
+  try{
+   const {error}=await db.auth.signOut();
+   if(error)throw error;
+   location.replace('index.html');
+  }catch(e){
+   let status=document.getElementById('logout-status');
+   if(!status){status=document.createElement('p');status.id='logout-status';status.setAttribute('role','alert');document.querySelector('.main')?.prepend(status);}
+   status.textContent='登出失敗，請重試。';
+   buttons.forEach((b,i)=>{b.disabled=false;b.textContent=labels[i];});
+   busy=false;
+  }
+ }
+ function init(){document.querySelectorAll('[data-session-logout],#logout,#route-logout').forEach(b=>b.addEventListener('click',logout));}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-</script>
-</body>
+</script></body>
 </html>

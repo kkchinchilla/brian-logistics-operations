@@ -1,6 +1,6 @@
 # Brian Logistics Operations
 
-Current release: **Increment 1.4.19 — Brian-only account management** (2026-10-23), extending accepted 1.4.18. See [release behavior and verification](docs/INCREMENT_1_4_19.md). Brian can create phone-only users, edit names and roles, change phone numbers, reset passwords, and delete login accounts while retaining operational history.
+Current release: **Increment 1.4.21 — mobile logout and drivers’ own read-only attendance** (2026-10-23). See [release behavior and verification](docs/INCREMENT_1_4_21.md). Drivers see their own scheduled deliveries and duties in responsive cards. Supervisors retain scheduling and close/reopen controls; the driver approval workflow is retired. All five dashboards have mobile logout.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
@@ -34,7 +34,7 @@ Open `http://localhost:8080/` for the login page. Sign in with an existing activ
 | --- | --- |
 | `index.html` | System login |
 | `ui-attendance.html`, `ui-routes.html`, `ui-vehicles.html`, `ui-monthly.html`, `ui-accounts.html` | Attendance, routes, fleet, monthly reports and account management |
-| Other root HTML files | Retained legacy tools linked from the dashboards |
+| Other root HTML files | Retained legacy tools; the old driver page redirects to current attendance |
 | `js/`, `css/` | Application code and styling |
 | `config/` | Public connection settings |
 | `scripts/` | Build, asset validation, schema generation and restore verification |
@@ -42,7 +42,7 @@ Open `http://localhost:8080/` for the login page. Sign in with an existing activ
 | `supabase/migrations/` | Original incremental migration source; already installed in the connected project |
 | `supabase/schema/` | Portable schema-only snapshot of the complete accepted structure |
 | `sql/` | Historical changes and read-only verification queries |
-| `tests/` | Isolated synthetic tests; `increment_1415/` covers payroll; `increment_1416/` covers close/reopen replacement |
+| `tests/` | Isolated synthetic tests, including payroll, close/reopen, phone login, accounts, and driver read-only access |
 | `examples/offline-1.4.15/` | Fictional, network-disabled demonstration generated from the app |
 | `docs/` | Current architecture, deployment and database instructions; historical handoffs |
 | `.github/workflows/verify.yml` | Build, regression checks, and GitHub Pages deployment from `main` |

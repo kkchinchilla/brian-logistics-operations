@@ -2,7 +2,7 @@
 
 ## Current environment
 
-- Current release: Increment 1.4.19, extending accepted 1.4.18. Brian-only account administration uses a separately deployed Supabase Edge Function; see `INCREMENT_1_4_19.md`.
+- Current release: Increment 1.4.21; see `INCREMENT_1_4_21.md`. Brian-only account administration continues to use the existing separately deployed Supabase Edge Function; see `INCREMENT_1_4_19.md`.
 - Existing Supabase project: `dispatch-system-dev`, ref `nyizxtaofoynfgazhzsg`.
 - Selected host: GitHub Pages, published by `.github/workflows/verify.yml`.
 - Access: public login page, followed by Supabase phone/password authentication and existing database permissions. Accounts need a confirmed phone number before using this login form.
@@ -36,6 +36,8 @@ The owner-private preview at https://brian-logistics-operations.sunlitlake65.cha
 ## Rollback
 
 Revert the relevant source change on `main` and allow the workflow to deploy the compatible build. The 1.4.14 client rejects the 1.4.15 calculation response and is not a safe frontend-only rollback. Use a forward correction or a compatible 1.4.15 source commit. Do not rerun historical SQL to roll back a frontend deployment.
+
+After 1.4.21, preserve the driver read-only database rules when correcting the interface. Older clients can no longer submit driver edits or requests; the current driver page redirects legacy bookmarks to the responsive attendance view. Do not restore approval permissions as a cosmetic rollback.
 
 ## Verification for this packaging
 

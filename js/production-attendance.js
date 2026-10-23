@@ -1,4 +1,4 @@
-let ownerBindings=[],attendanceRequests146=[],approvalReady146=false;
+let ownerBindings=[],closeoutReady1421=false;
 let boardDate=today(),runs=[],drivers=[],vehicles=[],routes=[],observations=[],extraTrips=[],standbyShifts=[],dutyEntries=[],closeout=null,boardRequest=0,actualWriteReady=false,actualWriteError="";
 // Attendance columns are explicit Excel groups, NOT route temperature_zone.
 const attendanceGroups=[
@@ -12,6 +12,7 @@ let slotCounts=defaultSlotCounts(),slotReady=false,slotLoadError='';
 const buckets=['常溫','冷藏','冷凍','低鮮'];
 
 async function loadPage(){
+if(!supervisor())return DriverAttendance1421.init();
 [drivers,vehicles,routes,ownerBindings]=await Promise.all([
  allPagedRows('profiles','id,display_name,role,active',q=>q.eq('role','driver')),
  allPagedRows('vehicles','id,plate_number,active'),
@@ -19,11 +20,11 @@ async function loadPage(){
  allPagedRows('vehicle_owner_bindings','id,driver_id,vehicle_id,effective_from,effective_to')
 ]);
 $('#head-actions').insertAdjacentHTML('afterbegin',`<div class="date-navigation"><button class="btn icon-nav" id="previous" aria-label="前一天">‹</button><input class="field" type="date" id="service-date" value="${boardDate}" aria-label="出勤日期"><button class="btn icon-nav" id="following" aria-label="後一天">›</button></div><button id="new-run" class="btn primary" ${supervisor()?'':'hidden'}>＋ 新增配送趟次</button><button id="close" class="btn" ${supervisor()?'':'hidden'}>結案</button>`);
-$('#page').innerHTML=`<div class="tools board-tools"><div class="attendance-operations"><button type="button" class="btn plan-open" id="template-open" hidden>單日範本／批次排班</button><button type="button" class="btn" id="adjust-slots" hidden>調整趟數</button><button type="button" class="btn" id="approval-open">變更申請</button><div class="board-legend"><span class="legend-dot"></span>黃色代表已異動</div></div><input class="field search" id="filter" placeholder="搜尋司機、車號、路線" aria-label="搜尋出勤資料"></div><div id="attendance-table"></div><div id="attendance-note" class="note"></div>`;
+$('#page').innerHTML=`<div class="tools board-tools"><div class="attendance-operations"><button type="button" class="btn plan-open" id="template-open" hidden>單日範本／批次排班</button><button type="button" class="btn" id="adjust-slots" hidden>調整趟數</button><div class="board-legend"><span class="legend-dot"></span>黃色代表已異動</div></div><input class="field search" id="filter" placeholder="搜尋司機、車號、路線" aria-label="搜尋出勤資料"></div><div id="attendance-table"></div><div id="attendance-note" class="note"></div>`;
 $('#service-date').onchange=e=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){e.target.value=boardDate;return;}boardDate=e.target.value;refreshBoard143()};
 $('#previous').onclick=()=>shift(-1);$('#following').onclick=()=>shift(1);
 $('#filter').oninput=paintBoard;$('#close').onclick=closeOrReopen;$('#new-run').onclick=()=>scheduleEditor();$('#adjust-slots').onclick=openSlotEditor;
-$('#approval-open').onclick=openApprovalInbox146;
+
 initSchedule143();
 await fetchBoard();
 }
@@ -32,7 +33,7 @@ async function refreshBoard143(){try{await fetchBoard();}catch(e){notify('出勤
 function shift(amount){const d=new Date(boardDate+'T12:00:00');d.setDate(d.getDate()+amount);boardDate=d.toLocaleDateString('en-CA');$('#service-date').value=boardDate;refreshBoard143()}
 async function fetchBoard(){
  const date=boardDate,req=++boardRequest;
- scheduleReady=false;actualWriteReady=false;approvalReady146=false;$('#close').disabled=true;$('#approval-open').disabled=true;$('#new-run').disabled=true;$('#template-open').disabled=true;
+ scheduleReady=false;actualWriteReady=false;closeoutReady1421=false;$('#close').disabled=true;$('#new-run').disabled=true;$('#template-open').disabled=true;
  // The new run columns require migration 141. Until then preserve the old 1.4 board.
  let nextRuns, nextSlots, newSlotReady=true, nextError='';
  try{
@@ -64,12 +65,10 @@ async function fetchBoard(){
    supervisor()?allPagedRows('trip_executions','id,driver_id',q=>q.eq('service_date',date)):Promise.resolve([])
   ]);newScheduleReady=true;
  }catch(e){scheduleError=e.message||'143 SQL 尚未安裝';}
- let nextCloseout=null,nextRequests=[],nextStandby=[],nextDuties=[],approvalOK=true;
+ let nextCloseout=null,nextStandby=[],nextDuties=[],closeoutOK=true;
  try{
-  const [state,pending,history,standby,duties]=await Promise.all([
+  const [state,standby,duties]=await Promise.all([
    db.rpc('dashboard_get_attendance_day_state',{p_date:date}),
-   allPagedRows('attendance_change_requests','*',q=>q.eq('status','pending')),
-   allPagedRows('attendance_change_requests','*',q=>q.eq('service_date',date).in('status',['approved','rejected','stale'])),
    db.rpc('dashboard_get_attendance_standby',{p_date:date}),
    db.rpc('dashboard_get_attendance_duties',{p_date:date})
   ]);
@@ -81,18 +80,18 @@ async function fetchBoard(){
   if(!Array.isArray(duties.data))throw Error('跟車／學習資料載入失敗');
   nextDuties=duties.data;
   if(typeof state.data?.closed!=='boolean')throw Error('無法確認結案狀態');
-  nextCloseout=state.data;nextRequests=[...pending,...history];
- }catch(e){approvalOK=false;ready=false;newScheduleReady=false;detailError=e.message||'結案與審核資料載入失敗';}
+  nextCloseout=state.data;
+ }catch(e){closeoutOK=false;ready=false;newScheduleReady=false;detailError=e.message||'結案與勤務資料載入失敗';}
 
  if(req!==boardRequest||date!==boardDate)return;
  allBoardRuns=nextRuns;driverDays=nextDriverDays;executionDrivers143=new Set(nextExecutions.map(e=>e.driver_id));scheduleReady=newScheduleReady;scheduleLoadError=scheduleError;
- runs=nextRuns.filter(r=>r.status!=='cancelled'||nextObservations.some(o=>o.run_id===r.id));observations=nextObservations;extraTrips=nextExtras;standbyShifts=nextStandby;dutyEntries=nextDuties;closeout=nextCloseout;attendanceRequests146=nextRequests;approvalReady146=approvalOK;
+ runs=nextRuns.filter(r=>r.status!=='cancelled'||nextObservations.some(o=>o.run_id===r.id));observations=nextObservations;extraTrips=nextExtras;standbyShifts=nextStandby;dutyEntries=nextDuties;closeout=nextCloseout;closeoutReady1421=closeoutOK;
  actualWriteReady=ready;actualWriteError=detailError;
  slotReady=newSlotReady;slotLoadError=nextError;
  slotCounts=defaultSlotCounts();
  for(const rec of nextSlots){if(Object.hasOwn(slotCounts,rec.category))slotCounts[rec.category]=Number(rec.slot_count)}
- $('#close').disabled=!approvalOK;$('#approval-open').disabled=!approvalOK;
- paintApprovalButton146();paintBoard();
+ $('#close').disabled=!closeoutOK;
+ paintBoard();
 }
 const name=id=>drivers.find(d=>d.id===id)?.display_name||'—';const plate=id=>vehicles.find(v=>String(v.id)===String(id))?.plate_number||'';const rt=id=>routes.find(r=>r.id===id);
 function paintLegacyBoard(){
@@ -113,7 +112,7 @@ function paintLegacyBoard(){
    const zoneRuns=runs.filter(r=>r.driver_id===d.id&&(rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')===zone);
    for(let i=0;i<max[zone];i++){
     const r=zoneRuns[i];const obs=r&&observations.find(o=>o.run_id===r.id);
-    const editable=r&&['assigned','in_progress','completed'].includes(r.status)&&actualWriteReady&&!closeout?.closed_at&&(supervisor()||d.id===currentUser.id);
+    const editable=r&&['assigned','in_progress','completed'].includes(r.status)&&actualWriteReady&&!closeout?.closed_at&&supervisor();
     const route=r?(rt(obs?.actual_route_id||r.route_id)?.route_code||r.route_code_snapshot||''):'';
     const effective=obs?.actual_vehicle_id??r?.vehicle_id;
     for(let idx=0;idx<2;idx++){
@@ -141,6 +140,7 @@ function paintLegacyBoard(){
 // Explicit slot configuration is per service date and shared by the entire company.
 // Legacy rows without an assigned group remain visible in '其他路線', never guessed from temperature.
 function paintBoard(){
+ if(!supervisor())return;
  const oldScroll=$('#attendance-table .scroll');const keepPosition=$('#attendance-table')?.dataset.serviceDate===boardDate;
  const pos=keepPosition&&oldScroll?{x:oldScroll.scrollLeft,y:oldScroll.scrollTop}:{x:0,y:0};
  if(!slotReady){
@@ -184,7 +184,7 @@ function paintBoard(){
     const standby=group.name==='其他值班'?unplacedStandby.filter(x=>x.driver_id===d.id)[i-1]:standbyShifts.find(x=>x.driver_id===d.id&&x.attendance_category===group.name&&Number(x.attendance_slot_index)===i);
     const duty=dutyEntries.find(x=>x.driver_id===d.id&&x.attendance_category===group.name&&Number(x.attendance_slot_index)===i);
     const obs=r&&observations.find(o=>o.run_id===r.id);
-    const editable=actualWriteReady&&scheduleReady&&!onLeave143(d.id)&&!isClosed&&(!r||['assigned','in_progress','completed'].includes(r.status))&&(supervisor()||d.id===currentUser.id);
+    const editable=actualWriteReady&&scheduleReady&&!onLeave143(d.id)&&!isClosed&&(!r||['assigned','in_progress','completed'].includes(r.status))&&supervisor();
     const isExtra=!r&&!!extra;
     const route=r?(rt(obs?.actual_route_id??r.route_id)?.route_code||r.route_code_snapshot||''):(extra?rt(extra.actual_route_id)?.route_code||'':'');
     const effective=r?(obs?.actual_vehicle_id??r.vehicle_id):extra?.actual_vehicle_id;
@@ -248,8 +248,7 @@ function openSlotEditor(){
  });
 }
 
-/* Increment 1.4.6 retains the accepted unified editor. Existing driver records
- * are proposals until dispatcher approval; open completed runs may be corrected. */
+/* Supervisor editor. Open completed runs may still be corrected directly. */
 function editRun(id){
  const run=runs.find(r=>r.id===id);
  if(run)editAttendanceCell145(run.driver_id,run.attendance_category,run.attendance_slot_index,run);
@@ -264,12 +263,9 @@ function editExtraTrip(driverId,category,slot){
 }
 function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standby=null,duty=null){
  if(!actualWriteReady||!scheduleReady||closeout?.closed_at||onLeave143(driverId)||
-    !(supervisor()||driverId===currentUser?.id))return;
+    !supervisor())return;
  if(!run&&(!slotReady||!attendanceGroups.some(g=>g.name===category)||
    !Number.isInteger(Number(slot))||Number(slot)<1||Number(slot)>slotCounts[category]))return;
- const pending=attendanceRequests146.find(q=>q.status==='pending'&&((run&&q.run_id===run.id)||(extra&&q.extra_trip_id===extra.id)||(['add','standby','duty'].includes(q.request_kind)&&q.service_date===boardDate&&q.driver_id===driverId&&q.attendance_category===category&&Number(q.attendance_slot_index)===Number(slot))));
- if(pending&&!supervisor()){openApprovalRequest146(pending);return;}
- const needsApproval=!supervisor();
  const observation=run?observations.find(o=>o.run_id===run.id):null;
  const isPlannedWrite=supervisor()&&!extra&&!run&&!standby&&!duty;
  const date=boardDate;
@@ -300,11 +296,11 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
   '<p class="note" id="cell-rental-hint" role="status"></p><p class="note" id="cell-fixed-time"></p>'+
   `<div id="cell-duty-help" hidden><p class="note">選擇勤務後，只需填寫備註；不需車輛、配送趟次或起迄時間。值班、跟車與學習僅記錄出勤，結案後納入月度筆數統計；不計算勤務費用，不另增加配送趟次或租車扣款。</p></div>`+
   field('備註','cell-note',currentNote)+
-  `<p class="attendance-edit-help">${needsApproval?'變更送出後，須由主管核准才會更新勤務。審核前保留原紀錄。':'未結案日期可跨日修改；儲存只影響此筆勤務。結案後需由主管填寫原因重新開啟。'}</p>`+
-  (canCancelRun?`<button type="button" class="btn secondary-action" id="cell-cancel-run">${needsApproval?'申請刪除此趟':'取消此趟'}</button>`:'')+
-  (duty?`<button type="button" class="btn secondary-action" id="cell-remove-duty">${needsApproval?'申請刪除勤務':'刪除此筆勤務'}</button>`:'')+
-  (standby?`<button type="button" class="btn secondary-action" id="cell-remove-standby">${needsApproval?'申請刪除值班':'刪除此筆值班'}</button>`:'')+
-  (canVoid?`<button type="button" class="btn secondary-action" id="cell-void-trip">${needsApproval?'申請刪除此趟':'撤銷此趟'}</button>`:''),async()=>{
+  `<p class="attendance-edit-help">未結案日期可跨日修改；儲存只影響此筆勤務。結案後需由主管填寫原因重新開啟。</p>`+
+  (canCancelRun?`<button type="button" class="btn secondary-action" id="cell-cancel-run">取消此趟</button>`:'')+
+  (duty?`<button type="button" class="btn secondary-action" id="cell-remove-duty">刪除此筆勤務</button>`:'')+
+  (standby?`<button type="button" class="btn secondary-action" id="cell-remove-standby">刪除此筆值班</button>`:'')+
+  (canVoid?`<button type="button" class="btn secondary-action" id="cell-void-trip">撤銷此趟</button>`:''),async()=>{
     if(boardDate!==date)throw Error('日期已變更，請重新開啟編輯視窗');
     if(closeout?.closed_at)throw Error('此日期已結案，請先重新開啟');
     const routeId=chosen('cell-route'),vehicleId=chosen('cell-vehicle'),note=chosen('cell-note');
@@ -322,7 +318,7 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
       if(target.kind==='delete'&&!note.trim())throw Error('刪除勤務請填寫原因');
       const {error}=await db.rpc('dashboard_save_attendance_duty',{p_service_date:date,p_driver_id:driverId,p_category:category,p_slot_index:Number(slot),p_source:source1410,p_target:target});
       if(error)throw error;
-      await fetchBoard();notify(needsApproval?'變更申請已送出，等待主管核准':'當日勤務已更新');return;
+      await fetchBoard();notify('當日勤務已更新');return;
     }
     if(standby||routeId==='standby'&&!cancelIntent&&!voidIntent){
       const target=voidIntent||cancelIntent?{kind:'delete',note}:routeId==='standby'?{kind:'standby',note}:{kind:'route',route_id:routeId?Number(routeId):null,vehicle_id:vehicleId?Number(vehicleId):null,note};
@@ -330,23 +326,11 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
       if(target.kind==='delete'&&!note.trim())throw Error('刪除值班請填寫原因');
       const {error}=await db.rpc('dashboard_save_attendance_standby',{p_service_date:date,p_driver_id:driverId,p_category:category,p_slot_index:Number(slot),p_source:source1410,p_target:target});
       if(error)throw error;
-      await fetchBoard();notify(needsApproval?'變更申請已送出，等待主管核准':target.kind==='delete'?'值班已刪除':'當日勤務已更新');return;
+      await fetchBoard();notify(target.kind==='delete'?'值班已刪除':'當日勤務已更新');return;
     }
     if(!voidIntent&&!cancelIntent&&Boolean(routeId)!==Boolean(vehicleId))throw Error('請同時選擇路線與車號');
     if(!voidIntent&&!cancelIntent&&(!routeId||!vehicleId))throw Error('請選擇路線與車號；取消預排請使用「取消此趟」');
-    if(needsApproval){
-      if((voidIntent||cancelIntent)&&!note.trim())throw Error('刪除趟次請填寫原因');
-      const {error}=!run&&!extra?await db.rpc('dashboard_request_attendance_add',{
-        p_service_date:date,p_category:category,p_slot_index:Number(slot),p_route_id:Number(routeId),p_vehicle_id:Number(vehicleId),
-        p_note:note,p_expected_revision:expectedExtraRevision
-      }):await db.rpc('dashboard_request_attendance_change',{
-        p_run_id:run?.id||null,p_extra_trip_id:extra?.id||null,
-        p_route_id:routeId?Number(routeId):null,p_vehicle_id:vehicleId?Number(vehicleId):null,
-        p_note:note,p_expected_revision:run?Number(expectedRunRevision):expectedExtraRevision,
-        p_expected_observation_revision:expectedObservationRevision,p_void:voidIntent||cancelIntent
-      });
-      if(error)throw error;
-    }else if(isPlannedWrite){
+    if(isPlannedWrite){
       const {error}=await db.rpc('dashboard_save_day_plan',{
         p_service_date:date,p_driver_id:driverId,p_category:category,p_slot_index:Number(slot),
         p_route_id:routeId?Number(routeId):null,p_vehicle_id:vehicleId?Number(vehicleId):null,
@@ -375,9 +359,9 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
       });
       if(error){if(/資料已被其他人更新|已結案|已排|欄位/.test(error.message||''))await fetchBoard();throw error;}
     }
-    await fetchBoard();notify(needsApproval?'變更申請已送出，等待主管核准':voidIntent?'已撤銷此趟':cancelIntent?'已取消此趟':'當日趟次已更新');
+    await fetchBoard();notify(voidIntent?'已撤銷此趟':cancelIntent?'已取消此趟':'當日趟次已更新');
   });
- $('#modal-save').textContent=needsApproval?'送出審核':'儲存';
+ $('#modal-save').textContent='儲存';
  if(!standby&&!duty&&!currentVehicle){const preferred=FleetBinding144.preferred(ownerBindings,driverId,date,vehicles);
    if(preferred)$('#cell-vehicle').value=String(preferred);}
  let savedVehicle=$('#cell-vehicle').value;
@@ -398,19 +382,19 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
  const updateRental=()=>{$('#cell-rental-hint').textContent=(chosen('cell-route')==='standby'||isDuty1411(chosen('cell-route')))?'':FleetBinding144.hint(ownerBindings,driverId,chosen('cell-vehicle'),date,vehicles);};
  $('#cell-route').onchange=updateRoute;$('#cell-vehicle').onchange=updateRental;
  updateRoute();updateRental();
- if(duty)$('#cell-remove-duty').onclick=()=>{voidIntent=true;$('#cell-route').disabled=true;$('#cell-vehicle').disabled=true;$('#modal-save').textContent=needsApproval?'送出刪除申請':'確認刪除勤務';$('#modal-error').textContent='請填寫刪除原因，再送出確認。';};
+ if(duty)$('#cell-remove-duty').onclick=()=>{voidIntent=true;$('#cell-route').disabled=true;$('#cell-vehicle').disabled=true;$('#modal-save').textContent='確認刪除勤務';$('#modal-error').textContent='請填寫刪除原因，再送出確認。';};
  if(standby)$('#cell-remove-standby').onclick=()=>{
    voidIntent=true;$('#cell-route').disabled=true;$('#cell-vehicle').disabled=true;
-   $('#modal-save').textContent=needsApproval?'送出刪除申請':'確認刪除值班';$('#modal-error').textContent='請填寫刪除原因，再送出確認。';
+   $('#modal-save').textContent='確認刪除值班';$('#modal-error').textContent='請填寫刪除原因，再送出確認。';
  };
  if(canCancelRun)$('#cell-cancel-run').onclick=()=>{
    cancelIntent=true;
    $('#cell-route').disabled=true;$('#cell-vehicle').disabled=true;
-   $('#cell-fixed-time').textContent=needsApproval?'刪除申請須由主管核准；核准前保留此趟配送。':'按下確認後將取消此趟配送，不影響其他日期。';
-   $('#modal-save').textContent=needsApproval?'送出刪除申請':'確認取消趟次';
+   $('#cell-fixed-time').textContent='按下確認後將取消此趟配送，不影響其他日期。';
+   $('#modal-save').textContent='確認取消趟次';
  };
  if(canVoid)$('#cell-void-trip').onclick=()=>{
-   voidIntent=true;$('#modal-save').textContent=needsApproval?'送出刪除申請':'確認撤銷';
+   voidIntent=true;$('#modal-save').textContent='確認撤銷';
    $('#modal-error').textContent='請填寫撤銷原因，再送出確認。';
  };
 }
@@ -467,12 +451,10 @@ function scheduleEditor(run=null){
 }
 
 function closeOrReopen(){
- if(!supervisor()||!approvalReady146)return;
+ if(!supervisor()||!closeoutReady1421)return;
  const editingDate=boardDate,closed=!!closeout?.closed_at;
- const pending=attendanceRequests146.filter(q=>q.status==='pending'&&q.service_date<=editingDate).length;
  modal(closed?'重新開啟 '+editingDate:'結案至 '+editingDate,
   `<p class="note">${closed?'只重新開啟此日期。月度報表會保留上次結案資料；修改後再次「確認結案」，才會取代報表中的舊資料。':`將鎖定 ${esc(editingDate)} 及之前所有尚未結案日期，保留按下結案時的紀錄。月度報表將以本次資料取代這些日期的上次結案資料，不重複計入。之後若需修改，須填寫原因重新開啟。`}</p>`+
-  (!closed&&pending?`<p class="note">有 ${pending} 筆待審變更。結案將保留目前紀錄，這些申請不會套用，重新開啟後須重新送審。</p>`:'')+
   field(closed?'重新開啟原因（必填）':'主管備註','close-note',''),async()=>{
    if(boardDate!==editingDate)throw Error('日期已變更，請重新開啟視窗');
    const note=chosen('close-note').trim();
