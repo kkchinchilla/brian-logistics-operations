@@ -42,3 +42,5 @@ These are isolated tests with synthetic identities. No real password is used or 
 - Pre/post deployment fingerprints of profiles, Auth account metadata, runs, rates and closeouts are unchanged. No live credentials were changed and the new account audit remains empty.
 - Security advisor findings for the new protected context RPC (intentional authenticated SECURITY DEFINER with an explicit owner and live-session check) and deny-by-default private audit table were reviewed. No credentials are exposed. Existing unrelated warnings remain.
 - Authenticated live credential mutations and visual browser inspection remain unverified; isolated tests do not substitute for Brian’s acceptance testing.
+
+Terminology update (2026-10-23): account role labels and validation wording use 「主管」 for the existing `dispatcher` role. Brian can add a phone to an existing account by selecting 「尚未設定」 in the phone column. This wording update changes no account permissions.

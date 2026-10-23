@@ -15,7 +15,7 @@ function password(value){
 function details(body){
  const name=typeof body.name==='string'?body.name.trim():'';
  if(!name||name.length>70)fail('請填寫姓名（1–70 字）。');
- if(!['driver','dispatcher'].includes(body.role))fail('請選擇司機或調度員。');
+ if(!['driver','dispatcher'].includes(body.role))fail('請選擇司機或主管。');
  return {name,role:body.role};
 }
 function phoneInput(body){
