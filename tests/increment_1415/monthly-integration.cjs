@@ -39,11 +39,11 @@ if(require.main===module)(async()=>{
  ok('salary is shown as 100 and removed regional placeholder stays absent',e.run('displayed[0].calculated.salary')===100&&e.element('#monthly-body').innerHTML.includes('<td>100</td>')&&!e.element('#monthly-body').innerHTML.includes('地區／職務加給'));
  ok('duty entries do not increase delivery count',e.run('displayed[0].rr.length')===1);
  ok('driver names remain escaped',!e.element('#monthly-body').innerHTML.includes('<img onerror=evil>'));
- ok('pay details contain only retained pay components',e.ctx.PayrollSettings1491.detailHTML('a').includes('依結案紀錄計算')&&!/底薪|值班津貼|跟車費用|學習費用/.test(e.ctx.PayrollSettings1491.detailHTML('a')));
+ ok('pay details contain only retained pay components',e.ctx.PayrollSettings1491.detailHTML('a').includes('依結案紀錄計算')&&!/底薪/.test(e.ctx.PayrollSettings1491.detailHTML('a')));
  ok('pay details use the confirmed route name',e.ctx.PayrollSettings1491.detailHTML('a').includes('Frozen route name')&&!e.ctx.PayrollSettings1491.detailHTML('a').includes('Current route name'));
  await e.run('exportCSV()');const attendance=await e.ctx.blobs.at(-1).text();ok('attendance CSV includes separate duty counts',attendance.includes('跟車筆數')&&attendance.includes('學習筆數')&&attendance.includes('"0","1","2","0"'));
  await e.ctx.PayrollSettings1491.exportCSV();const pay=await e.ctx.blobs.at(-1).text();ok('reconciliation CSV excludes attendance-only pay lines',!pay.includes('follow_along')&&!pay.includes('learning')&&!pay.includes('base:')&&pay.includes('100'));
- ok('both CSVs carry the simplified total without removed amounts',!attendance.includes('跟車費用')&&!attendance.includes('學習費用')&&!attendance.includes('底薪')&&attendance.includes('100')&&pay.includes('應計薪資')&&!pay.includes('不等於應計薪資'));
+ ok('both CSVs carry the simplified total without removed amounts',attendance.includes('跟車費用')&&attendance.includes('學習費用')&&!attendance.includes('底薪')&&attendance.includes('100')&&pay.includes('應計薪資')&&!pay.includes('不等於應計薪資'));
  ok('exports refetch server authority',e.calls.length===3);
  e.ctx.bundle.finalized.deliveries=[];e.ctx.bundle.finalized.special_work=[];e.ctx.bundle.finalized.dates[0].status='reopened';await e.run('loadMonth()');
  ok('date without any confirmed snapshot has no attendance or pay',e.run('displayed[0].followAlong')===0&&e.run('displayed[0].learning')===0&&e.run('reconciliation.summaries[0].basicSubtotal')===0);

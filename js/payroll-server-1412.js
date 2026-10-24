@@ -4,9 +4,9 @@
  function read(bundle,month){
   const e=root.PayrollReconciliation1491,p=bundle?.calculation,f=bundle?.finalized;
   e.validate(f,month);
-  if(!p||p.version!==1415||p.engine!=='database'||p.month!==month||!['summaries','lines','issues','expenses','dates'].every(k=>Array.isArray(p[k])))throw Error('計薪資料不完整，請確認 1.4.15 資料庫版本');
+  if(!p||![1415,1431].includes(p.version)||p.engine!=='database'||p.month!==month||!['summaries','lines','issues','expenses','dates'].every(k=>Array.isArray(p[k])))throw Error('計薪資料不完整，請重新整理並確認資料庫版本');
   const same=(a,b)=>String(a)===String(b),ids=new Set();
-  const moneyKeys=['variable','rentalDeduction','adjustment'];
+  const moneyKeys=['variable','rentalDeduction','adjustment',...(p.version===1431?['standbyPay','followAlongPay','learningPay']:[])];
   const countKeys=['count','standbyCount','followAlongCount','learningCount','rentalCount','unknownRentalCount'];
   const fail=()=>{throw Error('計薪結果與結案來源不一致');};
   for(const x of p.summaries){
@@ -24,7 +24,7 @@
    if(x.salaryReady!==salaryReady||(salaryReady?e.cents(x.salary)!==e.cents(x.basicSubtotal):x.salary!==null))fail();
   }
   for(const group of [f.deliveries,f.standby,f.special_work,f.attendance_records,bundle.adjustments])if(group.some(r=>!ids.has(r.driver_id)))fail();
-  if(p.summaries.some(x=>['baseSalary','standbyPay','followAlongPay','learningPay'].some(k=>Object.hasOwn(x,k)))||p.lines.some(l=>['base','standby','follow_along','learning'].includes(l.kind)))fail();
+  if(p.summaries.some(x=>['baseSalary',...(p.version===1415?['standbyPay','followAlongPay','learningPay']:[])].some(k=>Object.hasOwn(x,k)))||p.lines.some(l=>['base',...(p.version===1415?['standby','follow_along','learning']:[])].includes(l.kind)))fail();
   const seen=new Set();
   for(const l of p.lines){
    const key=[l.driverId,l.kind,l.source].join('|');

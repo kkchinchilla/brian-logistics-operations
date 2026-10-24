@@ -295,7 +295,7 @@ function editAttendanceCell145(driverId,category,slot,run=null,extra=null,standb
   `<label for="cell-route">路線</label><select class="field" id="cell-route">${option('','未指派',currentRoute||'')}${option('standby','值班',currentRoute)}${option('follow_along','跟車',currentRoute)}${option('learning','學習',currentRoute)}${routeOptions}</select>`+
   `<div id="cell-vehicle-fields"><label for="cell-vehicle">車號</label><select class="field" id="cell-vehicle">${option('','未指派',currentVehicle||'')}${vehicleOptions}</select></div>`+
   '<p class="note" id="cell-rental-hint" role="status"></p><p class="note" id="cell-fixed-time"></p>'+
-  `<div id="cell-duty-help" hidden><p class="note">選擇勤務後，只需填寫備註；不需車輛、配送趟次或起迄時間。值班、跟車與學習僅記錄出勤，結案後納入月度筆數統計；不計算勤務費用，不另增加配送趟次或租車扣款。</p></div>`+
+  `<div id="cell-duty-help" hidden><p class="note">選擇勤務後，只需填寫備註；不需車輛、配送趟次或起迄時間。值班、跟車與學習結案後依共用勤務費率每筆計酬，不另增加配送趟次或租車扣款。</p></div>`+
   field('備註','cell-note',currentNote)+
   `<p class="attendance-edit-help">未結案日期可跨日修改；儲存只影響此筆勤務。結案後需由主管填寫原因重新開啟。</p>`+
   (canCancelRun?`<button type="button" class="btn secondary-action" id="cell-cancel-run">取消此趟</button>`:'')+

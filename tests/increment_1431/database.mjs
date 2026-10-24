@@ -1,0 +1,88 @@
+// Synthetic actors and a disposable on-disk database. Never connect this fixture to Supabase.
+import {PGlite} from '@electric-sql/pglite';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const root=path.resolve(import.meta.dirname,'../..'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'monthly-1431-'));
+let pg=new PGlite(dir),checks=0;
+const require=createRequire(import.meta.url);
+globalThis.PayrollReconciliation1491=require('../../js/payroll-reconciliation-1491.js');
+const decoder=require('../../js/payroll-server-1412.js');
+const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+const scalar=async(sql,args)=>Object.values((await pg.query(sql,args)).rows[0])[0];
+const actor=async n=>pg.exec(`RESET ROLE;SELECT set_config('request.jwt.claim.sub','${id(n)}',false);SET ROLE authenticated;`);
+const ok=(name,value=true)=>{assert.ok(value,name);checks++;console.log('PASS:',name)};
+const report=async()=>{const b=await scalar("select dashboard_get_calculated_payroll('2026-10-01')");decoder.read(b,'2026-10');return b;};
+const date=(b,d)=>b.finalized.dates.find(x=>x.service_date===d);
+const empty={kind:'empty',id:null,revision:0,observation_revision:0};
+const source=d=>({kind:'duty',id:d.id,revision:d.revision,observation_revision:0});
+const duties=()=>scalar("select dashboard_get_attendance_duties('2026-10-15')");
+const save=(src,target,slot=1,day='2026-10-15')=>scalar('select dashboard_save_attendance_duty($1,$2,$3,$4,$5,$6)',[day,id(3),'OC',slot,src,target]);
+const close=d=>scalar('select dashboard_close_attendance_through($1,$2)',[d,'isolated confirmation']);
+const reopen=d=>scalar('select dashboard_reopen_attendance_date($1,$2)',[d,'isolated correction']);
+const groups=['deliveries','standby','special_work','attendance_records','original_runs'];
+const savedRows=b=>Object.fromEntries(groups.map(k=>[k,b.finalized[k]]));
+try{
+ await pg.exec(fs.readFileSync(root+'/tests/increment_146/baseline_fixture.sql','utf8'));
+ for(const inc of ['146','147','148','149','1491','1410','1411','14111','1412','1413','1414','1415','1416']){
+  const name=fs.readdirSync(root+'/supabase/migrations').find(n=>n.includes('_increment_'+inc+'_'));
+  await pg.exec(fs.readFileSync(root+'/supabase/migrations/'+name,'utf8'));
+ }
+ await actor(2);
+ await pg.exec("INSERT INTO delivery_temperature_zones(name) VALUES('常溫');INSERT INTO delivery_regions(id,name) VALUES(1,'Test');INSERT INTO vehicles(id,plate_number) VALUES(1,'TEST');INSERT INTO routes(id,route_code,temperature_zone,delivery_region_id,default_start_time,default_end_time) VALUES(1,'01','常溫',1,'06:00','07:00'),(2,'02','常溫',1,'08:00','09:00');INSERT INTO delivery_region_zone_rates(region_id,zone_name,delivery_fee) VALUES(1,'常溫',150);");
+ await pg.exec(`INSERT INTO runs(id,service_date,route_id,driver_id,vehicle_id,attendance_category,attendance_slot_index) VALUES(20,'2026-10-15',1,'${id(3)}',1,'日配',1),(21,'2026-10-16',1,'${id(4)}',1,'日配',1);`);
+ await save(empty,{kind:'follow_along',note:'original follow'},1);
+ await save(empty,{kind:'learning',note:'delete this later'},2);
+ await scalar('select dashboard_save_attendance_standby($1,$2,$3,1,$4,$5)',['2026-10-15',id(3),'鮮二',empty,{kind:'standby',note:'original standby'}]);
+ await actor(1);await scalar("select dashboard_save_rental_rate('2026-10-01',100,'isolated rate',0)");
+ await pg.exec("RESET ROLE;UPDATE routes SET route_name='Test route '||id;");
+ for(const inc of ['1418','1424','1431']){const name=fs.readdirSync(root+'/supabase/migrations').find(n=>n.includes('_increment_'+inc+'_'));await pg.exec(fs.readFileSync(root+'/supabase/migrations/'+name,'utf8'));}
+ await actor(1);
+ const setRate=(kind,amount,rev=0)=>scalar('select dashboard_save_assignment_rate($1,$2,$3)',[kind,amount,rev]);
+ for(const [kind,amount] of [['standby',100],['follow_along',200],['learning',50]])await setRate(kind,amount);
+ await assert.rejects(()=>setRate('learning',75),/已變更/);
+ for(const amount of [-1,10000001,1.001])await assert.rejects(()=>setRate('learning',amount,1),/金額/);
+ ok('stale updates and invalid rates rejected');
+ let b=await report();ok('unconfirmed attendance does not enter monthly reporting',groups.every(k=>b.finalized[k].length===0));
+ await close('2026-10-16');const confirmed=await report();const originalEvent=date(confirmed,'2026-10-15').close_event_id;
+ ok('first cumulative close includes each date once',confirmed.finalized.deliveries.length===2&&confirmed.finalized.standby.length===1&&confirmed.finalized.special_work.length===2);
+ ok('confirmed duties contribute once each',confirmed.calculation.summaries.find(x=>x.driverId===id(3)).standbyPay===100&&confirmed.calculation.summaries.find(x=>x.driverId===id(3)).followAlongPay===200&&confirmed.calculation.summaries.find(x=>x.driverId===id(3)).learningPay===50);
+ const sums=structuredClone(confirmed.calculation.summaries);
+ await reopen('2026-10-15');b=await report();
+ assert.deepEqual(savedRows(b),savedRows(confirmed));assert.deepEqual(b.calculation.summaries,sums);
+ ok('reopen preserves all confirmed rows, counts and calculated totals');
+ ok('editing state is separate from included snapshot',date(b,'2026-10-15').status==='finalized'&&date(b,'2026-10-15').attendance_status==='reopened'&&date(b,'2026-10-15').pending_reclose===true&&!(await scalar("select dashboard_get_attendance_day_state('2026-10-15')")).closed);
+ ok('included reopened date is not falsely reported as excluded',!b.calculation.issues.some(x=>x.date==='2026-10-15'&&x.code==='date_unfinalized'));
+ await pg.exec("RESET ROLE;SELECT set_config('request.jwt.claim.sub','',false);SET ROLE anon;");
+ await assert.rejects(report,/permission|Brian/);ok('signed-out session cannot read payroll');
+ await pg.close();pg=new PGlite(dir);await actor(1);b=await report();
+ assert.deepEqual(savedRows(b),savedRows(confirmed));assert.deepEqual(b.calculation.summaries,sums);ok('fresh connection and authenticated session retain the reopened snapshot');
+ await actor(2);
+ let rows=await duties();await save(source(rows.find(x=>x.kind==='follow_along')),{kind:'learning',note:'converted follow'},1);
+ rows=await duties();await save(source(rows.find(x=>x.note==='delete this later')),{kind:'delete',note:'test deletion'},2);
+ await save(empty,{kind:'learning',note:'new learning'},3);
+ await scalar("select dashboard_edit_run_direct(20,null,null,'test cancellation',1,0,true)");
+ await pg.exec(`INSERT INTO runs(id,service_date,route_id,driver_id,vehicle_id,attendance_category,attendance_slot_index) VALUES(22,'2026-10-15',2,'${id(4)}',1,'日配',2);`);
+ await actor(1);b=await report();assert.deepEqual(savedRows(b),savedRows(confirmed));assert.deepEqual(b.calculation.summaries,sums);ok('draft additions, edits and deletions do not leak into monthly report');
+ await reopen('2026-10-16');await close('2026-10-15');b=await report();
+ ok('reclose replaces deleted and added deliveries without duplication',b.finalized.deliveries.length===2&&!b.finalized.deliveries.some(x=>x.run_id===20)&&b.finalized.deliveries.some(x=>x.run_id===22));
+ const driver=b.calculation.summaries.find(x=>x.driverId===id(3));
+ ok('reclose replaces duty types and recalculates correct driver',driver.count===0&&driver.followAlongCount===0&&driver.learningCount===2&&driver.standbyCount===1&&driver.salary===200);
+ ok('new confirmed version replaces the pending marker',date(b,'2026-10-15').close_event_id>originalEvent&&!date(b,'2026-10-15').pending_reclose&&date(b,'2026-10-15').attendance_status==='closed');
+ ok('closing an earlier date preserves later reopened snapshot',date(b,'2026-10-16').close_event_id===originalEvent&&date(b,'2026-10-16').pending_reclose&&b.finalized.deliveries.find(x=>x.run_id===21).close_event_id===originalEvent);
+ const repeated=structuredClone(savedRows(b));await close('2026-10-15');assert.deepEqual(savedRows(await report()),repeated);ok('repeated confirmation does not double count or replace unaffected dates');
+ await close('2026-10-16');b=await report();ok('cumulative reclose updates only affected dates',!date(b,'2026-10-16').pending_reclose&&date(b,'2026-10-15').close_event_id===repeated.deliveries.find(x=>x.run_id===22).close_event_id);
+ await actor(2);await save(empty,{kind:'learning',note:'only record'},1,'2026-10-18');await close('2026-10-18');await reopen('2026-10-18');
+ const last=(await scalar("select dashboard_get_attendance_duties('2026-10-18')"))[0];await save(source(last),{kind:'delete',note:'remove all attendance'},1,'2026-10-18');
+ await actor(1);ok('deleting every draft entry still retains last confirmed record',(await report()).finalized.special_work.some(x=>x.service_date==='2026-10-18'));
+ await close('2026-10-18');b=await report();ok('empty reclose replaces prior contents instead of falling back',date(b,'2026-10-18').status==='finalized'&&groups.every(k=>b.finalized[k].every(x=>x.service_date!=='2026-10-18')));
+ await reopen('2026-10-17');b=await report();ok('reopened date with no previous snapshot remains excluded',date(b,'2026-10-17').status==='reopened'&&!date(b,'2026-10-17').pending_reclose);
+ await setRate('learning',0,1);b=await report();ok('explicit zero is valid and current rate recalculates earlier records',b.calculation.summaries.find(x=>x.driverId===id(3)).learningPay===0);
+ await pg.exec('RESET ROLE;DELETE FROM duty_assignment_rates WHERE kind=\'learning\';');await actor(1);b=await report();
+ ok('missing required rate blocks salary',b.calculation.summaries.find(x=>x.driverId===id(3)).salary===null&&b.calculation.summaries.find(x=>x.driverId===id(3)).learningPay===null);
+ for(const role of [2,3]){await actor(role);await assert.rejects(()=>setRate('standby',999,1),/Brian/);assert.equal(Number(await scalar('select count(*) from duty_assignment_rates')),0);await assert.rejects(()=>pg.exec("INSERT INTO duty_assignment_rates(kind,amount) VALUES('learning',999)"),/row-level/);await assert.rejects(report,/Brian/);await assert.rejects(()=>scalar("select private.dashboard147_monthly('2026-10-01')"),/Brian/);ok('non-finance role '+role+' denied through both report entry points');}
+ await pg.exec('RESET ROLE;');ok('prior confirmed snapshots remain in audit history',Number(await scalar('select count(*) from attendance_closeout_events where id=$1 and action=$2',[originalEvent,'close']))===1);
+ console.log(`RESULT: ${checks} reopened-monthly database checks passed`);
+}catch(e){console.error(e.message,e.where||'');process.exitCode=1;}finally{await pg.close();fs.rmSync(dir,{recursive:true,force:true});}

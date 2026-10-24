@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const basisLabels={fixed_only:'固定月薪',per_run_only:'按路線計趟',fixed_plus_run:'固定＋按趟',manual:'人工計算'};
- const componentLabels={per_run:'配送計酬',rental:'租車費用（扣款）',adjustment:'加給／獎懲'};
+ const componentLabels={per_run:'配送計酬',standby:'值班費用',follow_along:'跟車費用',learning:'學習費用',rental:'租車費用（扣款）',adjustment:'加給／獎懲'};
  const same=(a,b)=>String(a)===String(b);
  function dates(month){
   if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||Number(month.slice(0,4))<1900||Number(month.slice(0,4))>9998)throw Error('月份格式不正確');
@@ -98,7 +98,7 @@
   const rows=[['月份','資料類型','司機 ID','司機','日期','來源','結案紀錄','計薪項目','數量','費率來源／版本','金額','狀態／待確認事項']];
   for(const x of report.lines)rows.push([report.month,'明細',x.driverId,names.get(x.driverId)||'',x.date,x.source,x.closeEventId||'',x.kind,x.quantity??'',x.ruleId??'',x.notApplicable?'不適用':x.amount??'待設定',x.status]);
   for(const x of report.summaries){
-   rows.push([report.month,'應計薪資',x.driverId,x.name,'','','','配送計酬－租車費用＋加給／獎懲','','',x.salary??(x.basicSubtotal===null?'待設定':'待確認'),x.salaryReady?'依已結案紀錄計算':x.issues.map(i=>i.message).join('；')]);
+   rows.push([report.month,'應計薪資',x.driverId,x.name,'','','',report.version===1431?'配送計酬＋值班費用＋跟車費用＋學習費用－租車費用＋加給／獎懲':'配送計酬－租車費用＋加給／獎懲','','',x.salary??(x.basicSubtotal===null?'待設定':'待確認'),x.salaryReady?'依已結案紀錄計算':x.issues.map(i=>i.message).join('；')]);
    if(!x.salaryReady)rows.push([report.month,'已知項目小計',x.driverId,x.name,'','','','','','',x.basicSubtotal??'待設定','尚有缺漏或待確認紀錄，不能當作應計薪資']);
   }
   for(const x of report.issues)rows.push([report.month,'待確認',x.driverId,names.get(x.driverId)||'',x.date,x.source,'',x.code,'','','',x.message]);

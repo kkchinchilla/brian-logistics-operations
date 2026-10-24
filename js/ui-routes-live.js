@@ -4,7 +4,7 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const client=(typeof db!=='undefined'?db:window.db); // js/config.js uses a global lexical const db
-let regions=[],zones=[],routes=[],tariffs=[],tab='routes',editing=null,rateEditing=null,entityEditing=null,search='',filterRegion='',filterZone='',timer=null,waiting=false;
+let regions=[],zones=[],routes=[],tariffs=[],dutyRates=[],tab='routes',editing=null,rateEditing=null,entityEditing=null,search='',filterRegion='',filterZone='',timer=null,waiting=false;
 const rt=id=>regions.find(v=>v.id===Number(id))?.name||'未設定';
 const regionId=name=>regions.find(v=>v.name===name)?.id||null;
 const isEdit=(p)=>p&&p.role==='dispatcher'&&p.active;
@@ -14,17 +14,19 @@ const nameKey=v=>String(v??'').normalize('NFKC').trim().replace(/\s+/g,' ');
 const validName=v=>v.length>0&&v.length<=50;
 const notice=t=>{$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('toast').classList.remove('show'),3000)};
 const errorText=e=>String(e?.message||e||'未知錯誤');
+const dutyLabels={standby:'值班',follow_along:'跟車',learning:'學習'};
 let myProfile=null;
 function busy(on){waiting=on;document.querySelectorAll('#route-form button,#rate-form button,#entity-form button,#add-route,#toggle-active').forEach(x=>x.disabled=on)}
 async function load(){
- const [r,z,t,c]=await Promise.all([
+ const [r,z,t,c,d]=await Promise.all([
   client.from('delivery_regions').select('id,name').order('name'),
   client.from('delivery_temperature_zones').select('name').order('name'),
   finance()?client.from('delivery_region_zone_rates').select('region_id,zone_name,delivery_fee').order('region_id'):Promise.resolve({data:[],error:null}),
-  client.from('routes').select('id,route_name,active,temperature_zone,delivery_region_id').order('route_name')
+  client.from('routes').select('id,route_name,active,temperature_zone,delivery_region_id').order('route_name'),
+  finance()?client.from('duty_assignment_rates').select('kind,amount,revision').order('kind'):Promise.resolve({data:[],error:null})
  ]);
- for(const res of [r,z,t,c])if(res.error)throw res.error;
- regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];
+ for(const res of [r,z,t,c,d])if(res.error)throw res.error;
+ regions=r.data||[];zones=(z.data||[]).map(x=>x.name);tariffs=t.data||[];dutyRates=d.data||[];
  routes=(c.data||[]).map(x=>({...x,name:x.route_name||'未設定路線名稱',region:rt(x.delivery_region_id),zone:x.temperature_zone||''}));
  buildSelects();render();
 }
@@ -50,6 +52,7 @@ function render(){
  $('result-count').textContent=`顯示 ${visible.length} / ${routes.length} 條路線`;
  $('rates-head').innerHTML=finance()?`<tr><th>配送地區</th>${zones.map(z=>`<th>${esc(z)}</th>`).join('')}</tr>`:'';
  $('rates-body').innerHTML=finance()?regions.map(r=>`<tr><td>${esc(r.name)}</td>${zones.map(z=>`<td><button data-rate-region="${r.id}" data-rate-zone="${esc(z)}" type="button">${rate(r.name,z)===null?'＋ 設定費率':money(rate(r.name,z))}</button></td>`).join('')}</tr>`).join(''):'';
+ $('duty-rates-body').innerHTML=finance()?Object.entries(dutyLabels).map(([kind,label])=>{const r=dutyRates.find(x=>x.kind===kind);return `<tr><th scope="row">${label}</th><td>每筆勤務</td><td><button type="button" data-duty-rate="${kind}" aria-label="設定${label}費率">${r?money(r.amount):'＋ 設定費率'}</button></td></tr>`}).join(''):'';
  $('rates-head').parentElement.style.minWidth=Math.max(510,137*(zones.length+1))+'px';
  for(const [kind,names,target] of [['region',regions.map(r=>r.name),'region-list'],['zone',zones,'zone-list']]){
   $(target).innerHTML=names.map(n=>{const used=routes.filter(r=>r[kind]===n).length;return `<div class="catalog-item"><span class="catalog-name">${esc(n)}</span><span class="catalog-meta">${used} 條路線</span><button class="catalog-control" data-kind="${kind}" data-name="${esc(n)}" data-action="rename" type="button">編輯</button><button class="catalog-control delete" data-kind="${kind}" data-name="${esc(n)}" data-action="remove" type="button">移除</button></div>`}).join('');
@@ -94,11 +97,18 @@ async function submitRoute(e){e.preventDefault();if(waiting)return;
  }catch(err){$('form-error').textContent=`儲存失敗：${errorText(err)}`}finally{busy(false)}
 }
 function openRate(regionIdValue,zone){if(!finance())return;const region=regions.find(r=>r.id===Number(regionIdValue));if(!region)return;
+ $('rate-modal-title').textContent='修改配送費率';$('rate-amount-label').textContent='路線費用／趟 (NT$)';
  rateEditing={region,zone};$('rate-modal-desc').textContent=`${region.name} × ${zone} 的每趟配送費率。`;
  $('rate-amount').value=rate(region.name,zone)??'';$('rate-error').textContent='';openLayer('rate-modal');}
+function openDutyRate(kind){if(!finance()||!dutyLabels[kind])return;
+ const r=dutyRates.find(x=>x.kind===kind);rateEditing={kind,revision:r?.revision??0};
+ $('rate-modal-title').textContent='設定'+dutyLabels[kind]+'費率';$('rate-amount-label').textContent='勤務費用／筆 (NT$)';
+ $('rate-modal-desc').textContent='所有司機共用，每筆已結案勤務計一次。修改目前費率也會更新過去月份的試算金額。';
+ $('rate-amount').value=r?.amount??'';$('rate-error').textContent='';openLayer('rate-modal');
+}
 async function submitRate(e){e.preventDefault();if(!finance()||!rateEditing||waiting)return;const s=$('rate-amount').value.trim(),n=Number(s);
- if(!s||!Number.isFinite(n)||n<0||n>10000000){$('rate-error').textContent='請輸入 0 至 10,000,000 的非負金額。';return}
- busy(true);try{const res=await client.from('delivery_region_zone_rates').upsert({region_id:rateEditing.region.id,zone_name:rateEditing.zone,delivery_fee:n},{onConflict:'region_id,zone_name'});if(res.error)throw res.error;dismiss();await load();notice('費率已儲存')}catch(err){$('rate-error').textContent=errorText(err)}finally{busy(false)} }
+ if(!s||!Number.isFinite(n)||n<0||n>10000000||!/^\d+(?:\.\d{1,2})?$/.test(s)){$('rate-error').textContent='請輸入 0 至 10,000,000 的非負金額，最多兩位小數。';return}
+ busy(true);try{const res=rateEditing.kind?await client.rpc('dashboard_save_assignment_rate',{p_kind:rateEditing.kind,p_amount:n,p_expected_revision:rateEditing.revision}):await client.from('delivery_region_zone_rates').upsert({region_id:rateEditing.region.id,zone_name:rateEditing.zone,delivery_fee:n},{onConflict:'region_id,zone_name'});if(res.error)throw res.error;dismiss();await load();notice('費率已儲存')}catch(err){$('rate-error').textContent=errorText(err)}finally{busy(false)} }
 function openEntity(kind,old=null,origin='catalog'){entityEditing={kind,old,origin};$('entity-modal-title').textContent=(old?'編輯':'新增')+(kind==='region'?'配送地區':'配送溫層');$('entity-modal-desc').textContent=old?'修改分類名稱，既有路線將同步採用新名稱。':'新分類加入後，新組合費率需另行設定。';$('entity-name').value=old||'';$('entity-label').textContent=kind==='region'?'配送地區名稱':'配送溫層名稱';$('entity-error').textContent='';$('entity-submit').textContent=old?'儲存變更':'新增';openLayer('entity-modal')}
 async function submitEntity(e){e.preventDefault();if(!entityEditing||waiting)return;
  const {kind,old,origin}=entityEditing,name=nameKey($('entity-name').value);
@@ -149,6 +159,7 @@ function bind(){
  $('add-route').onclick=()=>openRoute(null);$('route-form').onsubmit=submitRoute;
  $('dismiss').onclick=dismiss;$('cancel-form').onclick=dismiss;$('overlay').onclick=dismiss;
  $('rates-body').onclick=e=>{const b=e.target.closest('button[data-rate-region]');if(b)openRate(b.dataset.rateRegion,b.dataset.rateZone)};
+ $('duty-rates-body').onclick=e=>{const b=e.target.closest('button[data-duty-rate]');if(b)openDutyRate(b.dataset.dutyRate)};
  $('rate-cancel').onclick=dismiss;$('rate-form').onsubmit=submitRate;
  document.querySelectorAll('[data-create-kind]').forEach(b=>b.onclick=()=>openEntity(b.dataset.createKind,null,b.dataset.origin||'catalog'));
  ['region-list','zone-list'].forEach(id=>$(id).onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;b.dataset.action==='rename'?openEntity(b.dataset.kind,b.dataset.name):removeEntity(b.dataset.kind,b.dataset.name)});
