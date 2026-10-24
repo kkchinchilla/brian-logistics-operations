@@ -1,7 +1,7 @@
 /* Current shared assignment rates and compact monthly driver names. */
 .duty-rates{margin-top:24px}
 .duty-rates h3{margin:0 0 12px;font-size:18px}
-.duty-rate-table{width:100%;min-width:0;table-layout:fixed}
+.duty-rates .duty-rate-table{width:100%;min-width:0;table-layout:fixed}
 .duty-rate-table th:first-child{width:24%}
 .duty-rate-table th,.duty-rate-table td{white-space:normal;overflow-wrap:anywhere}
 .duty-rate-table button{min-height:44px}
@@ -12,5 +12,10 @@
  #monthly-body .gridtable th:nth-child(7),#monthly-body .gridtable th:nth-child(8){width:110px}
  #monthly-body .gridtable th:last-child{width:132px}
  #monthly-body .rowlink{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
- .duty-rate-table th,.duty-rate-table td{padding:12px 8px}
+ .stage.mobile .duty-rates .duty-rate-table{min-width:0;width:100%}
+ .stage.mobile .duty-rate-table th:first-child,.stage.mobile .duty-rate-table td:first-child{width:12%;padding-left:1px;padding-right:1px;white-space:normal}
+ .stage.mobile .duty-rate-table th:nth-child(2){width:32%}
+ .stage.mobile .duty-rate-table th:last-child{width:56%}
+ .duty-rate-table th,.duty-rate-table td{padding:12px 6px}
+ .stage.mobile .duty-rate-table button{min-width:0;max-width:100%;padding:9px 8px;white-space:normal;overflow-wrap:anywhere}
 }
