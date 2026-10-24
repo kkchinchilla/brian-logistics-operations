@@ -3,14 +3,15 @@ async function loadPage(){if(!supervisor()){$('#page').innerHTML='<p class="empt
 async function reloadVehicles(){[vehicles,drivers,bindings]=await Promise.all([rows('vehicles','id,plate_number,label,active'),rows('profiles','id,display_name,role,active',q=>q.eq('role','driver')),rows('vehicle_owner_bindings','id,driver_id,vehicle_id,effective_from,effective_to,note')]);renderVehicles()}
 const dName=id=>drivers.find(x=>x.id===id)?.display_name||'未綁定';
 const vehicleName=id=>vehicles.find(x=>String(x.id)===String(id))?.plate_number||'—';
+function selectFleetTab(next){globalThis.DashboardTabs?.record('dashboard',fleetTab,next,selectFleetTab);fleetTab=next;renderVehicles();return true}
 function renderVehicles(){
  const active=bindings.filter(b=>b.effective_from<=today()&&(!b.effective_to||b.effective_to>=today()));
  const boundVehicleIds=new Set(active.map(b=>String(b.vehicle_id)));
  const ownDrivers=new Set(active.map(b=>b.driver_id));
  $('#stats').innerHTML=`<div class="kpi"><small>自有車司機</small><strong>${ownDrivers.size}</strong></div><div class="kpi"><small>已綁定車輛</small><strong>${boundVehicleIds.size}</strong></div><div class="kpi"><small>未綁定車輛</small><strong>${vehicles.filter(v=>v.active&&!boundVehicleIds.has(String(v.id))).length}</strong></div>`;
  $('#page').innerHTML=`<div class="subtabs"><button type="button" id="fleet-tab-vehicles" class="${fleetTab==='vehicles'?'on':''}">車輛與綁定</button><button type="button" id="fleet-tab-drivers" class="${fleetTab==='drivers'?'on':''}">司機名單</button></div><section class="panel fleet-section"><div class="panel-title" id="fleet-title">${fleetTab==='vehicles'?'車輛與綁定':'司機名單'}</div><div class="tools fleet-filter" style="padding:0 18px"><input class="field search" id="filter" placeholder="搜尋司機或車號"><button class="btn" id="new-binding" ${fleetTab==='vehicles'?'':'hidden'}>＋ 綁定司機</button><button class="btn" id="edit-driver" ${fleetTab==='drivers'?'':'hidden'}>編輯司機</button></div><div id="fleet-table"></div><div class="footer">${fleetTab==='vehicles'?'點選車號編輯車輛；綁定保留生效日期與歷史。':'查閱司機姓名及所屬車輛，可透過「編輯司機」修改顯示名稱。'}</div></section>`;
- $('#fleet-tab-vehicles').onclick=()=>{fleetTab='vehicles';renderVehicles()};
- $('#fleet-tab-drivers').onclick=()=>{fleetTab='drivers';renderVehicles()};
+ $('#fleet-tab-vehicles').onclick=()=>selectFleetTab('vehicles');
+ $('#fleet-tab-drivers').onclick=()=>selectFleetTab('drivers');
  $('#header-new-vehicle').onclick=()=>vehicleEditor();$('#new-binding').onclick=()=>bindingEditor();$('#edit-driver').onclick=()=>driverEditor();
  $('#filter').oninput=renderFleetTable;renderFleetTable();
 }

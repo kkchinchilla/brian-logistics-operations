@@ -52,6 +52,7 @@ const pendingNote=pendingDates.length?`<p class="note" role="status"><strong>${p
 const header=['司機','總趟數','值班','跟車','學習','租車','加給／獎勵','懲處','應計薪資'];const body=displayed.map(x=>`<tr><td class="sticky"><button class="rowlink" data-person="${x.d.id}">${esc(x.d.display_name)}</button></td><td>${x.rr.length}</td><td>${x.standby}</td><td>${x.followAlong}</td><td>${x.learning}</td><td>${x.rental}</td><td>${fmt(x.adj.filter(a=>a.category==='allowance').reduce((n,a)=>n+Number(a.amount),0))}</td><td>${fmt(x.adj.filter(a=>a.category!=='allowance').reduce((n,a)=>n+Number(a.amount),0))}</td><td${x.calculated?.salary==null?' class="muted"':''}>${x.calculated?.salary==null?(x.calculated?.knownItemsReady?'待確認':'待設定'):fmt(x.calculated.salary)}</td></tr>`).join('');$('#monthly-body').innerHTML=pendingNote+wrapTable(header,body)+`<p class="note">僅計入「結案」保存的配送紀錄（含有效加趟）；重新開啟後保留上次結案資料，再次「確認結案」後以最新資料取代，不重複計入。租車依結案快照，未知值不算租車。本月已納入 ${closedDates.filter(d=>d.status==='finalized').length} 個結案日期；${closedDates.filter(d=>d.attendance_status==='reopened'||d.status==='reopened').length} 個日期已重新開啟。路線計酬取自「路線管理」目前費率；值班、跟車及學習欄顯示已結案筆數，每筆依「費率表」的共用勤務費率計酬；租車費用扣款。點選司機查看各項金額及待確認事項。應計薪資＝配送計酬＋值班費用＋跟車費用＋學習費用－租車費用＋加給／獎懲。缺少配送、勤務或租車費率，或仍有待確認紀錄時，請點選司機查看原因。</p>`;
  document.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>detail(b.dataset.person))}
 function detail(id){
+ globalThis.DashboardTabs?.reset('monthly-detail');
  const x=displayed.find(x=>x.d.id===id);if(!x)return;
  const overlay=document.createElement('div');overlay.className='monthly-detail-overlay open';overlay.id='monthly-overlay';overlay.setAttribute('aria-hidden','true');
  const detail=document.createElement('aside');detail.className='monthly-detail open';detail.id='monthly-detail';detail.setAttribute('role','dialog');detail.setAttribute('aria-modal','true');detail.setAttribute('aria-label',x.d.display_name+' 月度薪資明細');
@@ -62,8 +63,13 @@ function detail(id){
 }).join('');
 detail.innerHTML=`<div class="monthly-detail-header"><div><div class="eyebrow">${esc(month)} / 月度出勤</div><h2>${esc(x.d.display_name)}</h2></div><button class="icon-close" type="button" id="close-detail" aria-label="關閉明細">×</button></div><div class="monthly-detail-body"><div class="drawer-stat-grid"><div class="kpi"><small>配送總趟次</small><strong>${x.rr.length}</strong></div><div class="kpi"><small>值班筆數</small><strong>${x.standby}</strong></div><div class="kpi"><small>租車趟次</small><strong>${x.rental}</strong>${x.unknownRental?`<small>${x.unknownRental} 趟未確認</small>`:''}</div><div class="kpi"><small>薪資調整淨額</small><strong>${fmt(x.adjustment)}</strong></div></div><div class="subtabs drawer-tabs"><button type="button" class="on" id="detail-salary">薪資明細</button><button type="button" id="detail-daily">每日出勤</button></div><section id="detail-salary-panel">${PayrollSettings1491.detailHTML(x.d.id)}<div class="panel-title" style="padding:12px 0">薪資加給與獎懲</div><div class="tools"><button class="btn primary" id="newAdj">＋ 新增加給／獎懲</button></div>${wrapTable(['日期','類型','事由','金額','操作'],adjustments)}<p class="note">懲處以負數入帳。地區或職務相關加給可登記於此；值班、跟車及學習依已結案筆數計酬。</p></section><section id="detail-daily-panel" hidden><div class="panel-title" style="padding:12px 0">本月已結案配送</div>${wrapTable(['日期','路線名稱','租車'],dayRows)}<div class="panel-title" style="padding:12px 0">本月已結案跟車／學習（每筆各計一次）</div>${wrapTable(['日期','勤務','備註','來源'],dutyRows)}<p class="note">僅顯示最近一次確認結案的資料。重新開啟後仍保留此版本；修改後再次確認結案，才會取代報表中的舊資料。</p></section></div>`;
 const salary=detail.querySelector('#detail-salary'),daily=detail.querySelector('#detail-daily');
-salary.onclick=()=>{salary.classList.add('on');daily.classList.remove('on');detail.querySelector('#detail-salary-panel').hidden=false;detail.querySelector('#detail-daily-panel').hidden=true};
-daily.onclick=()=>{daily.classList.add('on');salary.classList.remove('on');detail.querySelector('#detail-daily-panel').hidden=false;detail.querySelector('#detail-salary-panel').hidden=true};
+let detailTab='salary';
+const selectDetailTab=next=>{
+ globalThis.DashboardTabs?.record('monthly-detail',detailTab,next,selectDetailTab);detailTab=next;
+ salary.classList.toggle('on',next==='salary');daily.classList.toggle('on',next==='daily');
+ detail.querySelector('#detail-salary-panel').hidden=next!=='salary';detail.querySelector('#detail-daily-panel').hidden=next!=='daily';return true;
+};
+salary.onclick=()=>selectDetailTab('salary');daily.onclick=()=>selectDetailTab('daily');
 
  document.querySelectorAll('#monthly-detail,#monthly-overlay').forEach(el=>el.remove());
  document.body.append(overlay,detail);

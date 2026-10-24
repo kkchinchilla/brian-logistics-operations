@@ -5,7 +5,7 @@ const root=new URL('../../',import.meta.url);
 const source=fs.readFileSync(new URL('js/dashboard-android-back.js',root),'utf8');
 const common=fs.readFileSync(new URL('js/production-common.js',root),'utf8');
 const html=fs.readFileSync(new URL('ui-monthly.html',root),'utf8');
-assert.ok(html.includes('js/dashboard-android-back.js?v=1437'));
+assert.ok(html.includes('js/dashboard-android-back.js?v=1438'));
 async function setup(platform='android',available=true){
  const dom=new JSDOM(html.replace(/<script[\s\S]*?<\/script>/g,''),{runScripts:'outside-only',url:'https://localhost/ui-monthly.html'}),w=dom.window;
  await new Promise(r=>w.addEventListener('load',r));
@@ -37,7 +37,13 @@ d.body.insertAdjacentHTML('beforeend','<section id="plan-panel" class="show"><bu
 let allowClose=false;d.querySelector('#plan-x').onclick=()=>{if(allowClose)d.querySelector('#plan-panel').classList.remove('show')};
 e.back()({canGoBack:true});assert.ok(d.querySelector('#plan-panel.show'));assert.equal(e.navigation(),1);
 allowClose=true;e.back()({canGoBack:true});assert.ok(!d.querySelector('#plan-panel.show'));assert.equal(e.navigation(),1);
-e.close();
+const tabs=w.DashboardTabs;let current='apply',allowed=false;
+tabs.record('plan-panel','template','apply',previous=>{if(!allowed)return false;current=previous;return true});
+d.querySelector('#plan-panel').classList.add('show');e.back()({canGoBack:true});await new Promise(r=>setImmediate(r));assert.equal(current,'apply');assert.equal(e.navigation(),1);
+allowed=true;e.back()({canGoBack:true});await new Promise(r=>setImmediate(r));assert.equal(current,'template');assert.ok(d.querySelector('#plan-panel.show'));
+e.back()({canGoBack:true});assert.ok(!d.querySelector('#plan-panel.show'));
+let fleet='drivers';tabs.record('dashboard','vehicles','drivers',previous=>{fleet=previous;return true});e.back()({canGoBack:true});await new Promise(r=>setImmediate(r));assert.equal(fleet,'vehicles');assert.equal(e.navigation(),1);
+tabs.reset('dashboard');e.close();
 for(const page of ['attendance','vehicles','accounts','monthly','routes']){
  const markup=fs.readFileSync(new URL('ui-'+page+'.html',root),'utf8');
  assert.equal((markup.match(/src="js\/dashboard-android-back.js/g)||[]).length,1);

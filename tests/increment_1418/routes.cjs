@@ -38,6 +38,15 @@ async function setup({finance=false,role='dispatcher',capabilityError=false,nati
   e.el('rates-body').onclick({target:{closest:()=>({dataset:{rateRegion:'1',rateZone:'常溫'}})}});e.el('rate-amount').value='123';
   await e.el('rate-form').onsubmit({preventDefault(){}});ok('rate edit event is capability guarded',e.calls.some(x=>x.action==='upsert')===finance);
  }
+ for(const finance of [false,true]){
+  const t=await setup({finance,native:'android'});
+  t.el('tab-manage').click();assert.equal(t.el('section-title').textContent,'地區與溫層管理');
+  t.el('add-route').click();t.back(true);assert.equal(t.el('section-title').textContent,'地區與溫層管理');
+  t.back(true);await new Promise(r=>setImmediate(r));assert.equal(t.el('section-title').textContent,'路線列表');assert.equal(t.backCount(),0);
+  t.el('tab-manage').click();t.el('tab-routes').click();t.back(true);assert.equal(t.backCount(),1);
+  if(!finance){t.el('tab-rates').click();assert.equal(t.el('section-title').textContent,'路線列表');}
+  ok('role '+(finance?'Brian':'supervisor')+' closes dialog, then returns through tabs, without a return-tab loop');
+ }
  const failed=await setup({finance:true,capabilityError:true});ok('capability failure keeps rates closed but route management usable',!failed.calls.some(x=>x.table==='delivery_region_zone_rates')&&failed.el('routes-body').innerHTML.includes('Test route')&&failed.ctx.document.body.dataset.financeAccess==='denied');
  const driver=await setup({role:'driver'});ok('drivers still cannot open route administration',driver.workspace.innerHTML.includes('沒有路線管理權限')&&!driver.calls.some(x=>x.table));
 

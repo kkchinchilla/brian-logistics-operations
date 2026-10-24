@@ -98,6 +98,7 @@ function setBusy143(busy){
 async function openPlan143(){
  if(!supervisor()||!scheduleReady)return;
  const available=drivers.filter(x=>x.active);if(!available.length){notify('請先建立啟用中的司機帳號');return;}
+ globalThis.DashboardTabs?.reset('plan-panel');
  plan143.open=true;plan143.focus=document.activeElement;plan143.driver=available[0].id;plan143.tab='template';plan143.month=boardDate.slice(0,7);plan143.overwrite=false;
  plan143.selected=new Set();plan143.calendar={};plan143.error='';plan143.pending=null;plan143.overwrite=false;
  plan143.overflow=document.body.style.overflow;document.body.style.overflow='hidden';
@@ -131,9 +132,11 @@ async function loadCalendar143(){
  }finally{setBusy143(false);}
 }
 async function setPlanTab143(tab){
- if(tab===plan143.tab)return;if(!discardTemplate143())return;
+ if(plan143.busy)return false;
+ if(tab===plan143.tab)return true;if(!discardTemplate143())return false;
+ globalThis.DashboardTabs?.record('plan-panel',plan143.tab,tab,setPlanTab143);
  plan143.draft=clone143(plan143.saved?.rows||[]);plan143.dirty=false;plan143.tab=tab;plan143.error='';
- if(tab==='apply')await loadCalendar143();renderPlan143();
+ if(tab==='apply')await loadCalendar143();renderPlan143();return true;
 }
 function routeTime143(id){const r=rt(Number(id));return r?`溫層：${r.temperature_zone||'未設定'}`:'選擇路線後帶入溫層';}
 function row143(x,i){

@@ -131,6 +131,7 @@ async function removeEntity(kind,name){const used=routes.filter(r=>r[kind]===nam
 async function toggleActive(){if(!editing||editing==='new'||waiting)return;
  const row=editing;if(!confirm(`確定${row.active?'停用':'啟用'}路線 ${row.name}？`))return;
  busy(true);try{const res=await client.from('routes').update({active:!row.active}).eq('id',row.id);if(res.error)throw res.error;dismiss();await load();notice('路線狀態已更新')}catch(err){$('form-error').textContent=errorText(err)}finally{busy(false)} }
+function selectRouteTab(next){if(next==='rates'&&!finance())return false;window.DashboardTabs?.record('dashboard',tab,next,selectRouteTab);tab=next;render();return true}
 function bind(){
  function applyDevice(){const mobile=window.matchMedia('(max-width: 800px)').matches;
   $('stage').classList.toggle('mobile',mobile);$('stage').classList.toggle('desktop',!mobile);
@@ -138,7 +139,7 @@ function bind(){
  }
  applyDevice();window.addEventListener('resize',applyDevice,{passive:true});
 
- ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>{if(t==='rates'&&!finance())return;tab=t;render()});
+ ['routes','rates','manage'].forEach(t=>$('tab-'+t).onclick=()=>selectRouteTab(t));
  $('route-search').oninput=e=>{search=e.target.value.trim();render()};
  $('filter-region').onchange=e=>{filterRegion=e.target.value;render()};
  $('filter-zone').onchange=e=>{filterZone=e.target.value;render()};
