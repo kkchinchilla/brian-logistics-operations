@@ -2,10 +2,10 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {JSDOM} from 'jsdom';
 const root=new URL('../../',import.meta.url);
-const source=fs.readFileSync(new URL('js/monthly-android-back.js',root),'utf8');
+const source=fs.readFileSync(new URL('js/dashboard-android-back.js',root),'utf8');
 const common=fs.readFileSync(new URL('js/production-common.js',root),'utf8');
 const html=fs.readFileSync(new URL('ui-monthly.html',root),'utf8');
-assert.ok(html.includes('js/monthly-android-back.js?v=1434'));
+assert.ok(html.includes('js/dashboard-android-back.js?v=1437'));
 async function setup(platform='android',available=true){
  const dom=new JSDOM(html.replace(/<script[\s\S]*?<\/script>/g,''),{runScripts:'outside-only',url:'https://localhost/ui-monthly.html'}),w=dom.window;
  await new Promise(r=>w.addEventListener('load',r));
@@ -31,6 +31,18 @@ w.eval("modal('編輯薪資調整','<input id=reason value=unchanged>',()=>windo
 const saving=d.querySelector('#modal-save').onclick();e.back()({canGoBack:true});assert.ok(d.querySelector('#modal.open'));assert.equal(e.navigation(),1);
 release(new Error('save failed'));await saving;assert.equal(d.querySelector('#modal-error').textContent,'save failed');assert.equal(d.querySelector('#reason').value,'unchanged');
 e.back()({canGoBack:true});assert.ok(!d.querySelector('#modal.open'));assert.equal(e.navigation(),1);
-w.eval("modal('租車費用設定','',async()=>{})");e.back()({canGoBack:false});assert.ok(!d.querySelector('#modal.open'));assert.equal(e.minimized(),1);e.close();
+w.eval("modal('租車費用設定','',async()=>{})");e.back()({canGoBack:false});assert.ok(!d.querySelector('#modal.open'));assert.equal(e.minimized(),1);
+// A blocked/declined batch-schedule close must still consume Back.
+d.body.insertAdjacentHTML('beforeend','<section id="plan-panel" class="show"><button id="plan-x">Close</button></section>');
+let allowClose=false;d.querySelector('#plan-x').onclick=()=>{if(allowClose)d.querySelector('#plan-panel').classList.remove('show')};
+e.back()({canGoBack:true});assert.ok(d.querySelector('#plan-panel.show'));assert.equal(e.navigation(),1);
+allowClose=true;e.back()({canGoBack:true});assert.ok(!d.querySelector('#plan-panel.show'));assert.equal(e.navigation(),1);
+e.close();
+for(const page of ['attendance','vehicles','accounts','monthly','routes']){
+ const markup=fs.readFileSync(new URL('ui-'+page+'.html',root),'utf8');
+ assert.equal((markup.match(/src="js\/dashboard-android-back.js/g)||[]).length,1);
+ assert.ok(!markup.includes('monthly-android-back.js'));
+}
+assert.ok(!fs.readFileSync(new URL('js/ui-routes-live.js',root),'utf8').includes("addListener('backButton'"));
 for(const [platform,available] of [['web',true],['ios',true],['android',false]]){const x=await setup(platform,available);assert.equal(x.back(),undefined);x.close();}
 console.log('PASS: nested adjustment/detail dismissal, save protection, failure recovery, rental modal, history/minimize and non-Android behavior');

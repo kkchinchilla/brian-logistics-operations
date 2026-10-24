@@ -10,7 +10,7 @@ async function setup({finance=false,role='dispatcher',capabilityError=false,nati
   const q={action:'select',select(){return this},order(){return this},eq(){return this},insert(payload){this.action='insert';this.payload=payload;return this},update(payload){this.action='update';this.payload=payload;return this},upsert(payload){this.action='upsert';this.payload=payload;return this},async single(){return {data:{id:'synthetic-account',active:true,role,display_name:'Test operator'},error:null}},then(resolve){calls.push({table,action:this.action,payload:this.payload&&JSON.parse(JSON.stringify(this.payload))});return Promise.resolve({data:structuredClone(tables[table]||[]),error:null}).then(resolve)}};return q;
  }};
  const ctx={db,console,setTimeout:()=>1,clearTimeout(){},location:{href:''},document:{body:{dataset:{}},getElementById:id=>nodes.get(id)||null,querySelector:s=>s==='.workspace'?workspace:nodes.get(s.slice(1)),querySelectorAll:()=>[],addEventListener(){}},matchMedia:()=>({matches:false}),addEventListener(){},confirm:()=>true};ctx.window=ctx;ctx.history={back(){backCount++;}};if(native)ctx.Capacitor={getPlatform:()=>native,isPluginAvailable:()=>true,registerPlugin(name){assert.equal(name,'App');return app;}};
- vm.createContext(ctx);for(const f of ['js/access-146.js','js/ui-routes-live.js'])vm.runInContext(fs.readFileSync(root+'/'+f,'utf8'),ctx);
+ vm.createContext(ctx);for(const f of ['js/access-146.js','js/ui-routes-live.js','js/dashboard-android-back.js'])vm.runInContext(fs.readFileSync(root+'/'+f,'utf8'),ctx);
  await new Promise(resolve=>setImmediate(resolve));return {ctx,calls,el:id=>nodes.get(id),workspace,back:canGoBack=>backHandler({canGoBack}),hasBack:()=>!!backHandler,backCount:()=>backCount,minimized:()=>minimized};
 }
 (async()=>{
