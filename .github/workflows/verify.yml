@@ -16,6 +16,7 @@ jobs:
       - run: npm test
       - run: node tests/increment_1431/database.mjs
       - run: node tests/increment_1434/monthly-back.mjs
+      - run: node tests/increment_1435/report-export.mjs
       - run: npm run schema:generate && npm run test:schema
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4

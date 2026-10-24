@@ -35,7 +35,7 @@
  async function exportCSV(){
   const selectedMonth=month;if(!await loadMonth()||month!==selectedMonth||!state)return;
   const text=engine().csv(engine().exportRows(state.report));
-  const u=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='計薪對帳_'+selectedMonth+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+  try{await root.ReportExport.csv('計薪對帳_'+selectedMonth+'.csv',text)}catch(e){notify('匯出失敗：'+(e.message||String(e)))}
  }
  root.PayrollSettings1491={setState,open,detailHTML,exportCSV};
 })(typeof globalThis!=='undefined'?globalThis:this);

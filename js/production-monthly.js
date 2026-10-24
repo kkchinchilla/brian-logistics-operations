@@ -83,6 +83,5 @@ async function exportCSV(){
   x.adj.filter(a=>a.category==='deduction').reduce((n,a)=>n+Number(a.amount),0),x.adjustment,x.calculated.variable??'待設定',x.calculated.standbyPay??'待設定',x.calculated.followAlongPay??'待設定',x.calculated.learningPay??'待設定',x.calculated.rentalDeduction??'待設定',x.calculated.salary??(x.calculated.knownItemsReady?'待確認':'待設定'),x.calculated.issues.map(i=>i.message).join('；')]);
  const quote=value=>{const raw=String(value??'');const safe=typeof value==='string'&&/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;return '"'+safe.replace(/"/g,'""')+'"'};
  const csv=[header,...body].map(row=>row.map(quote).join(',')).join('\r\n');
- const u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
- const a=document.createElement('a');a.href=u;a.download='月度出勤_'+month+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+ try{await ReportExport.csv('月度出勤_'+month+'.csv','\ufeff'+csv)}catch(e){notify('匯出失敗：'+(e.message||String(e)))}
 }

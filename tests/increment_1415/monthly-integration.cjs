@@ -15,7 +15,7 @@ function env(){
   modal:(title,html,onSave)=>{ctx.modalState={title,html,onSave};},save:async()=>{},
   db:{rpc:async(fn,args)=>{calls.push({fn,args:structuredClone(args)});if(ctx.fail)return {data:null,error:{message:'network unavailable'}};if(fn!=='dashboard_get_calculated_payroll')return {data:{revision:1},error:null};const b=structuredClone(ctx.bundle);if(args.p_month!==b.month){b.month=args.p_month;b.finalized.month=args.p_month;for(const key of ['deliveries','standby','special_work','attendance_records','original_runs','dates'])b.finalized[key]=[];}if(!ctx.omitCalculation)b.calculation=ctx.serverCalculation(b);if(ctx.corrupt)ctx.corrupt(b);if(ctx.delay)await new Promise(r=>setTimeout(r,ctx.delay));return {data:b,error:null};}},
  };
- vm.createContext(ctx);for(const f of ['payroll-reconciliation-1491.js','payroll-server-1412.js','payroll-settings-1491.js','production-monthly.js'])vm.runInContext(fs.readFileSync(root+'/js/'+f,'utf8'),ctx);
+ vm.createContext(ctx);for(const f of ['report-export.js','payroll-reconciliation-1491.js','payroll-server-1412.js','payroll-settings-1491.js','production-monthly.js'])vm.runInContext(fs.readFileSync(root+'/js/'+f,'utf8'),ctx);
  vm.runInContext("drivers=[{id:'a',display_name:'A <img onerror=evil>',active:true}];routes=[{id:1,route_name:'Current route name',active:true}];",ctx);
  const referenceBuild=ctx.PayrollReconciliation1491.build;
  ctx.serverCalculation=b=>{const report=referenceBuild({...b,month:b.month.slice(0,7),drivers:[{id:'a',display_name:'A <img onerror=evil>'}]});
