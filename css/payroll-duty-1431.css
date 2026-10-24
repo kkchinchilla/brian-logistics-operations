@@ -3,8 +3,6 @@
 .duty-rates h3{margin:0 0 12px;font-size:18px}
 .duty-rates .duty-rate-table{width:100%;min-width:0;table-layout:fixed}
 .duty-rate-table th:first-child{width:24%}
-.duty-rate-table th,.duty-rate-table td{white-space:normal;overflow-wrap:anywhere}
-.duty-rate-table button{min-height:44px}
 @media(max-width:800px){
  #monthly-body .gridtable{table-layout:fixed;min-width:770px;width:100%}
  #monthly-body .gridtable th:first-child,#monthly-body .gridtable td:first-child{width:88px;min-width:88px;max-width:88px;padding-left:10px;padding-right:10px;white-space:normal;overflow-wrap:anywhere}
@@ -13,9 +11,6 @@
  #monthly-body .gridtable th:last-child{width:132px}
  #monthly-body .rowlink{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
  .stage.mobile .duty-rates .duty-rate-table{min-width:0;width:100%}
- .stage.mobile .duty-rate-table th:first-child,.stage.mobile .duty-rate-table td:first-child{width:12%;padding-left:1px;padding-right:1px;white-space:normal}
- .stage.mobile .duty-rate-table th:nth-child(2){width:32%}
- .stage.mobile .duty-rate-table th:last-child{width:56%}
- .duty-rate-table th,.duty-rate-table td{padding:12px 6px}
- .stage.mobile .duty-rate-table button{min-width:0;max-width:100%;padding:9px 8px;white-space:normal;overflow-wrap:anywhere}
+ /* Retain the shared tariff cell/button styles; only size this two-column table. */
+ .stage.mobile .duty-rate-table th:first-child{width:64px}
 }
