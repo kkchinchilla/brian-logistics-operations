@@ -39,6 +39,15 @@ body[data-dashboard="routes"]{line-height:1.45}
 /* Like the fleet/accounts dashboards, three non-financial statistics stay in one row. */
 body[data-dashboard="routes"]:not([data-finance-access="allowed"]) #app .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:800px){
+ /* Keep the pinned name compact instead of letting auto table layout expand it.
+    Explicit widths also align headers and cells while horizontally scrolling. */
+ #app .routes-table{table-layout:fixed;width:100%;min-width:460px}
+ body[data-dashboard="routes"]:not([data-finance-access="allowed"]) #app .routes-table{min-width:336px}
+ #app .routes-table th:first-child,#app .routes-table td:first-child{width:120px;min-width:0;max-width:none;white-space:normal;overflow-wrap:anywhere}
+ #app .routes-table th:nth-child(2),#app .routes-table td:nth-child(2){width:100px;white-space:normal;overflow-wrap:anywhere}
+ #app .routes-table th:nth-child(3),#app .routes-table td:nth-child(3){width:84px;white-space:normal;overflow-wrap:anywhere}
+ #app .routes-table .zone{display:inline-block;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+ #app .routes-table th:last-child,#app .routes-table td:last-child{width:32px;min-width:0;padding-inline:4px}
  #app .page-header{align-items:flex-start}
  #app .header-actions{width:100%;margin-left:0;justify-content:flex-start}
  #app .main{padding:29px clamp(18px,2.2vw,33px) 20px}
