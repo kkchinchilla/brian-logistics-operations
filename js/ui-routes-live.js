@@ -61,6 +61,20 @@ function render(){
 }
 function openLayer(id){$('overlay').classList.add('open');$(id).classList.add('open');$(id).setAttribute('aria-hidden','false')}
 function dismiss(){editing=rateEditing=entityEditing=null;['drawer','rate-modal','entity-modal'].forEach(id=>{$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')});$('overlay').classList.remove('open')}
+async function bindAndroidBack(){
+ const cap=window.Capacitor;
+ if(cap?.getPlatform?.()!=='android'||!cap.isPluginAvailable?.('App'))return;
+ const app=cap.Plugins?.App||cap.registerPlugin('App');
+ await app.addListener('backButton',({canGoBack})=>{
+  // Do not leave a form while its save request is still in flight.
+  if(waiting)return;
+  // A category dialog can sit above an unsaved route. Preserve that draft.
+  if($('entity-modal').classList.contains('open')){$('entity-cancel').click();return}
+  if($('rate-modal').classList.contains('open')||$('drawer').classList.contains('open')){dismiss();return}
+  if(canGoBack)window.history.back();
+  else app.minimizeApp().catch(err=>console.warn('Android back navigation failed',err));
+ });
+}
 function openRoute(id){const row=id===null?null:routes.find(r=>r.id===Number(id));if(id!==null&&!row)return;
  editing=row||'new';$('drawer-kicker').textContent=row?'編輯配送路線':'建立新路線';$('drawer-title').textContent=row?'編輯路線':'新增路線';
  $('f-name').value=row?row.route_name||row.name:'';
@@ -145,6 +159,7 @@ function bind(){
  $('toggle-active').onclick=toggleActive;
 
  document.addEventListener('keydown',e=>{if(e.key==='Escape')dismiss()});
+ bindAndroidBack().catch(err=>console.warn('Android back listener unavailable',err));
 }
 async function init(){
  if(!db)throw Error('找不到 Supabase 設定。請確認 js/config.js 已正確放置。');
