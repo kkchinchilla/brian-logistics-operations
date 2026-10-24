@@ -20,7 +20,7 @@ function setup(config={}){
    deleteUser:async(id,soft)=>{calls.push(['delete',id,soft]);return config.deleteError?{error:{}}:{data:{}};}
   }}};
  };
- const handle=createAccountHandler({createClient,url,publicKey:'public',secretKey:secret,allowedOrigin:origin});
+ const handle=createAccountHandler({createClient,url,publicKey:'public',secretKey:secret,allowedOrigins:[origin,'https://localhost']});
  async function run(body,headers={}){const response=await handle(new Request(url,{method:'POST',headers:{Origin:origin,Authorization:'Bearer test-session','Content-Type':'application/json',...headers},body:typeof body==='string'?body:JSON.stringify(body)}));return {status:response.status,body:await response.json(),headers:response.headers};}
  return {run,handle,calls,users,get privileged(){return privileged;}};
 }
@@ -45,4 +45,15 @@ for(const action of ['phone','password']){e=setup();response=await e.run({...cre
 e=setup({applyError:'password'});response=await e.run({action:'password',user_id:'driver',password:create.password});ok('credential success is not falsely reported as failure when audit fails',response.status===200&&response.body.audit_saved===false);
 e=setup({authError:{code:'weak_password',message:'internal private credential detail'}});response=await e.run({action:'password',user_id:'driver',password:create.password});ok('provider errors do not leak internal details or credentials',response.status===400&&!JSON.stringify(response.body).includes('private'));
 e=setup();assert.equal((await e.run('{bad json')).status,400);ok('malformed bodies return a controlled response');
+for(const allowed of [origin,'https://localhost']){
+ e=setup();const preflight=await e.handle(new Request(url,{method:'OPTIONS',headers:{Origin:allowed,'Access-Control-Request-Method':'POST'}}));
+ ok('preflight accepts exact app or web origin without privileged access',preflight.status===204&&preflight.headers.get('Access-Control-Allow-Origin')===allowed&&e.privileged===0);
+ response=await e.run({action:'list'},{Origin:allowed});ok('authorized list returns matching CORS header',response.status===200&&response.headers.get('Access-Control-Allow-Origin')===allowed);
+ e=setup({actor:'driver',denied:true});response=await e.run({action:'list'},{Origin:allowed});ok('app origin does not grant non-owner access',response.status===403&&e.privileged===0);
+ e=setup();response=await e.run({action:'list'},{Origin:allowed,Authorization:''});ok('app origin still requires authentication',response.status===401&&e.privileged===0);
+}
+for(const blocked of ['http://localhost','https://localhost:444','https://localhost.evil.invalid','null']){
+ e=setup();const preflight=await e.handle(new Request(url,{method:'OPTIONS',headers:{Origin:blocked}}));
+ ok('unlisted origins are rejected without CORS reflection',preflight.status===403&&!preflight.headers.has('Access-Control-Allow-Origin')&&e.privileged===0);
+}
 console.log(`RESULT: ${checks} account Edge Function checks passed`);

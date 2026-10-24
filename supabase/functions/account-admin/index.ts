@@ -9,5 +9,5 @@ Deno.serve(createAccountHandler({
  url: Deno.env.get('SUPABASE_URL') || '',
  publicKey: key('SUPABASE_PUBLISHABLE_KEYS', 'SUPABASE_ANON_KEY'),
  secretKey: key('SUPABASE_SECRET_KEYS', 'SUPABASE_SERVICE_ROLE_KEY'),
- allowedOrigin: 'https://kkchinchilla.github.io'
+ allowedOrigins: ['https://kkchinchilla.github.io', 'https://localhost']
 }));

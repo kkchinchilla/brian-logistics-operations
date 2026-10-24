@@ -30,13 +30,14 @@ function authError(error){
  if(error?.status===429)return new Failure(429,'操作次數過多，請稍後再試。');
  return new Failure(502,'帳號服務暫時無法完成操作，請重新整理確認後再試。');
 }
-export function createAccountHandler({createClient,url,publicKey,secretKey,allowedOrigin}) {
+export function createAccountHandler({createClient,url,publicKey,secretKey,allowedOrigin,allowedOrigins=allowedOrigin?[allowedOrigin]:[]}) {
+ const origins=new Set(allowedOrigins);
  return async function handle(request){
   const origin=request.headers.get('Origin');
   const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Vary':'Origin'};
-  if(origin===allowedOrigin)Object.assign(headers,{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS'});
+  if(origins.has(origin))Object.assign(headers,{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS'});
   const respond=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
-  if(origin&&origin!==allowedOrigin)return respond({error:'不允許此來源。'},403);
+  if(origin&&!origins.has(origin))return respond({error:'不允許此來源。'},403);
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   if(request.method!=='POST')return respond({error:'請使用 POST。'},405);
   try{
