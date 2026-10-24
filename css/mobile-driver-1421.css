@@ -48,3 +48,9 @@ body[data-attendance-view="driver"] #stats{display:none}
  .driver-date-nav{flex-basis:100%}
  .driver-date-nav .field{max-width:none;flex:1}
 }
+/* Drivers have a single destination; keep the mobile view free of a redundant tab. */
+body[data-account-role="driver"] .mobilebar{display:none}
+@media(max-width:800px){
+ body[data-attendance-view="driver"] .app-shell{padding-bottom:0}
+ body[data-attendance-view="driver"] .main{padding-top:calc(44px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+}
