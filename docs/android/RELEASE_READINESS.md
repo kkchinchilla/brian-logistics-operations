@@ -47,7 +47,7 @@ Recent authentication changes justify focused role checks below.
 | E4 | Reopen retains last closed figures; re-close overwrites them without duplication | Passed: reopened and edited totals stay 400; reclose rental change gives 300 with 2 trips; restored non-rental and reclosed gives 400 |
 | E5 | Export the tested month and compare CSV figures with the verified web/app totals | Passed: phone CSV delivery 400, learning 100, rental 200, salary 300 before restoring non-rental |
 | E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending: run 15 remains; rental flag restored to false and finalized |
-| A1 | Owner account-management create/update/disable/reactivate using a dedicated test account | Pending controlled scenario |
+| A1 | Owner account management: create, password reset, name edit, role changes, delete | Passed on phone/web using the dedicated test account; phone-number change remains untested |
 | N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). Passed: automatic cold-start recovery, manual retry, failed save retains input, online retry saves once. Test note restored and reclosed; salary remains 400. |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
 | D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
@@ -80,7 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: install 1.4.48 to receive the localized save-error message. Recovery-screen styling passed on 1.4.47. Account management A1 and release preparation remain pending.
+Next user instruction: inspect appId, appName and webDir from the native project's capacitor.config.json on the Mac. No phone rebuild is needed for this documentation update. Release preparation and audit remain pending.
 
 ## Test-data correction during payroll acceptance
 
@@ -101,3 +101,27 @@ write. Input retention and explicit retry behavior are unchanged. Existing
 business validation/conflict messages remain intact. User confirmed the offline
 save → online retry → restore original note → reclose scenario with no duplicate
 and the original 2 trips / delivery 400 / rental 100 / salary 400 totals.
+
+## Account-management physical acceptance (2026-10-25)
+
+User confirmed these steps with a dedicated account, APP帳號測試, later renamed
+APP帳號測試-更新:
+
+- Created from Brian's account; correct phone and driver role appeared in the list.
+- Phone login opened the read-only driver view with no management navigation.
+- Reset password: old password rejected; new password accepted.
+- Name edit appeared correctly in the account list.
+- Driver → supervisor after sign-out/sign-in exposed attendance/routes/fleet only,
+  without monthly reports, account management or finance rates.
+- Supervisor → driver while signed in, followed by app restart, restored driver
+  restrictions and removed routes/fleet.
+- Deleted only this test account while signed in. After restart the phone returned
+  to login, and the deleted credentials were rejected. Test account cleanup passed.
+
+The assistant's earlier disable/reactivate test was incorrect: the current UI has
+no reversible disable feature. It was skipped, not passed, and is not planned scope.
+The delete operation preserves historical reporting records. Changing an existing
+account's phone number has not been manually tested. UI observations do not replace
+server authorization review. No passwords or phone numbers are recorded here.
+
+User also confirmed the localized 1.4.48 save-error wording works.
