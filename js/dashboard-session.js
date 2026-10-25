@@ -14,13 +14,21 @@ window.DashboardSession=(()=>{
   const title=document.createElement('h2');title.textContent='目前無法連線';
   const text=document.createElement('p');text.textContent='請檢查網路連線。連線恢復後會重新載入此頁；你也可以按下重試。';
   const button=document.createElement('button');button.type='button';button.className='btn';button.textContent='重新載入';button.addEventListener('click',retry);
-  panel.append(title,text,button);document.querySelector('.main').prepend(panel);
+  panel.append(title,text,button);(document.querySelector('.main')||document.querySelector('.loginbox')).prepend(panel);
   window.addEventListener('online',retry,{once:true});
+  // Android may restore the WebView after the online event has already fired.
+  window.addEventListener('focus',()=>{if(window.navigator?.onLine===true)retry();});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&window.navigator?.onLine===true)retry();});
  }
  async function verify(client){
   let phase='auth';
   try{
    if(window.navigator?.onLine===false){showRecovery();return null;}
+   // Surface refresh errors before getUser: an offline/expired saved session is
+   // not proof of logout. getSession refreshes tokens but never grants access.
+   const {data:sessionData,error:sessionError}=await client.auth.getSession();
+   if(sessionError)throw sessionError;
+   if(!sessionData?.session){window.location.replace('index.html');return null;}
    const {data,error}=await client.auth.getUser();
    if(error){if(invalidAuth(error)){window.location.replace('index.html');return null;}throw error;}
    if(!data?.user){window.location.replace('index.html');return null;}
@@ -38,6 +46,8 @@ window.DashboardSession=(()=>{
    showRecovery();return null;
   }
  }
- document.addEventListener('DOMContentLoaded',()=>{if(window.navigator?.onLine===false)showRecovery();});
- return {verify,showRecovery};
+ // This script precedes the network-loaded SDK, including on the launch page.
+ // Show recovery even when the SDK cannot load at all during a cold start.
+ if(window.navigator?.onLine===false)showRecovery();
+ return {verify,showRecovery,invalidAuth};
 })();

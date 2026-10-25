@@ -38,17 +38,17 @@ Recent authentication changes justify focused role checks below.
 
 | ID | Scenario | Status |
 | --- | --- | --- |
-| R1 | Sign in as a non-Brian 主管: only 每日出勤、路線管理、車輛管理; no 費率表 | Next manual check |
-| R2 | Driver sign-in: own assignments only; no editing/request-to-change controls or management dashboards | Pending after auth changes |
-| R3 | Brian sign-in: owner dashboards and 費率表 remain available | Pending after auth changes |
-| E1 | Supervisor creates one explicitly identified test assignment; correct driver sees it on phone after refresh | Pending |
-| E2 | Edit that test assignment; confirm latest data agrees between web and app | Pending |
-| E3 | Close attendance; Brian verifies monthly delivery/duty counts and calculation using known rates | Pending |
-| E4 | Reopen retains last closed figures; re-close overwrites them without duplication | Pending |
-| E5 | Export the tested month and compare CSV figures with the verified web/app totals | Pending in the end-to-end scenario |
-| E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending |
+| R1 | Sign in as a non-Brian 主管: only 每日出勤、路線管理、車輛管理; no 費率表 | Passed on phone |
+| R2 | Driver sign-in: own assignments only; no editing/request-to-change controls or management dashboards | Passed on phone |
+| R3 | Brian sign-in: owner dashboards and 費率表 remain available | Passed on phone |
+| E1 | Supervisor creates one explicitly identified test assignment; correct driver sees it on phone after refresh | Passed: 10/25 林小美, 7H, APP測試-01 |
+| E2 | Edit that test assignment; confirm latest data agrees between web and app | Passed: APP測試-02, one assignment |
+| E3 | Close attendance; Brian verifies monthly delivery/duty counts and calculation using known rates | Passed: 2 deliveries / 400 delivery + 100 learning − 100 rental = 400 |
+| E4 | Reopen retains last closed figures; re-close overwrites them without duplication | Passed: reopened and edited totals stay 400; reclose rental change gives 300 with 2 trips; restored non-rental and reclosed gives 400 |
+| E5 | Export the tested month and compare CSV figures with the verified web/app totals | Passed: phone CSV delivery 400, learning 100, rental 200, salary 300 before restoring non-rental |
+| E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending: run 15 remains; rental flag restored to false and finalized |
 | A1 | Owner account-management create/update/disable/reactivate using a dedicated test account | Pending controlled scenario |
-| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Pending |
+| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed, but reconnect returned to login. 1.4.45 fix awaiting device retest; other scenarios pending |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
 | D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
 
@@ -80,4 +80,13 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: R1 only. Report its actual result, then advance to R2.
+Next user instruction: update the Android build with 1.4.45, then repeat cold-start offline → reconnect without entering credentials. Do not mark this passed until confirmed on the phone.
+
+## Test-data correction during payroll acceptance
+
+2026-10-25: run 12 (10/22, 全家測試A線) retained 常溫 while the route
+was OC. User confirmed OC was correct. A targeted transaction reopened only
+10/22, corrected the run temperature, and reclosed only that date (event 26),
+retaining original event 24. No rates or other run fields changed. This was a
+data correction, not a general historical rate-resolution change. User confirmed
+林小美 salary 400 after refresh. Run 15 is the separate 10/25 test assignment.

@@ -7,7 +7,7 @@ function setup(options={}){
  const elements=new Map();const calls=[];let submit,signouts=0;
  for(const id of ['login-form','phone','password','error-message','login-submit'])elements.set('#'+id,{value:'',textContent:'',disabled:false,addEventListener(name,fn){submit=fn;}});
  elements.get('#phone').value='0912345678';elements.get('#password').value='synthetic-password-only';
- const ctx={document:{querySelector:s=>elements.get(s)},window:{location:{href:'',replace(url){this.href=url;}}},db:{auth:{
+ const ctx={DashboardSession:{invalidAuth:e=>e?.status===401,showRecovery(){elements.get('#error-message').textContent='目前無法連線';}},document:{body:{dataset:{}},querySelector:s=>elements.get(s)},window:{location:{href:'',replace(url){this.href=url;}}},db:{auth:{
   async getSession(){if(options.restoreWait)await options.restoreWait;return options.sessionResult||{data:{session:null},error:null};},
   async getUser(){return options.userResult||{data:{user:{id:'synthetic-user'}},error:null};},
   async signInWithPassword(input){calls.push(input);if(options.wait)await options.wait;if(options.throwAuth)throw Error('network');return options.auth||{data:{user:{id:'synthetic-user'}},error:null};},
@@ -54,6 +54,6 @@ function setup(options={}){
  ok('password login waits for startup verification',restoring.calls.length===0&&restoring.e('login-submit').disabled);
  finishRestore();await earlySubmit;
  ok('password login remains usable after startup verification',restoring.calls.length===1&&restoring.ctx.window.location.href==='ui-attendance.html');
- const html=fs.readFileSync(new URL('../../index.html','file://'+__filename),'utf8');ok('phone form keeps password autofill and has no email input',html.includes('id="phone"')&&html.includes('type="tel"')&&html.includes('autocomplete="current-password"')&&!html.includes('type="email"')&&html.includes('js/login.js?v=1428'));
+ const html=fs.readFileSync(new URL('../../index.html','file://'+__filename),'utf8');ok('phone form keeps password autofill and has no email input',html.includes('id="phone"')&&html.includes('type="tel"')&&html.includes('autocomplete="current-password"')&&!html.includes('type="email"')&&html.includes('js/login.js?v=1445'));
  console.log(`RESULT: ${checks} phone-login checks passed`);
 })().catch(e=>{console.error(e);process.exitCode=1});

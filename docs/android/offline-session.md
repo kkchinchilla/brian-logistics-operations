@@ -26,3 +26,33 @@ Previously passed physical-device Back checks (2026-10-25): route tab navigation
 route entity dialog, keyboard before dialog, monthly driver details, and
 加給／獎懲 dialog. These confirmations apply to the scenarios listed above,
 not every network or background-resume scenario.
+
+## Cold-start recovery follow-up (Increment 1.4.45)
+
+The user subsequently confirmed the offline panel on a cold start, but restoring
+connectivity showed the login page. This distinct scenario failed physical
+acceptance even though navigation from an already open dashboard had passed.
+
+Code inspection found that index.html did not load recovery handling and login.js
+only attempted session restoration once; temporary errors left the password form
+with no reconnect handler. The login page now uses the same recovery panel as
+the dashboards, loads that handler before the remote SDK, and hides the form
+during initial session verification. Network/profile-request errors preserve the
+session and provide retry; confirmed invalid authentication still allows login,
+and confirmed inactive/unsupported profiles still sign out locally.
+
+Dashboard startup explicitly calls getSession to refresh saved credentials and
+surface refresh errors before getUser and the current profile check. Cached
+session contents never authorize access. Returning focus/visibility to an online
+blocked screen also retries, covering an online event missed while backgrounded.
+All retry events in a page instance share one reload guard.
+
+Automated regression: node tests/increment_1445/cold-start.mjs (38 checks), plus
+the existing offline and phone-login suites. No native dependency or database
+change. Physical retest is still required; without the phone's logs the exact
+device failure cannot be conclusively attributed to one startup branch.
+
+Update on the Mac: git pull origin main && npm run build && npx cap sync android,
+then Android Studio Run. Stay signed in, turn off all connectivity, swipe the app
+away, reopen, and restore connectivity. Expect automatic attendance loading
+without password entry. Do not uninstall/clear app data for this test.

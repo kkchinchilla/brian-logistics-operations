@@ -6,14 +6,17 @@ let signingIn=false;
 // App launches always open index.html, including when Auth has a saved session.
 // Verify with Auth and the current profile before leaving the login screen.
 async function restoreLoginSession(){
+ let phase='auth';
  loginButton.disabled=true;loginButton.textContent='確認登入狀態…';
  try{
+  if(window.navigator?.onLine===false){DashboardSession.showRecovery();return;}
   const {data,error}=await db.auth.getSession();
   if(error)throw error;
   if(!data?.session)return;
   const {data:userData,error:userError}=await db.auth.getUser();
   if(userError)throw userError;
   if(!userData?.user?.id)return;
+  phase='profile';
   const {data:profile,error:profileError}=await db.from('profiles').select('role, active').eq('id',userData.user.id).maybeSingle();
   if(profileError)throw profileError;
   if(!profile||!profile.active||!['dispatcher','driver'].includes(profile.role)){
@@ -22,10 +25,15 @@ async function restoreLoginSession(){
    return;
   }
   window.location.replace('ui-attendance.html');
- }catch{
+ }catch(error){
   // A temporary network failure must not erase a potentially valid session.
-  errorMessage.textContent='無法確認登入狀態，請檢查網路連線後重新開啟，或重新登入。';
+  if(phase==='auth'&&DashboardSession.invalidAuth(error)){
+   errorMessage.textContent='登入已失效，請重新登入。';
+  }else{
+   DashboardSession.showRecovery();
+  }
  }finally{
+  document.body.dataset.sessionState='ready';
   loginButton.disabled=false;loginButton.textContent='登入';
  }
 }
