@@ -46,6 +46,6 @@ for(const role of ['driver','dispatcher']){
 }
 const loading=await setup();loading.ctx.loadPage=async()=>{throw Error('network interrupted during loading');};await loading.ctx.init();ok('connection lost after authentication shows recovery instead of an empty board',!!loading.doc.querySelector('#connection-recovery')&&loading.calls.signouts===0);loading.close();
 for(const page of ['attendance','vehicles','monthly','accounts','routes']){
- const html=read(`ui-${page}.html`);ok(`${page}: recovery guard and CSS are included before page logic`,html.includes('css/connection-recovery.css?v=1446')&&html.indexOf('js/dashboard-session.js')<html.indexOf(page==='routes'?'js/ui-routes-live.js':'js/production-common.js'));
+ const html=read(`ui-${page}.html`);ok(`${page}: recovery guard and CSS are included before page logic`,html.includes('css/connection-recovery.css?v=1447')&&html.indexOf('js/dashboard-session.js')<html.indexOf(page==='routes'?'js/ui-routes-live.js':'js/production-common.js'));
 }
 console.log(`RESULT: ${checks} offline/session checks passed`);

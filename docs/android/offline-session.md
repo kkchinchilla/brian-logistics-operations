@@ -84,3 +84,13 @@ the existing offline, cold-start, and application suites. No native dependency
 or database change. Physical automatic-recovery retest remains pending.
 
 Endpoint reference: https://supabase.com/kb/troubleshooting/how-do-i-check-gotrueapi-version-of-a-supabase-project-lQAnOR
+
+## Physical acceptance and navigation cleanup (Increment 1.4.47)
+
+User confirmed automatic recovery works on 1.4.46 (2026-10-25). They reported an
+unnecessary attendance navigation tab at the bottom of the recovery screen.
+The navigation containers sit outside .main, so the original blocked-content
+selector did not hide them, and driver role styling may not yet be available.
+Recovery CSS now hides both .mobilebar and the route page's .mobile-navbar while
+connectionState is blocked, independently of account role. Normal dashboard
+navigation is unaffected. No changes to the accepted recovery logic.

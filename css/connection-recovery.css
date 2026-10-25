@@ -1,5 +1,8 @@
 /* Startup cannot display business data until online identity checks succeed. */
 body[data-connection-state="blocked"] .main>:not(#connection-recovery){display:none!important}
+/* Navigation is outside .main, and the account role may not be loaded yet. */
+body[data-connection-state="blocked"] .mobilebar,
+body[data-connection-state="blocked"] #app .mobile-navbar{display:none!important}
 body[data-connection-state="blocked"] .loginbox>:not(#connection-recovery):not(.tgj-login-brand){display:none!important}
 body[data-connection-state="blocked"] .loginbox{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
 body[data-session-state="checking"] #login-form{display:none}
