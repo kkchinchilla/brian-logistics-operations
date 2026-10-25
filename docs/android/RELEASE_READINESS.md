@@ -48,7 +48,7 @@ Recent authentication changes justify focused role checks below.
 | E5 | Export the tested month and compare CSV figures with the verified web/app totals | Passed: phone CSV delivery 400, learning 100, rental 200, salary 300 before restoring non-rental |
 | E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending: run 15 remains; rental flag restored to false and finalized |
 | A1 | Owner account-management create/update/disable/reactivate using a dedicated test account | Pending controlled scenario |
-| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). 1.4.46 automatic cold-start recovery passed on phone; manual recovery passed. Interrupted save pending |
+| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). Passed: automatic cold-start recovery, manual retry, failed save retains input, online retry saves once. Test note restored and reclosed; salary remains 400. |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
 | D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
 
@@ -80,7 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: install 1.4.47 and verify the recovery screen has no bottom navigation. Automatic cold-start recovery passed on 1.4.46; do not ask for another full session test solely for this CSS change.
+Next user instruction: install 1.4.48 to receive the localized save-error message. Recovery-screen styling passed on 1.4.47. Account management A1 and release preparation remain pending.
 
 ## Test-data correction during payroll acceptance
 
@@ -90,3 +90,14 @@ was OC. User confirmed OC was correct. A targeted transaction reopened only
 retaining original event 24. No rates or other run fields changed. This was a
 data correction, not a general historical rate-resolution change. User confirmed
 林小美 salary 400 after refresh. Run 15 is the separate 10/25 test assignment.
+
+## Save error wording (Increment 1.4.48)
+
+During the offline-save test, the shared dialog retained entered text but showed
+TypeError: Failed to fetch. Network transport errors in shared save dialogs now
+show Traditional Chinese recovery instructions. The message says the save result
+cannot be confirmed: a dropped response does not prove the server rejected the
+write. Input retention and explicit retry behavior are unchanged. Existing
+business validation/conflict messages remain intact. User confirmed the offline
+save → online retry → restore original note → reclose scenario with no duplicate
+and the original 2 trips / delivery 400 / rental 100 / salary 400 totals.

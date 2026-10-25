@@ -30,7 +30,14 @@ async function allPagedRows(table,fields='*',scope){
  return out;
 }
 async function save(table,payload,match){const q=match?db.from(table).update(payload).match(match):db.from(table).insert(payload);const {error}=await q;if(error)throw error;return true}
-function modal(title,fields,onSave){$('#modal-title').textContent=title;$('#modal-fields').innerHTML=fields;$('#modal-error').textContent='';$('#modal').classList.add('open');$('#modal-save').hidden=false;$('#modal-save').onclick=async()=>{try{$('#modal-save').disabled=true;await onSave();closeModal()}catch(e){$('#modal-error').textContent=e.message||String(e)}finally{$('#modal-save').disabled=false}}}
+function saveErrorMessage(error){
+ const message=error?.message||String(error);
+ if(/failed to fetch|fetch failed|network request failed|networkerror|network error|load failed/i.test(message)||error?.name==='AuthRetryableFetchError'){
+  return '目前無法連線，無法確認是否儲存成功。輸入內容已保留，請恢復網路後重試。';
+ }
+ return message;
+}
+function modal(title,fields,onSave){$('#modal-title').textContent=title;$('#modal-fields').innerHTML=fields;$('#modal-error').textContent='';$('#modal').classList.add('open');$('#modal-save').hidden=false;$('#modal-save').onclick=async()=>{try{$('#modal-save').disabled=true;await onSave();closeModal()}catch(e){$('#modal-error').textContent=saveErrorMessage(e)}finally{$('#modal-save').disabled=false}}}
 function closeModal(){$('#modal').classList.remove('open')}
 function option(v,t,selected){return `<option value="${esc(v)}" ${String(v)===String(selected)?'selected':''}>${esc(t)}</option>`}
 function dropdown(arr,key,label,selected){return arr.map(x=>option(x[key],x[label]||x[key],selected)).join('')}
