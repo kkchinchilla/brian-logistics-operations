@@ -12,3 +12,5 @@ config/local.json
 .openai/local/
 
 **/.huoyitong-icon-backup/
+**/.huoyitong-privacy-backup/
+*.huoyitong-tmp

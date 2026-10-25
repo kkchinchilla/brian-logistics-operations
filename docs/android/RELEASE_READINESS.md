@@ -80,7 +80,11 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: inspect appId, appName and webDir from the native project's capacitor.config.json on the Mac. No phone rebuild is needed for this documentation update. Release preparation and audit remain pending.
+Next user instruction: apply scripts/configure-android-privacy.mjs on the Mac,
+then build/sync and verify with --check before Android Studio Run. See
+privacy-settings.md. Native app ID/name, version 1.0/build 1, min SDK 24 and
+target/compile SDK 36 were confirmed from user-provided files. Source manifest
+and sharing paths reviewed; merged release manifest and native build still pending.
 
 ## Test-data correction during payroll acceptance
 
