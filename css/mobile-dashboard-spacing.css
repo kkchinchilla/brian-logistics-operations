@@ -16,7 +16,7 @@
 /* Fill short mobile pages, then let the footer travel with long content.
    Reserve the same bottom navigation clearance for every account. */
 @media(max-width:800px){
- body[data-dashboard]{--logout-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard]{--logout-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
  body[data-dashboard] .app-shell{padding-bottom:0}
  body[data-dashboard] .app-shell>.main{display:flex;flex-direction:column;min-height:100dvh;padding-inline:14px;padding-bottom:var(--logout-bottom)}
  body[data-dashboard] .app-shell>.main>*{flex-shrink:0}
