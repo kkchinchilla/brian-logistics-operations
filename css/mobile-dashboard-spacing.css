@@ -12,3 +12,17 @@
 .dashboard-footer .dashboard-logout:disabled{opacity:.45;cursor:not-allowed}
 .dashboard-footer #logout-status{margin:0}
 .dashboard-footer #logout-status:empty{display:none}
+
+/* Fill short mobile pages, then let the footer travel with long content.
+   Reserve the same bottom navigation clearance for every account. */
+@media(max-width:800px){
+ body[data-dashboard]{--logout-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard] .app-shell{padding-bottom:0}
+ body[data-dashboard] .app-shell>.main{display:flex;flex-direction:column;min-height:100dvh;padding-inline:14px;padding-bottom:var(--logout-bottom)}
+ body[data-dashboard] .app-shell>.main>*{flex-shrink:0}
+ body[data-dashboard] .dashboard-footer{margin-top:auto;padding:28px 0 0}
+ body[data-dashboard] .dashboard-footer #logout-status{order:-1}
+ body[data-dashboard="routes"] #app .main{padding-inline:14px;padding-bottom:0}
+ body[data-dashboard="routes"] #app .workspace{display:flex;flex-direction:column;padding-bottom:var(--logout-bottom)}
+ body[data-dashboard="routes"] #app .workspace>*{flex-shrink:0}
+}
