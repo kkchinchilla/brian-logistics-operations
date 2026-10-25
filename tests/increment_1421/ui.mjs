@@ -50,7 +50,7 @@ ok('retired approval entry is removed for supervisors',!e.el('approval-open')&&!
 e.ctx.closeOrReopen();ok('supervisor close dialog still opens',e.el('modal-save').textContent==='確認結案');e.dom.window.close();
 for(const page of ['attendance','routes','vehicles','monthly','accounts']){
  const html=read('ui-'+page+'.html'),doc=new JSDOM(html).window.document;
- assert.equal(doc.querySelectorAll('[data-session-logout]').length,1);assert.equal(doc.querySelectorAll('script[src="js/session-controls-1421.js"]').length,1);
+ assert.equal(doc.querySelectorAll('[data-session-logout]').length,1);assert.ok(doc.querySelector('main .dashboard-footer [data-session-logout]'));assert.equal(doc.querySelectorAll('.side [data-session-logout],.head [data-session-logout]').length,0);assert.equal(doc.querySelectorAll('script[src="js/session-controls-1421.js"]').length,1);
 }
 ok('all five dashboards provide the shared mobile logout control');
 console.log(`RESULT: ${checks} driver mobile/read-only UI checks passed`);

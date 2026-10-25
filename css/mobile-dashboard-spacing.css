@@ -1,5 +1,14 @@
 /* Consistent mobile top clearance for all roles, including display cutouts. */
 @media(max-width:800px){
  body[data-dashboard] .main,
- body[data-dashboard="routes"] #app .main{padding-top:calc(44px + env(safe-area-inset-top,0px))}
+ body[data-dashboard="routes"] #app .main{padding-top:calc(32px + env(safe-area-inset-top,0px))}
 }
+
+/* A single logout action at the end of each dashboard's scrollable content. */
+.dashboard-footer{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:28px;padding:0 0 8px;text-align:left;flex-shrink:0}
+.dashboard-footer .dashboard-logout{display:inline-flex;align-items:center;justify-content:center;background:#303338;border:1px solid #494c52;border-radius:10px;color:#f5f5f3;padding:10px 14px;min-height:42px;font:inherit;font-size:12px;font-weight:630;line-height:1.45;cursor:pointer;white-space:nowrap}
+.dashboard-footer .dashboard-logout:hover{background:#3b3e43;border-color:#686b70}
+.dashboard-footer .dashboard-logout:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.dashboard-footer .dashboard-logout:disabled{opacity:.45;cursor:not-allowed}
+.dashboard-footer #logout-status{margin:0}
+.dashboard-footer #logout-status:empty{display:none}
