@@ -14,9 +14,16 @@
 .dashboard-footer #logout-status:empty{display:none}
 
 /* Fill short mobile pages, then let the footer travel with long content.
-   Reserve the same bottom navigation clearance for every account. */
+   Keep a 10px footer gap and reserve navigation space only where it exists. */
 @media(max-width:800px){
- body[data-dashboard]{--logout-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard]{--dashboard-nav-height:58px;--logout-bottom:calc(10px + var(--dashboard-nav-height) + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard][data-account-role="driver"]{--dashboard-nav-height:0px}
+ /* Route navigation previously added 11px to the safe area; other pages used
+    max(8px, safe-area). Give both bars the same measured outer dimensions. */
+ body[data-dashboard] .mobilebar,
+ body[data-dashboard="routes"] #app .mobile-navbar{box-sizing:border-box;height:calc(58px + env(safe-area-inset-bottom,0px));min-height:calc(58px + env(safe-area-inset-bottom,0px));padding:0 8px env(safe-area-inset-bottom,0px);align-items:center}
+ body[data-dashboard] .mobilebar a,
+ body[data-dashboard="routes"] #app .mobile-navbar a{padding:10px 2px;line-height:1.3}
  body[data-dashboard] .app-shell{padding-bottom:0}
  body[data-dashboard] .app-shell>.main{display:flex;flex-direction:column;min-height:100dvh;padding-inline:14px;padding-bottom:var(--logout-bottom)}
  body[data-dashboard] .app-shell>.main>*{flex-shrink:0}
