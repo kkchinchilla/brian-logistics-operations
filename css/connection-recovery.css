@@ -1,0 +1,7 @@
+/* Startup cannot display business data until online identity checks succeed. */
+body[data-connection-state="blocked"] .main>:not(#connection-recovery){display:none!important}
+#connection-recovery{margin:0;padding:24px;border:1px solid #4b4e53;border-radius:14px;background:#292c31;color:#f5f5f3;line-height:1.6}
+#connection-recovery h2{margin:0 0 12px;font-size:20px}
+#connection-recovery p{margin:0 0 20px;color:#c3c5c8}
+#connection-recovery button{background:#303338;border:1px solid #494c52;border-radius:10px;color:#f5f5f3;padding:10px 14px;min-height:44px;font:inherit;cursor:pointer}
+#connection-recovery button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}

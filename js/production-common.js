@@ -4,7 +4,12 @@ const fmt=n=>Number(n||0).toLocaleString('zh-TW');
 const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Taipei'});
 const notify=msg=>{const e=$('#message');if(e){e.textContent=msg;e.hidden=false;}else alert(msg)};
 let currentUser=null,currentProfile=null;
-async function requireLogin(){const {data:{user},error}=await db.auth.getUser();if(error||!user){location.replace('index.html');return false}const {data:p,error:pe}=await db.from('profiles').select('id,display_name,role,active,can_manage_finance').eq('id',user.id).single();if(pe||!p?.active){await db.auth.signOut();location.replace('index.html');return false}currentUser=user;currentProfile=p;document.body.dataset.accountRole=p.role;await DashboardAccess146.load();$('#account-name').textContent=p.display_name;return true}
+async function requireLogin(){
+ const verified=await DashboardSession.verify(db);if(!verified)return false;
+ currentUser=verified.user;currentProfile=verified.profile;
+ document.body.dataset.accountRole=currentProfile.role;
+ await DashboardAccess146.load();$('#account-name').textContent=currentProfile.display_name;return true;
+}
 const supervisor=()=>currentProfile?.role==='dispatcher';
 const finance=()=>supervisor()&&DashboardAccess146.finance();
 async function rows(table,fields='*',q){let req=db.from(table).select(fields);if(q)req=q(req);const {data,error}=await req;if(error)throw error;return data||[]}
@@ -32,5 +37,5 @@ function dropdown(arr,key,label,selected){return arr.map(x=>option(x[key],x[labe
 function field(label,id,value='',type='text'){return `<label for="${id}">${label}</label><input id="${id}" class="field" type="${type}" value="${esc(value)}">`}
 function chosen(id){return $('#'+id).value}
 function wrapTable(headers,body){return `<div class="panel"><div class="scroll"><table class="gridtable"><thead><tr>${headers.map((h,i)=>`<th class="${i?'':'sticky'}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料</td></tr>`}</tbody></table></div></div>`}
-async function init(){if(!await requireLogin())return;try{await window.loadPage()}catch(e){console.error(e);notify('載入失敗：'+e.message)}}
+async function init(){try{if(!await requireLogin())return;await window.loadPage()}catch(e){console.error(e);DashboardSession.showRecovery()}}
 document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});init()});

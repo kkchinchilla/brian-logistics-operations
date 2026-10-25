@@ -3,7 +3,8 @@
  * Client-side checks are UX only; database RLS is authoritative. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const client=(typeof db!=='undefined'?db:window.db); // js/config.js uses a global lexical const db
+let client;
+try{client=(typeof db!=='undefined'?db:window.db);}catch{DashboardSession.showRecovery();return;} // config can fail to load while offline
 let regions=[],zones=[],routes=[],tariffs=[],dutyRates=[],tab='routes',editing=null,rateEditing=null,entityEditing=null,search='',filterRegion='',filterZone='',timer=null,waiting=false;
 const rt=id=>regions.find(v=>v.id===Number(id))?.name||'未設定';
 const regionId=name=>regions.find(v=>v.name===name)?.id||null;
@@ -160,12 +161,11 @@ function bind(){
 }
 async function init(){
  if(!db)throw Error('找不到 Supabase 設定。請確認 js/config.js 已正確放置。');
- const result=await client.auth.getUser();if(result.error||!result.data?.user){location.href='index.html';return}
- const id=result.data.user.id,prof=await client.from('profiles').select('id,role,active,display_name').eq('id',id).single();
- if(!prof.error&&prof.data?.active)document.body.dataset.accountRole=prof.data.role;
- if(prof.error||!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
+ const verified=await DashboardSession.verify(client);if(!verified)return;
+ const prof={data:verified.profile};document.body.dataset.accountRole=prof.data.role;
+ if(!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
  myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
  $('account-name').textContent=myProfile.display_name;
 }
-init().catch(e=>{console.error('routes live error',e);document.querySelector('#route-status').textContent=`無法載入路線資料：${errorText(e)}。請重新整理後再試，或聯絡管理員。`});
+init().catch(e=>{console.error('routes live error',e);DashboardSession.showRecovery()});
 })();
