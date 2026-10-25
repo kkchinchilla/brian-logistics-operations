@@ -10,3 +10,5 @@ config/local.json
 **/_screenshots/
 **/__pycache__/
 .openai/local/
+
+**/.huoyitong-icon-backup/
