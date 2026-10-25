@@ -1,0 +1,83 @@
+# 貨易通 Android preparation and acceptance tracker
+
+Updated: 2026-10-25 (Asia/Taipei).
+Status: development/testing; **not approved for public launch**.
+Google developer identity verification is still pending, per the user.
+This tracker reflects the current application and supersedes older prototype
+assumptions for Android testing. Keep the UI in Traditional Chinese.
+
+## Evidence rules
+
+Record the exact scenario and result. A passing UI check does not prove server
+permissions, a debug install does not prove a signed release, and acceptance of
+one role does not imply acceptance of the other roles. Do not ask the user to
+repeat passed checks without a relevant change or release-build reason. Guide
+one focused manual test at a time. Automated tests complement physical tests.
+
+## Confirmed on the physical phone
+
+User confirmations in the current conversation, 2026-10-25:
+
+| Scenario | Result |
+| --- | --- |
+| 路線管理: 路線列表 → 地區與溫層 → Android Back | Returned to 路線列表 in the same dashboard |
+| 新增配送地區 dialog → Back | Closed dialog and kept current tab |
+| Keyboard open in the entity dialog → Back twice | Keyboard closed first; dialog closed next without saving |
+| 月度報表 driver details → Back | Closed details and kept dashboard/month |
+| 月度報表 加給／獎懲 → Back | Closed dialog and kept dashboard/month |
+| Disable mobile data and Wi-Fi, then open 車輛管理 | Recovery panel shown; no login redirect after fix |
+| Restore internet while on that recovery panel | Dashboard loaded automatically without another login |
+| Install launcher icon and run Android app | Branded icon visible on the phone |
+
+Earlier user-confirmed checks include phone login/session persistence, monthly
+statistics and salary totals, native CSV saving and contents, and role-specific
+screens. These are useful prior evidence, not blanket acceptance of all flows.
+Recent authentication changes justify focused role checks below.
+
+## Remaining functional acceptance
+
+| ID | Scenario | Status |
+| --- | --- | --- |
+| R1 | Sign in as a non-Brian 主管: only 每日出勤、路線管理、車輛管理; no 費率表 | Next manual check |
+| R2 | Driver sign-in: own assignments only; no editing/request-to-change controls or management dashboards | Pending after auth changes |
+| R3 | Brian sign-in: owner dashboards and 費率表 remain available | Pending after auth changes |
+| E1 | Supervisor creates one explicitly identified test assignment; correct driver sees it on phone after refresh | Pending |
+| E2 | Edit that test assignment; confirm latest data agrees between web and app | Pending |
+| E3 | Close attendance; Brian verifies monthly delivery/duty counts and calculation using known rates | Pending |
+| E4 | Reopen retains last closed figures; re-close overwrites them without duplication | Pending |
+| E5 | Export the tested month and compare CSV figures with the verified web/app totals | Pending in the end-to-end scenario |
+| E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending |
+| A1 | Owner account-management create/update/disable/reactivate using a dedicated test account | Pending controlled scenario |
+| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Pending |
+| N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
+| D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
+
+Use clearly identified test records and accounts. Select the test date and
+records before making changes; do not clear historical or operational data.
+Do not mark absence of a button as proof that its server endpoint is protected.
+
+Current role/business expectations: drivers have their own read-only attendance
+view; supervisors handle attendance/routes/fleet; only Brian has finance/rates
+and account management. There is no base salary. Shared per-assignment rates
+for 值班、跟車、學習 are included in payroll; rental cost is deducted and
+加給／獎懲 applied. Route names are displayed; stable internal IDs identify rows.
+
+## Release preparation, separate from functional acceptance
+
+1. Inspect the native project on the Mac: application ID, app name, version code,
+   version name, SDK targets, manifest and required permissions. The repository
+   package version is still 1.4.27; do not infer Android release versions from it.
+2. Prepare the release signing/upload key on the user's Mac and an appropriate
+   backup. Never request passwords, private keys or signing files in chat.
+3. Build a signed release bundle and test the release build on a physical phone;
+   confirm upgrade behavior and data/session continuity without clearing data.
+4. Prepare store screenshots, description, support details, privacy policy,
+   data-handling/account-deletion disclosures and reviewer access. Verify current
+   Google Play requirements when completing those tasks; do not submit guessed
+   disclosures. Support address: tangguanjia.support@gmail.com.
+5. When the developer account is available, use Play testing and address required
+   feedback and account-specific requirements before requesting production access.
+6. Public release requires explicit readiness review and user approval. A complete
+   Google identity check or a passing debug test is not a launch decision.
+
+Next user instruction: R1 only. Report its actual result, then advance to R2.

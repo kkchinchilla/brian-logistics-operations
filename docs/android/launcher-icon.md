@@ -30,7 +30,9 @@ For an Android project in another directory, pass its directory as the optional
 argument: `node scripts/install-android-icon.mjs /path/to/android`.
 
 Validation: `node tests/increment_1444/android-icon.mjs`. Native Gradle compilation
-and launcher appearance still require the Android project on the Mac and phone.
+and launcher appearance require the Android project on the Mac and phone.
+The user confirmed successful installation and the branded phone icon on 2026-10-25.
+A signed release build and store-delivered installation remain untested.
 
 Reference: https://developer.android.com/develop/ui/compose/system/icon_design_adaptive
 
