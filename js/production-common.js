@@ -37,5 +37,5 @@ function dropdown(arr,key,label,selected){return arr.map(x=>option(x[key],x[labe
 function field(label,id,value='',type='text'){return `<label for="${id}">${label}</label><input id="${id}" class="field" type="${type}" value="${esc(value)}">`}
 function chosen(id){return $('#'+id).value}
 function wrapTable(headers,body){return `<div class="panel"><div class="scroll"><table class="gridtable"><thead><tr>${headers.map((h,i)=>`<th class="${i?'':'sticky'}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}" class="empty">目前沒有資料</td></tr>`}</tbody></table></div></div>`}
-async function init(){try{if(!await requireLogin())return;await window.loadPage()}catch(e){console.error(e);DashboardSession.showRecovery()}}
+async function init(){try{if(!await requireLogin())return;await window.loadPage();DashboardSession.ready()}catch(e){console.error(e);DashboardSession.showRecovery()}}
 document.addEventListener('DOMContentLoaded',()=>{$('#modal-cancel').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});init()});

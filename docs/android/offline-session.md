@@ -56,3 +56,31 @@ Update on the Mac: git pull origin main && npm run build && npx cap sync android
 then Android Studio Run. Stay signed in, turn off all connectivity, swipe the app
 away, reopen, and restore connectivity. Expect automatic attendance loading
 without password entry. Do not uninstall/clear app data for this test.
+
+## Missing or early connection events (Increment 1.4.46)
+
+Physical retest of 1.4.45: the recovery panel remained after reconnecting, but
+manual 重新載入 immediately opened attendance without a password. This confirms
+that the saved session survived. Automatic recovery still failed; it is unknown
+whether the WebView missed the event or retried before the network was usable.
+
+Recovery now checks the configured Supabase /auth/v1/health endpoint every three
+seconds while the panel is visible. It requires an uncached successful GoTrue
+response before reloading; online/focus/visibility events request the same check.
+Checks do not depend on navigator.onLine and send only the public API key, with
+credentials omitted. They neither authorize access nor replay business writes.
+After reload the existing Auth/profile/capability checks still apply. The deployed
+endpoint was checked read-only: HTTP 200, GoTrue, CORS allowed localhost.
+
+Requests time out after five seconds, never overlap, pause in the background, and
+stop on page exit. Automatic reloads are capped at two across page instances in
+sessionStorage; successful dashboard startup resets this counter. Manual retry
+always remains available and resets only the recovery counter, not Auth storage.
+If sessionStorage is unavailable, automatic reloads are disabled to prevent loops.
+The login recovery view removes the extra outer card.
+
+Automated regression: node tests/increment_1446/reconnect.mjs (35 checks), plus
+the existing offline, cold-start, and application suites. No native dependency
+or database change. Physical automatic-recovery retest remains pending.
+
+Endpoint reference: https://supabase.com/kb/troubleshooting/how-do-i-check-gotrueapi-version-of-a-supabase-project-lQAnOR

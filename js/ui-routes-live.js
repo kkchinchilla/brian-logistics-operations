@@ -166,6 +166,7 @@ async function init(){
  if(!isEdit(prof.data)){document.querySelector('.workspace').innerHTML='<p class="table-note" role="alert">目前帳號沒有路線管理權限。請使用主管帳號登入。</p>';return}
  myProfile=prof.data;if(typeof DashboardAccess146!=='undefined')await DashboardAccess146.load();bind();await load();
  $('account-name').textContent=myProfile.display_name;
+ DashboardSession.ready();
 }
 init().catch(e=>{console.error('routes live error',e);DashboardSession.showRecovery()});
 })();

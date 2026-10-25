@@ -7,7 +7,7 @@ let checks=0;const ok=(name,condition)=>{assert.ok(condition,name);checks++;cons
 async function setup({page='vehicles',online=true,userError,throwUser,profileError,throwProfile,profile={id:'test-user',role:'dispatcher',active:true,display_name:'Test'},noUser=false}={}){
  const dom=new JSDOM(read(`ui-${page}.html`),{runScripts:'outside-only'});await new Promise(r=>dom.window.addEventListener('load',r));
  const calls={auth:0,profile:0,signouts:0,reloads:0,redirects:[],data:0};const listeners={};
- const ctx={console:{error(){}},document:dom.window.document,navigator:{onLine:online},location:{replace:p=>calls.redirects.push(p),reload:()=>calls.reloads++},addEventListener:(name,fn)=>listeners[name]=fn,DashboardAccess146:{load:async()=>false,finance:()=>false}};ctx.window=ctx;
+ const ctx={setTimeout:()=>1,clearTimeout(){},AbortController,sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test',fetch:async()=>({ok:true,json:async()=>({name:'GoTrue'})}),console:{error(){}},document:dom.window.document,navigator:{onLine:online},location:{replace:p=>calls.redirects.push(p),reload:()=>calls.reloads++},addEventListener:(name,fn)=>listeners[name]=fn,DashboardAccess146:{load:async()=>false,finance:()=>false}};ctx.window=ctx;
  ctx.db={auth:{async getUser(){calls.auth++;if(throwUser)throw throwUser;return {data:{user:noUser?null:{id:'test-user'}},error:userError};},async signOut(){calls.signouts++;return {error:null};},async getSession(){return {data:{session:{user:{id:'test-user'}}},error:null};}},from(table){assert.equal(table,'profiles');return {select(){return this;},eq(k,id){assert.equal(id,'test-user');return this;},async single(){calls.profile++;if(throwProfile)throw throwProfile;return {data:profileError?null:profile,error:profileError};}};}};
  vm.createContext(ctx);vm.runInContext(read('js/dashboard-session.js'),ctx);ctx.loadPage=async()=>{calls.data++;};
  if(page==='routes')vm.runInContext(read('js/ui-routes-live.js'),ctx);else {vm.runInContext(read('js/production-common.js'),ctx);await ctx.init();}
@@ -46,6 +46,6 @@ for(const role of ['driver','dispatcher']){
 }
 const loading=await setup();loading.ctx.loadPage=async()=>{throw Error('network interrupted during loading');};await loading.ctx.init();ok('connection lost after authentication shows recovery instead of an empty board',!!loading.doc.querySelector('#connection-recovery')&&loading.calls.signouts===0);loading.close();
 for(const page of ['attendance','vehicles','monthly','accounts','routes']){
- const html=read(`ui-${page}.html`);ok(`${page}: recovery guard and CSS are included before page logic`,html.includes('css/connection-recovery.css?v=1445')&&html.indexOf('js/dashboard-session.js')<html.indexOf(page==='routes'?'js/ui-routes-live.js':'js/production-common.js'));
+ const html=read(`ui-${page}.html`);ok(`${page}: recovery guard and CSS are included before page logic`,html.includes('css/connection-recovery.css?v=1446')&&html.indexOf('js/dashboard-session.js')<html.indexOf(page==='routes'?'js/ui-routes-live.js':'js/production-common.js'));
 }
 console.log(`RESULT: ${checks} offline/session checks passed`);

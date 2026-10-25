@@ -48,7 +48,7 @@ Recent authentication changes justify focused role checks below.
 | E5 | Export the tested month and compare CSV figures with the verified web/app totals | Passed: phone CSV delivery 400, learning 100, rental 200, salary 300 before restoring non-rental |
 | E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending: run 15 remains; rental flag restored to false and finalized |
 | A1 | Owner account-management create/update/disable/reactivate using a dedicated test account | Pending controlled scenario |
-| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed, but reconnect returned to login. 1.4.45 fix awaiting device retest; other scenarios pending |
+| N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). 1.4.46 automatic recovery retest pending; interrupted save pending |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
 | D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
 
@@ -80,7 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: update the Android build with 1.4.45, then repeat cold-start offline → reconnect without entering credentials. Do not mark this passed until confirmed on the phone.
+Next user instruction: update the Android build with 1.4.46, then repeat cold-start offline → reconnect without entering credentials. Do not mark this passed until confirmed on the phone.
 
 ## Test-data correction during payroll acceptance
 

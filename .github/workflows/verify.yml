@@ -20,6 +20,7 @@ jobs:
       - run: node tests/increment_1443/offline-session.mjs
       - run: node tests/increment_1444/android-icon.mjs
       - run: node tests/increment_1445/cold-start.mjs
+      - run: node tests/increment_1446/reconnect.mjs
       - run: npm run schema:generate && npm run test:schema
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4

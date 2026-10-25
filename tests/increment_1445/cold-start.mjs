@@ -11,7 +11,7 @@ async function launch({online=true,sdk=true,state={session:true},sessionError,us
  await new Promise(resolve=>dom.window.addEventListener('load',resolve));
  const style=dom.window.document.createElement('style');style.textContent=read('css/connection-recovery.css');dom.window.document.head.append(style);
  const calls={order:[],redirects:[],reloads:0,signouts:0};const listeners={};
- const ctx={document:dom.window.document,navigator:{onLine:online},console,
+ const ctx={setTimeout:()=>1,clearTimeout(){},AbortController,sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test',fetch:async()=>{if(ctx.navigator.onLine===false)throw Error('offline');return {ok:true,json:async()=>({name:'GoTrue'})};},document:dom.window.document,navigator:{onLine:online},console,
   location:{replace:url=>calls.redirects.push(url),reload:()=>calls.reloads++},
   addEventListener:(type,fn)=>listeners[type]=fn};ctx.window=ctx;
  const client={auth:{
@@ -49,9 +49,9 @@ for(const options of [
 ]){
  const e=await launch(options);
  ok('temporary startup failure shows recovery and preserves session',e.blocked()&&e.state.session&&e.calls.signouts===0&&e.calls.redirects.length===0);
- e.listeners.focus();ok('returning to an online app retries when online event was missed',e.calls.reloads===1);e.close();
+ await e.listeners.focus();ok('returning to an online app retries when online event was missed',e.calls.reloads===1);e.close();
 }
-const stillOffline=await launch({online:false});stillOffline.listeners.focus();
+const stillOffline=await launch({online:false});await stillOffline.listeners.focus();
 ok('focus while offline does not cause a reload loop',stillOffline.calls.reloads===0);stillOffline.close();
 const retry=await launch({sessionError:{status:503}});retry.ctx.document.querySelector('#connection-recovery button').click();
 ok('manual retry remains available without a connectivity event',retry.calls.reloads===1);retry.close();
@@ -69,6 +69,6 @@ for(const page of ['ui-attendance','ui-routes','ui-vehicles','ui-monthly','ui-ac
 }
 for(const page of ['index','ui-attendance','ui-routes','ui-vehicles','ui-monthly','ui-accounts']){
  const html=read(`${page}.html`);
- ok(`${page}: recovery is available before any remote SDK request`,html.indexOf('js/dashboard-session.js?v=1445')<html.indexOf('https://cdn.jsdelivr.net/npm/@supabase'));
+ ok(`${page}: recovery is available before any remote SDK request`,html.indexOf('js/dashboard-session.js?v=1446')<html.indexOf('https://cdn.jsdelivr.net/npm/@supabase'));
 }
 console.log(`RESULT: ${checks} cold-start recovery checks passed`);
