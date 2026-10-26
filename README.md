@@ -1,12 +1,12 @@
 # 貨易通
 
-Current release: **Increment 1.4.27 — Route dashboard layout alignment** (2026-10-24). See [release behavior and verification](docs/INCREMENT_1_4_27.md). Attendance, route management and reports use route names; obsolete route codes are removed. Internal IDs preserve all record links. Drivers retain their own responsive read-only attendance, and supervisors retain scheduling and close/reopen controls.
+Current release: **Increment 1.4.51 — pre-Play release preparation** (2026-10-26). See the [preparation handoff](docs/android/PRE_PLAY_HANDOFF.md) and [acceptance tracker](docs/android/RELEASE_READINESS.md). Android remains in testing; this is not public-launch approval.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
-**應計薪資 = 配送計酬 − 租車費用 + 加給／獎懲**
+**應計薪資 = 配送計酬 + 值班津貼 + 跟車費用 + 學習費用 − 租車費用 + 加給／獎懲**
 
-底薪 is excluded. 值班、跟車、學習 are attendance records/counts only. Additional rules from 台11508.xls are outside the accepted scope. Company-layout Excel export and frozen paid-month amounts remain future work.
+底薪 is excluded. 值班、跟車、學習 each use a shared per-assignment rate set by Brian. Additional rules from 台11508.xls are outside the accepted scope. Company-layout Excel export and frozen paid-month amounts remain future work.
 
 Reopening an attendance date keeps its last confirmed records in monthly reporting. Draft edits remain on the attendance board until the next 「確認結案」 replaces that date’s report contents, including deletions. The monthly report labels dates awaiting reconfirmation. Dates never confirmed remain excluded.
 

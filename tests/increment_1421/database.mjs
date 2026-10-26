@@ -1,4 +1,4 @@
-// Isolated real-schema authorization and supervisor regression checks. No live data.
+// Release privilege regression: real triggers, role restrictions and supervisor writes. No live data.
 import {PGlite} from '@electric-sql/pglite';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
@@ -32,8 +32,19 @@ try{
  await actor(3);const request=await value('select dashboard_request_attendance_change(3,null,1,1,\'historical request\',1,1,false)');
  await actor(2);await value('select dashboard_review_attendance_change($1,$2,false,\'historical rejection\')',[request.id,request.revision]);
  await value('select dashboard_close_attendance_through($1,\'fixture close\')',[day]);
- await pg.exec('RESET ROLE;');const before=await fingerprint();await pg.exec(migration('1421'));
+ await pg.exec('RESET ROLE;');const before=await fingerprint();await pg.exec(migration('1421'));await pg.exec(migration('1451'));
  assert.deepEqual(await fingerprint(),before);ok('migration preserves attendance, historical requests and closed snapshots exactly');
+ await pg.exec('RESET ROLE;');
+ for(const role of ['anon','authenticated']){
+  for(const table of ['delivery_regions','delivery_temperature_zones','delivery_region_zone_rates','vehicle_owner_bindings','report_driver_mappings','report_route_mappings']){
+   ok(role+' cannot truncate/create triggers on '+table,!(await value("select has_table_privilege($1,$2,'TRUNCATE') or has_table_privilege($1,$2,'TRIGGER')",[role,table])));
+  }
+  for(const fn of ['dashboard_log_attendance_change()','protect_run_assignment()'])ok(role+' cannot directly invoke '+fn,!(await value("select has_function_privilege($1,$2,'EXECUTE')",[role,fn])));
+ }
+ await pg.exec('SET ROLE anon;');
+ await assert.rejects(()=>value("select dashboard_rename_driver('00000000-0000-4000-8000-000000000003','forbidden')"),/permission denied/);
+ await actor(2);await value("select dashboard_rename_driver('00000000-0000-4000-8000-000000000003','Driver renamed')");
+ ok('supervisor rename still works',await value("select display_name='Driver renamed' from profiles where id='00000000-0000-4000-8000-000000000003'"));
  await actor(3);
  for(const table of ['runs','daily_run_observations','daily_attendance_extra_trips','attendance_driver_days','attendance_duty_entries']){
   const rows=(await pg.query('SELECT driver_id FROM '+table)).rows;
@@ -45,6 +56,17 @@ try{
  ok('company closeout snapshots and approval history are inaccessible',Number(await value('select count(*) from daily_attendance_closeouts'))===0&&Number(await value('select count(*) from attendance_change_requests'))===0);
  assert.deepEqual(Object.keys(await value('select dashboard_get_attendance_day_state($1)',[day])).sort(),['closed','service_date']);ok('day-state RPC cannot leak a company snapshot');
  await actor(2);await value('select dashboard_reopen_attendance_date($1,\'test readonly while open\')',[day]);
+ await pg.exec('RESET ROLE;');
+ for(const role of ['anon','authenticated']){
+  for(const table of ['delivery_regions','delivery_temperature_zones','delivery_region_zone_rates','vehicle_owner_bindings','report_driver_mappings','report_route_mappings']){
+   ok(role+' cannot truncate/create triggers on '+table,!(await value("select has_table_privilege($1,$2,'TRUNCATE') or has_table_privilege($1,$2,'TRIGGER')",[role,table])));
+  }
+  for(const fn of ['dashboard_log_attendance_change()','protect_run_assignment()'])ok(role+' cannot directly invoke '+fn,!(await value("select has_function_privilege($1,$2,'EXECUTE')",[role,fn])));
+ }
+ await pg.exec('SET ROLE anon;');
+ await assert.rejects(()=>value("select dashboard_rename_driver('00000000-0000-4000-8000-000000000003','forbidden')"),/permission denied/);
+ await actor(2);await value("select dashboard_rename_driver('00000000-0000-4000-8000-000000000003','Driver renamed')");
+ ok('supervisor rename still works',await value("select display_name='Driver renamed' from profiles where id='00000000-0000-4000-8000-000000000003'"));
  await actor(3);
  for(const table of ['runs','daily_run_observations']){
   const field=table==='runs'?'dispatcher_notes':'actual_note';

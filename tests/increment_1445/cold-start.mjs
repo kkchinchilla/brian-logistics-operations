@@ -69,6 +69,6 @@ for(const page of ['ui-attendance','ui-routes','ui-vehicles','ui-monthly','ui-ac
 }
 for(const page of ['index','ui-attendance','ui-routes','ui-vehicles','ui-monthly','ui-accounts']){
  const html=read(`${page}.html`);
- ok(`${page}: recovery is available before any remote SDK request`,html.indexOf('js/dashboard-session.js?v=1446')<html.indexOf('https://cdn.jsdelivr.net/npm/@supabase'));
+ ok(`${page}: recovery is available before SDK initialization`,html.indexOf('js/dashboard-session.js?v=1446')<html.indexOf('js/vendor/supabase-2.118.0.js'));
 }
 console.log(`RESULT: ${checks} cold-start recovery checks passed`);

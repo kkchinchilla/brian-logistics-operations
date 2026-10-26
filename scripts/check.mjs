@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -16,3 +17,11 @@ for(const f of fs.readdirSync(out).filter(f=>f.endsWith('.html'))){
 }
 for(const name of ['tests','sql','supabase','docs','prototypes','config'])assert.ok(!fs.existsSync(path.join(out,name)),`${name} must not be deployed`);
 console.log('Application syntax, deployment asset links and package exclusions passed');
+
+const vendor=JSON.parse(fs.readFileSync(path.join(root,'js/vendor/supabase-manifest.json'),'utf8'));
+const sdk=fs.readFileSync(path.join(out,`js/vendor/supabase-${vendor.version}.js`));
+assert.equal(createHash('sha256').update(sdk).digest('hex'),vendor.sha256,'Bundled authentication SDK checksum');
+for(const f of fs.readdirSync(out).filter(f=>f.endsWith('.html'))){
+ assert.ok(!fs.readFileSync(path.join(out,f),'utf8').includes('cdn.jsdelivr.net/npm/@supabase'),'Authentication SDK must be bundled');
+}
+console.log('Pinned authentication SDK integrity passed');

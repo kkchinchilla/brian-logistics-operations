@@ -8,7 +8,7 @@ fixtures=['mock_supabase_143.js','mock_increment_146.js','mock_increment_147.js'
 fixture='\n'.join((root/'tests'/f).read_text() for f in fixtures)
 def inline_script(match):
  src=match[1].split('?')[0]
- if src.startswith('https://'):return '<script>'+fixture+'</script>' if 'supabase' in src else ''
+ if src.startswith('js/vendor/supabase-') or src.startswith('https://'):return '<script>'+fixture+'</script>' if 'supabase' in src else ''
  if src=='js/config.js':return '<script>const db=window._testDB143;window.db=db;</script>'
  code=(root/src).read_text()
  if src=='js/production-common.js':code=code.replace("const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Taipei'});","const today=()=> '2026-10-20';")
@@ -17,6 +17,8 @@ for page in ['ui-attendance.html','ui-routes.html','ui-vehicles.html','ui-monthl
  html=(root/page).read_text()
  # Account credentials require the real server; do not offer this action offline.
  html=re.sub(r'<a[^>]*data-account-nav[^>]*>.*?</a>','',html)
+ # Support requests belong to the live app, not this historical isolated fixture.
+ html=re.sub(r'<nav class="privacy-links"[^>]*>.*?</nav>','',html)
  html=html.replace('<head>', '<head><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\'; style-src \'unsafe-inline\'; img-src data:; connect-src \'none\'">')
  html=re.sub(r'<link rel="stylesheet" href="([^\"]+)"[^>]*>',lambda m:'<style>'+(root/m[1].split('?')[0]).read_text()+'</style>',html)
  html=re.sub(r'<script src="([^\"]+)"[^>]*></script>',inline_script,html)

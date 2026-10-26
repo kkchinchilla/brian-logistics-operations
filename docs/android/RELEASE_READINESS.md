@@ -2,7 +2,7 @@
 
 Updated: 2026-10-26 (Asia/Taipei).
 Status: development/testing; **not approved for public launch**.
-Google developer identity verification is still pending, per the user.
+Google developer address verification must be resubmitted and is pending, per the user.
 This tracker reflects the current application and supersedes older prototype
 assumptions for Android testing. Keep the UI in Traditional Chinese.
 
@@ -50,7 +50,7 @@ Recent authentication changes justify focused role checks below.
 | A1 | Owner account management: create, password reset, name edit, role changes, delete | Passed on phone/web using the dedicated test account; phone-number change remains untested |
 | N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). Passed: automatic cold-start recovery, manual retry, failed save retains input, online retry saves once. Test note restored and reclosed; salary remains 400. |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
-| D1 | Review for debug/test-only content, exposed secrets, logging of credentials, unsafe cached authorization and missing server-side role checks | Pending release audit |
+| D1 | Release security/access review | 1.4.51 code/live role review and grant hardening completed; see SECURITY_REVIEW_1451.md for remaining settings and limitations |
 
 Use clearly identified test records and accounts. Select the test date and
 records before making changes; do not clear historical or operational data.
@@ -80,8 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: apply scripts/configure-android-splash.mjs on the Mac,
-then inspect the new release lint/build result. See splash-resources.md.
+Next user instruction: disable public signup in Supabase Auth while keeping Phone login enabled. See PRE_PLAY_HANDOFF.md; manual native updates follow separately.
 
 ## Native privacy and release preparation evidence
 
@@ -104,11 +103,16 @@ User-confirmed since Increment 1.4.49 (2026-10-25/26):
   ManifestOrder removed.
 - Supplied normal/round v33 icon definitions both contain monochrome layers.
 - Reviewed the full supplied res archive: 11 default Capacitor splash PNGs and
-  only one styles.xml. Splash cleanup prepared in 1.4.50; native lint/build and
-  physical appearance after applying this change are still pending.
+  only one styles.xml. Splash cleanup applied in 1.4.50: one XML written and 11 templates removed.
+  Release build/lint succeeded; 17 warnings remain. Branded cold launch and automatic
+  sign-in passed on the physical phone.
 
-Remaining release audit, signing, signed-build tests and Play preparation above
-remain open. Do not treat the native checks as full application/security approval.
+User created a private upload keystore (alias huoyitong-upload, 25-year validity),
+built a signed AAB successfully and confirmed a private backup/password record.
+The keystore is outside the repository. Signed physical install/update testing
+and a rebuilt AAB containing 1.4.51 remain pending.
+
+See PRE_PLAY_HANDOFF.md for completed preparation and remaining manual decisions. Do not treat the native checks as full application/security approval.
 
 ## Test-data correction during payroll acceptance
 

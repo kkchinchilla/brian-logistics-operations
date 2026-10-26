@@ -33,3 +33,8 @@
  body[data-dashboard="routes"] #app .workspace{display:flex;flex-direction:column;padding-bottom:var(--logout-bottom)}
  body[data-dashboard="routes"] #app .workspace>*{flex-shrink:0}
 }
+
+/* Links precede logout so its accepted bottom/left alignment is preserved. */
+.privacy-links{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;line-height:1.7}
+.privacy-links a{color:var(--yellow);text-underline-offset:3px}
+.privacy-links a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
