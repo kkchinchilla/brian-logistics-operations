@@ -80,7 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: disable public signup in Supabase Auth while keeping Phone login enabled. See PRE_PLAY_HANDOFF.md; manual native updates follow separately.
+Public signup is now disabled (settings verified); Brian sign-out/sign-in on the phone passed. Next: apply the 1.4.53 attendance roster fix, then test administrator account creation. See PRE_PLAY_HANDOFF.md.
 
 ## Native privacy and release preparation evidence
 

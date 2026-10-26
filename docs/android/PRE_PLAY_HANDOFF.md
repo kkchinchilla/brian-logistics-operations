@@ -17,8 +17,9 @@ Updated 2026-10-26. Prepared, not submitted. No public-release approval.
 
 ## Still needs a person or a real device
 
-1. Disable public sign-up in Supabase Auth (not phone login). It was enabled at audit.
-   Brian's existing Admin API account creation remains the intended path.
+1. Public sign-up disabled and settings independently verified on 2026-10-26.
+   Phone provider remains enabled; user confirmed Brian can sign out/sign in and
+   reach attendance. Administrator-created accounts need the follow-up test.
 2. Brian must confirm retention periods and a working deletion/anonymization process.
    The current Delete user action retains names, payroll and attendance history;
    it must not be represented as erasing all associated data. Public pages describe
@@ -41,11 +42,10 @@ Updated 2026-10-26. Prepared, not submitted. No public-release approval.
 
 ## Small next manual step
 
-In Supabase project dispatch-system-dev, Authentication → Sign In / Providers
-(the label may be Providers), disable **Allow new users to sign up** and save.
-Do not disable the Phone provider. Then verify the setting and existing login;
-create/delete one clearly identified test account through Brian's UI to confirm
-administrator-created accounts still work. Guide these as separate steps.
+Install 1.4.53 on the Mac/phone and verify the deleted empty test driver is absent
+from attendance. Then create one clearly identified disposable account through
+Brian's account-management UI to check Admin API creation still works with public
+signup disabled. Guide creation, login and cleanup as separate steps.
 
 ## Safe Mac update sequence (when prompted)
 

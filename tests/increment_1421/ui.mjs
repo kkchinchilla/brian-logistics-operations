@@ -48,6 +48,23 @@ e.ctx.editAttendanceCell145('driver-one','日配',1,e.fixture.tables.runs[0]);
 ok('route editor offers name labels with ID values',e.el('modal-fields').textContent.includes('北區門市配送')&&!e.el('modal-fields').textContent.includes('北區 01')&&Array.from(e.el('modal-fields').querySelectorAll('option')).some(x=>x.value==='1'&&x.textContent.includes('北區門市配送')));
 ok('retired approval entry is removed for supervisors',!e.el('approval-open')&&!e.fixture.state.calls.some(x=>x.table==='attendance_change_requests'));
 e.ctx.closeOrReopen();ok('supervisor close dialog still opens',e.el('modal-save').textContent==='確認結案');e.dom.window.close();
+// Deleting an account must not leave an empty roster row or erase dated history.
+e=await setup('supervisor');
+vm.runInContext(`drivers.push({id:'deleted-empty',display_name:'已刪除空白測試',active:false},{id:'active-empty',display_name:'在職未排班',active:true});drivers.filter(d=>['driver-one','driver-two'].includes(d.id)).forEach(d=>d.active=false);paintBoard();`,e.ctx);
+ok('inactive empty profile hidden; active unscheduled driver retained',!e.el('attendance-table').textContent.includes('已刪除空白測試')&&e.el('attendance-table').textContent.includes('在職未排班'));
+ok('inactive drivers with dated delivery/duty history remain visible',e.el('attendance-table').textContent.includes('測試司機甲')&&e.el('attendance-table').textContent.includes('測試司機乙'));
+vm.runInContext('paintLegacyBoard()',e.ctx);
+ok('legacy fallback also omits the deleted empty profile',!e.el('attendance-table').textContent.includes('已刪除空白測試')&&e.el('attendance-table').textContent.includes('測試司機甲'));
+for(const setupRows of ["runs=[];allBoardRuns=[];extraTrips=[];standbyShifts=[];dutyEntries=[{driver_id:'driver-one',kind:'learning'}];driverDays=[];executionDrivers143=new Set()", "dutyEntries=[];standbyShifts=[{driver_id:'driver-one'}]", "standbyShifts=[];extraTrips=[{driver_id:'driver-one',status:'active'}]", "extraTrips=[];allBoardRuns=[{driver_id:'driver-one',status:'cancelled'}]", "allBoardRuns=[];executionDrivers143.add('driver-one')"]){
+ vm.runInContext(setupRows,e.ctx);
+ assert.ok(vm.runInContext("attendanceRoster().some(d=>d.id==='driver-one')",e.ctx));
+}
+ok('duty-only, standby-only, extra-trip, cancelled-plan and execution history retain the inactive driver');
+vm.runInContext("boardDate='2026-10-26'",e.ctx);await e.ctx.fetchBoard();
+ok('changing date keeps leave-only history but removes drivers with no records that day',e.el('attendance-table').textContent.includes('測試司機甲')&&!e.el('attendance-table').textContent.includes('測試司機乙'));
+vm.runInContext("boardDate='2026-10-27'",e.ctx);await e.ctx.fetchBoard();
+ok('empty later date contains only active roster entries',!e.el('attendance-table').textContent.includes('測試司機甲')&&!e.el('attendance-table').textContent.includes('測試司機乙')&&e.el('attendance-table').textContent.includes('在職未排班'));
+e.dom.window.close();
 for(const page of ['attendance','routes','vehicles','monthly','accounts']){
  const html=read('ui-'+page+'.html'),doc=new JSDOM(html).window.document;
  assert.equal(doc.querySelectorAll('[data-session-logout]').length,1);assert.ok(doc.querySelector('main .dashboard-footer [data-session-logout]'));assert.equal(doc.querySelectorAll('.side [data-session-logout],.head [data-session-logout]').length,0);assert.equal(doc.querySelectorAll('script[src="js/session-controls-1421.js"]').length,1);

@@ -95,12 +95,20 @@ async function fetchBoard(){
 }
 const name=id=>drivers.find(d=>d.id===id)?.display_name||'—';const plate=id=>vehicles.find(v=>String(v.id)===String(id))?.plate_number||'';const rt=id=>routes.find(r=>r.id===id);
 const routeLabel1424=id=>rt(id)?.route_name?.trim()||'未設定路線名稱';
+// Retained inactive profiles label history; they are not empty roster rows.
+// All collections here belong to the currently selected service date.
+function attendanceRoster(){
+ const recorded=new Set([...allBoardRuns,...runs,...extraTrips.filter(x=>x.status==='active'),...standbyShifts,...dutyEntries,
+  ...driverDays.filter(x=>x.is_leave||x.has_plan_exception||x.applied_rows?.length)].map(x=>x.driver_id));
+ for(const id of executionDrivers143)recorded.add(id);
+ return drivers.filter(d=>d.active||recorded.has(d.id));
+}
 function paintLegacyBoard(){
  const term=($('#filter')?.value||'').toLocaleLowerCase();
  const zones=[...new Set([...buckets,...runs.map(r=>rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')])];
  const max={};
  zones.forEach(z=>max[z]=Math.max(1,...drivers.map(d=>runs.filter(r=>r.driver_id===d.id&&(rt(r.route_id)?.temperature_zone||r.temperature_zone_snapshot||'未設定')===z).length)));
- const matching=drivers.filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
+ const matching=attendanceRoster().filter(d=>{const mine=runs.filter(r=>r.driver_id===d.id);return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id)])].join(' ').toLocaleLowerCase().includes(term)});
  let thead='<thead><tr class="category"><th class="sticky" rowspan="2">司機</th>';
  for(const zone of zones)thead+=`<th colspan="${max[zone]*2}">${esc(zone)}</th>`;
  thead+='</tr><tr class="subheading">';
@@ -165,7 +173,7 @@ function paintBoard(){
  const unplacedStandby=standbyShifts.filter(x=>!x.attendance_category);
  const unplacedCount=Math.max(0,...drivers.map(d=>unplacedStandby.filter(x=>x.driver_id===d.id).length));
  if(unplacedCount)groups.push({name:'其他值班',prefix:'值班',count:unplacedCount});
- const matching=drivers.filter(d=>{
+ const matching=attendanceRoster().filter(d=>{
   const mine=runs.filter(r=>r.driver_id===d.id);
   const extras=activeExtras.filter(x=>x.driver_id===d.id);
   return !term||[d.display_name,...mine.flatMap(r=>[routeLabel1424(observations.find(o=>o.run_id===r.id)?.actual_route_id??r.route_id),plate(r.vehicle_id),r.attendance_category]),...extras.flatMap(x=>[routeLabel1424(x.actual_route_id),plate(x.actual_vehicle_id),x.attendance_category]),...dutyEntries.filter(x=>x.driver_id===d.id).flatMap(x=>[dutyLabel1411(x.kind),'不指定',x.note]),...standbyShifts.filter(x=>x.driver_id===d.id).flatMap(x=>['值班','不指定',x.note])].join(' ').toLocaleLowerCase().includes(term);
