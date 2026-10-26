@@ -38,3 +38,12 @@ Reference: https://developer.android.com/develop/ui/compose/system/icon_design_a
 
 Recent device acceptance (2026-10-25): offline navigation recovery screen and
 automatic online reload both passed without requiring another login.
+
+## Logo revision 1.4.52 (2026-10-26)
+
+The shared source is now the user's logistics-dispatch-logo(4).svg, preserved
+byte-for-byte. It keeps #ffc533 and the white mark, with a smaller arrow and dot.
+The existing installer reads the revised geometry for all eight native resources;
+the splash references the same launcher resource. Run install-android-icon.mjs
+again after pulling, then build/sync and Run in Android Studio. No uninstall is
+needed. The already-installed phone icon changes only after this native update.
