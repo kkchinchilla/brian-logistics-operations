@@ -1,6 +1,6 @@
 # 貨易通 Android preparation and acceptance tracker
 
-Updated: 2026-10-25 (Asia/Taipei).
+Updated: 2026-10-26 (Asia/Taipei).
 Status: development/testing; **not approved for public launch**.
 Google developer identity verification is still pending, per the user.
 This tracker reflects the current application and supersedes older prototype
@@ -80,11 +80,35 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Next user instruction: apply scripts/configure-android-privacy.mjs on the Mac,
-then build/sync and verify with --check before Android Studio Run. See
-privacy-settings.md. Native app ID/name, version 1.0/build 1, min SDK 24 and
-target/compile SDK 36 were confirmed from user-provided files. Source manifest
-and sharing paths reviewed; merged release manifest and native build still pending.
+Next user instruction: apply scripts/configure-android-splash.mjs on the Mac,
+then inspect the new release lint/build result. See splash-resources.md.
+
+## Native privacy and release preparation evidence
+
+User-confirmed since Increment 1.4.49 (2026-10-25/26):
+
+- Privacy installer applied four files, then build/sync and --check passed.
+- Android Studio update preserved the signed-in session without reinstalling.
+- Attendance CSV saved/opened; salary CSV saved/opened and matched the dashboard.
+- Android App info displayed 貨易通.
+- App ID io.github.kkchinchilla.huoyitong; native version 1.0/build 1;
+  min SDK 24, target/compile SDK 36.
+- Release variant sync and processReleaseMainManifest succeeded. Reviewed the
+  supplied merged manifest: INTERNET plus the app's signature-protected AndroidX
+  receiver permission; correct backup rule references; both providers non-exported;
+  launcher activity exported; AndroidX profile receiver guarded by DUMP permission.
+- assembleRelease and lintRelease succeeded. This is not evidence of a signed
+  release installation, actual backup/transfer behavior, or release readiness.
+- Supplied lint HTML contained 21 warnings, no errors. User moved INTERNET before
+  application in the source manifest, reran lint and confirmed 20 warnings with
+  ManifestOrder removed.
+- Supplied normal/round v33 icon definitions both contain monochrome layers.
+- Reviewed the full supplied res archive: 11 default Capacitor splash PNGs and
+  only one styles.xml. Splash cleanup prepared in 1.4.50; native lint/build and
+  physical appearance after applying this change are still pending.
+
+Remaining release audit, signing, signed-build tests and Play preparation above
+remain open. Do not treat the native checks as full application/security approval.
 
 ## Test-data correction during payroll acceptance
 

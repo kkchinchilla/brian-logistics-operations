@@ -13,4 +13,5 @@ config/local.json
 
 **/.huoyitong-icon-backup/
 **/.huoyitong-privacy-backup/
+**/.huoyitong-splash-backup/
 *.huoyitong-tmp

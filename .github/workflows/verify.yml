@@ -22,6 +22,7 @@ jobs:
       - run: node tests/increment_1445/cold-start.mjs
       - run: node tests/increment_1446/reconnect.mjs
       - run: node tests/increment_1449/android-privacy.mjs
+      - run: node tests/increment_1450/android-splash.mjs
       - run: npm run schema:generate && npm run test:schema
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4
