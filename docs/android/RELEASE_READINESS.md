@@ -1,6 +1,6 @@
 # 貨易通 Android preparation and acceptance tracker
 
-Updated: 2026-10-26 (Asia/Taipei).
+Updated: 2026-10-27 (Asia/Taipei).
 Status: development/testing; **not approved for public launch**.
 Google developer address verification must be resubmitted and is pending, per the user.
 This tracker reflects the current application and supersedes older prototype
@@ -47,7 +47,7 @@ Recent authentication changes justify focused role checks below.
 | E4 | Reopen retains last closed figures; re-close overwrites them without duplication | Passed: reopened and edited totals stay 400; reclose rental change gives 300 with 2 trips; restored non-rental and reclosed gives 400 |
 | E5 | Export the tested month and compare CSV figures with the verified web/app totals | Passed: phone CSV delivery 400, learning 100, rental 200, salary 300 before restoring non-rental |
 | E6 | Remove only test records identified during this scenario; confirm no accidental operational changes | Pending: run 15 remains; rental flag restored to false and finalized |
-| A1 | Owner account management: create, password reset, name edit, role changes, delete | Passed on phone/web using the dedicated test account; phone-number change remains untested |
+| A1 | Owner account management: create, password reset, name edit, role changes, delete | Passed on phone/web using dedicated test accounts; phone-number change also passed on 2026-10-27 |
 | N1 | Manual retry after network recovery, cold start offline, and connection loss during a save | Cold offline panel passed. 1.4.45 automatic recovery stayed on the panel; manual retry loaded attendance without a password (passed). Passed: automatic cold-start recovery, manual retry, failed save retains input, online retry saves once. Test note restored and reclosed; salary remains 400. |
 | N2 | Background/foreground or process restart: session and data recover; incomplete writes are not presented as saved | Pending release-build regression |
 | D1 | Release security/access review | 1.4.51 code/live role review and grant hardening completed; see SECURITY_REVIEW_1451.md for remaining settings and limitations |
@@ -80,7 +80,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 6. Public release requires explicit readiness review and user approval. A complete
    Google identity check or a passing debug test is not a launch decision.
 
-Public signup is now disabled (settings verified); Brian sign-out/sign-in on the phone passed. Next: apply the 1.4.53 attendance roster fix, then test administrator account creation. See PRE_PLAY_HANDOFF.md.
+Public signup is now disabled (settings verified); Brian sign-out/sign-in on the phone passed. The 1.4.53 roster fix and administrator creation/login/deletion with public signup disabled passed on the phone. See PRE_PLAY_HANDOFF.md.
 
 ## Native privacy and release preparation evidence
 
@@ -153,7 +153,35 @@ APP帳號測試-更新:
 The assistant's earlier disable/reactivate test was incorrect: the current UI has
 no reversible disable feature. It was skipped, not passed, and is not planned scope.
 The delete operation preserves historical reporting records. Changing an existing
-account's phone number has not been manually tested. UI observations do not replace
+account's phone number passed on 2026-10-27 using APP換號測試: old phone rejected,
+new phone accepted with the unchanged password and driver role. The test account
+was deleted and disappeared from account and attendance lists. This test had no
+assigned attendance and does not prove historical-record preservation. UI observations do not replace
 server authorization review. No passwords or phone numbers are recorded here.
 
 User also confirmed the localized 1.4.48 save-error wording works.
+
+## Dependency and preparation follow-up (2026-10-27, Increment 1.4.56)
+
+- Repository now records the six Capacitor packages already used on the Mac,
+  pinned to the tested versions, plus targeted ExcelJS/xcode UUID 11.1.1 overrides.
+  See dependency-maintenance.md for scope and safe local synchronization.
+- User's Mac: npm audit reported zero vulnerabilities; 14-page build, check and
+  Capacitor sync passed; assembleRelease and lintRelease succeeded. No new lint
+  warning count was supplied. Android Studio Run updated the existing installation;
+  automatic sign-in and attendance loading passed. This remains a debug-device
+  check, not signed-release installation evidence.
+- APP註冊測試: Brian-created driver could sign in while public signup was disabled;
+  only the read-only driver view was available; deletion removed the test account
+  from account and attendance lists. APP帳號測試-更新's empty roster row was also
+  confirmed gone after 1.4.53.
+- Privacy page readability and Android Back/session continuity passed. Account/data
+  request email action opened the email app/chooser with the support address;
+  returning to attendance retained the session. The request page also opened
+  without credentials from the login page. No email was sent: mailbox receipt and
+  response handling remain unverified.
+
+Still open: retention/deletion procedure decisions, isolated reviewer access, final
+store screenshots/device coverage, current signed bundle and physical release tests,
+Play verification/testing and production-access review. Do not treat this dependency
+update as launch approval.

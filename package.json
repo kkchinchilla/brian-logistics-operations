@@ -19,8 +19,24 @@
     "test:attendance": "node tests/increment_1421/database.mjs && node tests/increment_1421/ui.mjs && node tests/increment_1424/database.mjs"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.3",
     "@electric-sql/pglite": "0.5.10",
     "exceljs": "4.4.0",
     "jsdom": "26.1.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/share": "8.0.3"
+  },
+  "overrides": {
+    "exceljs": {
+      "uuid": "11.1.1"
+    },
+    "xcode": {
+      "uuid": "11.1.1"
+    }
   }
 }

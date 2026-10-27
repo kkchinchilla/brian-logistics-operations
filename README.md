@@ -1,6 +1,6 @@
 # 貨易通
 
-Current release: **Increment 1.4.55 — route footer link consistency** (2026-10-26). See the [preparation handoff](docs/android/PRE_PLAY_HANDOFF.md) and [acceptance tracker](docs/android/RELEASE_READINESS.md). Android remains in testing; this is not public-launch approval.
+Current release: **Increment 1.4.56 — reproducible Android dependencies and UUID fix** (2026-10-27). See the [preparation handoff](docs/android/PRE_PLAY_HANDOFF.md) and [acceptance tracker](docs/android/RELEASE_READINESS.md). Android remains in testing; this is not public-launch approval.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 
