@@ -1,0 +1,63 @@
+/* Let enlarged system text reflow instead of clipping fixed-height controls. */
+body[data-dashboard] .date-navigation,
+body[data-dashboard] .driver-date-nav{
+ display:grid;grid-template-columns:44px minmax(0,1fr) 44px;
+ align-items:center;gap:6px;min-width:0;max-width:100%;
+}
+body[data-dashboard] .date-navigation{width:min(100%,22em);flex-shrink:0}
+body[data-dashboard] .date-navigation .field,
+body[data-dashboard] .driver-date-nav .field{
+ box-sizing:border-box;width:100%;min-width:0;max-width:none;
+ height:auto;min-height:44px;line-height:1.5;padding:8px 2px;
+}
+body[data-dashboard] .date-navigation .icon-nav,
+body[data-dashboard] .driver-date-nav>.btn{
+ display:grid;place-items:center;box-sizing:border-box;
+ width:44px;min-width:44px;height:44px;min-height:44px;padding:0;
+}
+.date-arrow{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+
+/* Routes do not load production.css; override their prototype's fixed heights. */
+body[data-dashboard="routes"] #app .toolbar .filter{
+ height:auto;min-height:44px;min-height:max(44px,calc(1.5em + 20px));
+ line-height:1.5;padding:10px 12px;max-width:100%;
+ min-width:min(100%,max(124px,calc(6em + 24px)));
+}
+body[data-dashboard="routes"] #app .toolbar .search{
+ height:auto;min-height:44px;min-height:max(44px,calc(1.5em + 20px));padding-block:10px;
+}
+
+@media(max-width:800px){
+ body[data-dashboard] .head-actions{min-width:0;max-width:100%}
+ body[data-dashboard] .date-navigation{width:100%;flex:1 1 100%}
+ body[data-dashboard] .date-navigation .field{font-size:16px}
+ /* Keep the footer below the measured bar, including its safe-area padding. */
+ body[data-dashboard]{--logout-bottom:calc(10px + var(--dashboard-nav-height,58px) + var(--dashboard-footer-safe-area,env(safe-area-inset-bottom,0px)))}
+ body[data-dashboard] .mobilebar,
+ body[data-dashboard="routes"] #app .mobile-navbar{
+ height:auto;min-height:calc(58px + env(safe-area-inset-bottom,0px));align-items:stretch;
+ }
+ body[data-dashboard] .mobilebar a,
+ body[data-dashboard="routes"] #app .mobile-navbar a{
+ display:flex;align-items:center;justify-content:center;flex:1 1 0;min-width:0;
+ white-space:normal;overflow-wrap:anywhere;word-break:keep-all;line-height:1.4;
+ padding:10px 2px;text-align:center;
+ }
+ body[data-account-role="driver"] .mobilebar,
+ body[data-account-role="driver"] #app .mobile-navbar{display:none}
+}
+@media(max-width:480px){
+ body[data-dashboard="routes"] #app .toolbar .filter{
+ flex:1 1 100%;width:100%;min-width:0;
+ }
+}
+/* At very narrow widths, a native date field needs its own row to retain the
+   full date/month and picker icon at large text sizes. Keep both arrows inside. */
+@media(max-width:380px){
+ body[data-dashboard] .date-navigation .field,
+ body[data-dashboard] .driver-date-nav .field{grid-column:1/-1;grid-row:1}
+ body[data-dashboard] .date-navigation>button:first-child,
+ body[data-dashboard] .driver-date-nav>button:first-child{grid-column:1;grid-row:2}
+ body[data-dashboard] .date-navigation>button:last-child,
+ body[data-dashboard] .driver-date-nav>button:last-child{grid-column:3;grid-row:2}
+}

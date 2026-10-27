@@ -24,6 +24,7 @@ jobs:
       - run: node tests/increment_1449/android-privacy.mjs
       - run: node tests/increment_1450/android-splash.mjs
       - run: node tests/increment_1451/release-prep.mjs
+      - run: node tests/increment_1457/navigation-space.cjs
       - run: npm run schema:generate && npm run test:schema
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4

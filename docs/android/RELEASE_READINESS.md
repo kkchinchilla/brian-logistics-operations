@@ -178,10 +178,34 @@ User also confirmed the localized 1.4.48 save-error wording works.
 - Privacy page readability and Android Back/session continuity passed. Account/data
   request email action opened the email app/chooser with the support address;
   returning to attendance retained the session. The request page also opened
-  without credentials from the login page. No email was sent: mailbox receipt and
-  response handling remain unverified.
+  without credentials from the login page. Subsequent user tests confirmed a test message arrived in the support mailbox
+  and its reply arrived in the original sending account. This verifies email
+  delivery in both directions, not completion of a real data-deletion request.
 
 Still open: retention/deletion procedure decisions, isolated reviewer access, final
 store screenshots/device coverage, current signed bundle and physical release tests,
 Play verification/testing and production-access review. Do not treat this dependency
 update as launch approval.
+
+## Large-text mobile corrections (Increment 1.4.57)
+
+- Mac synchronization of 1.4.56 completed with npm ci and zero audit vulnerabilities.
+- Brian has not decided retention periods. Leave the retention/deletion procedure
+  item open; do not invent a policy or enable automatic deletion.
+- User's largest-font test found overlapping bottom navigation, escaped date
+  arrows on attendance/monthly, and clipped route region/temperature selectors.
+  This is a failed large-text check, not driver-specific acceptance (the reported
+  pages include management dashboards).
+- Date/month controls now grow with text, have fixed SVG arrows, and use a separate
+  date row at widths up to 380px. Route filters have content-sized heights and
+  stack at phone widths. Existing text navigation wraps at two-character word
+  boundaries; icon replacement remains a future design change.
+- All five dashboards reserve the actual navigation height, including safe areas,
+  as labels wrap or the bar hides for driver/offline views. Route-specific CSS
+  overrides were inspected explicitly.
+- Build/check, existing driver UI, monthly Back and release-preparation checks
+  passed. Navigation-height tests cover all five pages. Browser geometry and
+  screenshot checks use synthetic page content and doubled CSS font sizes; they
+  do not reproduce Samsung WebView system-font scaling exactly.
+- Physical phone retest of the affected controls at maximum system font size is
+  pending. No account permissions, payroll calculations or database data changed.
