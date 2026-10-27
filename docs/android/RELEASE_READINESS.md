@@ -207,5 +207,14 @@ update as launch approval.
   passed. Navigation-height tests cover all five pages. Browser geometry and
   screenshot checks use synthetic page content and doubled CSS font sizes; they
   do not reproduce Samsung WebView system-font scaling exactly.
-- Physical phone retest of the affected controls at maximum system font size is
-  pending. No account permissions, payroll calculations or database data changed.
+- User confirmed the affected date controls, route filters and bottom navigation
+  are now fine on the phone at maximum system font size. No account permissions, payroll calculations or database data changed.
+
+## Account phone styling (Increment 1.4.58)
+
+The user reported the mobile 手機號碼 label and number were too close at maximum
+font size and requested an always-visible underline for editable phone numbers.
+The account-only stylesheet now adds a 16px horizontal / 8px wrapped-row gap and
+underlines the existing edit button at every viewport size. Read-only/deleted
+values remain plain text. No edits to account behavior, shared footer links or
+route styles. Physical phone confirmation of this adjustment remains pending.
