@@ -31,7 +31,7 @@ for(const page of ['index','ui-attendance','ui-routes','ui-vehicles','ui-monthly
  const dom=new JSDOM(fs.readFileSync(page+'.html','utf8')),doc=dom.window.document;
  assert.ok(doc.querySelector('.privacy-links a[href="privacy.html"]'));
  assert.ok(doc.querySelector('.privacy-links a[href="account-data.html"]'));
- if(page!=='index')assert.ok(doc.querySelector('.dashboard-footer .privacy-links').compareDocumentPosition(doc.querySelector('[data-session-logout]'))&4,'Links must precede logout');
+ if(page!=='index')assert.ok(doc.querySelector('[data-session-logout]').compareDocumentPosition(doc.querySelector('.dashboard-footer .privacy-links'))&4,'Links must follow logout');
  dom.window.close();
 }
 for(const page of ['privacy','account-data']){
@@ -45,4 +45,4 @@ for(const page of ['privacy','account-data']){
   dom.window.close();
  }
 }
-console.log('PASS: support/privacy accessible across roles and before login, safe return targets, logout remains final footer action');
+console.log('PASS: support/privacy accessible across roles and before login, safe return targets, support links follow logout');
