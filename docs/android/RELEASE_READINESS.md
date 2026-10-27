@@ -14,6 +14,9 @@ one role does not imply acceptance of the other roles. Do not ask the user to
 repeat passed checks without a relevant change or release-build reason. Guide
 one focused manual test at a time. Automated tests complement physical tests.
 
+Confirmed test device: **Samsung Galaxy Z Flip 5**, corrected by the user on
+2026-10-27. Earlier references to a Flip 8 were incorrect.
+
 ## Confirmed on the physical phone
 
 User confirmations in the current conversation, 2026-10-25:
@@ -217,4 +220,20 @@ font size and requested an always-visible underline for editable phone numbers.
 The account-only stylesheet now adds a 16px horizontal / 8px wrapped-row gap and
 underlines the existing edit button at every viewport size. Read-only/deleted
 values remain plain text. No edits to account behavior, shared footer links or
-route styles. Physical phone confirmation of this adjustment remains pending.
+route styles. User confirmed this adjustment is fixed on the phone.
+
+## Landscape attendance height (Increment 1.4.59)
+
+User rotated the Galaxy Z Flip 5 to landscape and reported only one problem:
+the attendance table became so short that the first driver's name was clipped.
+The table previously used viewport height minus 248px; two sticky header rows
+consumed most of the remaining area.
+
+For landscape viewports up to 500px tall, the attendance table now uses a maximum
+height of the larger of 240px or 75dvh. The page can scroll past its top controls
+to the table; table scrolling and sticky headers/driver names remain intact.
+The rule is scoped to the supervisor attendance table, leaving the driver's card
+view, other dashboards and portrait/normal-height desktop layouts unchanged.
+
+Browser reproduction used synthetic rows at several narrow-height viewports.
+Physical landscape/portrait retest of this correction remains pending.

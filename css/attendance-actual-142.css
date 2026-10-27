@@ -9,3 +9,10 @@ body[data-dashboard="attendance"] .attendance-matrix td.empty-slot .cell.add-act
 body[data-dashboard="attendance"] .dialog .secondary-action{width:100%;margin-top:19px;border:1px solid #69604d;background:#37332a;color:#f2d99d;white-space:normal}
 body[data-dashboard="attendance"] .dialog .secondary-action:hover{border-color:var(--yellow);background:#44402c}
 @media(max-width:800px){body[data-dashboard="attendance"] .dialog .secondary-action{min-height:44px}}
+
+/* A landscape phone has little vertical space: subtracting the entire page
+   header from its viewport left only the sticky table headers visible.
+   Let the page scroll to a usable table, while retaining both table axes. */
+@media(orientation:landscape) and (max-height:500px){
+ body[data-dashboard="attendance"] .attendance-panel .scroll{max-height:max(240px,75dvh)}
+}
