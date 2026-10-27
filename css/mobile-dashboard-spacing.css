@@ -36,5 +36,5 @@
 
 /* Support links follow logout within the consistently aligned dashboard footer. */
 .privacy-links{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;line-height:1.7}
-.privacy-links a{color:var(--yellow);text-underline-offset:3px}
+.privacy-links a{color:var(--yellow);text-decoration:none}
 .privacy-links a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
