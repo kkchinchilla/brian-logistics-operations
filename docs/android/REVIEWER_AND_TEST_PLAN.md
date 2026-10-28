@@ -5,7 +5,10 @@ to the operational company backend. Existing automated fixtures are not a live d
 
 ## Isolated reviewer environment
 
-Prepare a separate Supabase project (plan/cost decision required before provisioning).
+The user selected the Brian organization and the separate huoyitong-review project
+was created at the quoted $0/month on 2026-10-28. Setup is incomplete: see
+[REVIEW_ENVIRONMENT.md](REVIEW_ENVIRONMENT.md) for the installed migrations and
+connector blocker before taking any provisioning action. Do not create a duplicate.
 Use schema baseline plus later migrations in docs/DATABASE.md, preserve real Supabase
 Auth objects, and deploy account-admin to that project. Add synthetic owner, supervisor
 and driver accounts via the Admin API. Bind finance to the synthetic owner, not Brian's
