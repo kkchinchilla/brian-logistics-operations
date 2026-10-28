@@ -36,14 +36,17 @@ use of a provider does not mean data was not collected. Do not automatically sel
 
 ## Open blockers before final disclosure
 
-- Public signup currently enabled at audit; disable while retaining phone sign-in
-  and administrator account creation. Recheck after the user changes settings.
+- Public signup was disabled and verified after the initial audit; administrator
+  creation/login/deletion and existing phone sign-in tests passed.
 - Existing Delete user retains personal work/payroll history and Auth soft-delete
   metadata. Define retention periods, exceptions, backup/log handling and a verified
   deletion/anonymization procedure before claiming compliant full deletion.
+  Five-year retention preference selected 2026-10-28 (supersedes two months);
+  category-specific clocks and implementation remain open. See retention-plan.md.
 - Admin-created accounts and in-app account creation must be explained accurately
   in Console. Do not assume exemption solely because a driver cannot self-register.
-- Confirm Brian's support mailbox access and operational handling of requests.
+- Support test message and reply delivery passed. Actual request fulfillment and
+  deletion handling remain to be verified.
 - Confirm optional note practices, provider logs/retention, and any processing outside
   this codebase. Do not place operational personal data in screenshots/reviewer seed.
 - Verify the final native dependencies and build do not introduce new data flows.

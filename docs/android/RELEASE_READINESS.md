@@ -1,6 +1,6 @@
 # 貨易通 Android preparation and acceptance tracker
 
-Updated: 2026-10-27 (Asia/Taipei).
+Updated: 2026-10-28 (Asia/Taipei).
 Status: development/testing; **not approved for public launch**.
 Google developer address verification must be resubmitted and is pending, per the user.
 This tracker reflects the current application and supersedes older prototype
@@ -112,8 +112,9 @@ User-confirmed since Increment 1.4.49 (2026-10-25/26):
 
 User created a private upload keystore (alias huoyitong-upload, 25-year validity),
 built a signed AAB successfully and confirmed a private backup/password record.
-The keystore is outside the repository. Signed physical install/update testing
-and a rebuilt AAB containing 1.4.51 remain pending.
+The keystore is outside the repository. A newer signed AAB and emulator smoke
+test passed on 2026-10-28; see the evidence below. Signed physical install/update
+and Play-delivered testing remain pending.
 
 See PRE_PLAY_HANDOFF.md for completed preparation and remaining manual decisions. Do not treat the native checks as full application/security approval.
 
@@ -185,16 +186,16 @@ User also confirmed the localized 1.4.48 save-error wording works.
   and its reply arrived in the original sending account. This verifies email
   delivery in both directions, not completion of a real data-deletion request.
 
-Still open: retention/deletion procedure decisions, isolated reviewer access, final
-store screenshots/device coverage, current signed bundle and physical release tests,
+Still open: retention/deletion implementation and scope, isolated reviewer access, final
+store screenshots/device coverage, signed physical release tests,
 Play verification/testing and production-access review. Do not treat this dependency
 update as launch approval.
 
 ## Large-text mobile corrections (Increment 1.4.57)
 
 - Mac synchronization of 1.4.56 completed with npm ci and zero audit vulnerabilities.
-- Brian has not decided retention periods. Leave the retention/deletion procedure
-  item open; do not invent a policy or enable automatic deletion.
+- At this increment Brian had not decided retention periods. Superseded by the
+  2026-10-28 decision below; no automatic deletion has been enabled.
 - User's largest-font test found overlapping bottom navigation, escaped date
   arrows on attendance/monthly, and clipped route region/temperature selectors.
   This is a failed large-text check, not driver-specific acceptance (the reported
@@ -236,4 +237,50 @@ The rule is scoped to the supervisor attendance table, leaving the driver's card
 view, other dashboards and portrait/normal-height desktop layouts unchanged.
 
 Browser reproduction used synthetic rows at several narrow-height viewports.
-Physical landscape/portrait retest of this correction remains pending.
+User confirmed the phone layout is fixed. Subsequent checks also passed: unsaved
+APP旋轉測試 route name survived rotation with dialog buttons reachable (cancelled,
+not saved); folding/unfolding and unlocking retained the selected attendance day,
+records and session.
+
+## Signed release smoke test (2026-10-27/28)
+
+Evidence supplied by the user from the Mac and Android Studio emulator:
+
+- Final artifact: android/app/release/app-release.aab, 3.2 MB, built Oct 27 at
+  19:46:32. Build succeeded. The larger intermediary bundle is not the final artifact.
+- jarsigner reported jar verified, with self-signed/no timestamp/chain and
+  JarFile-versus-JarInputStream warnings. The latter warning has not been separately
+  diagnosed; do not claim it was fixed.
+- bundletool 1.18.3 validate passed; packaged manifest matches app ID
+  io.github.kkchinchilla.huoyitong, version 1.0/code 1, min SDK 24/target 36,
+  backup exclusions, private providers and expected permissions. No debuggable
+  attribute is present (default false).
+- AAB signer SHA-256 matches alias huoyitong-upload in the user's private keystore:
+  11:04:AA:24:2F:F4:5A:E3:A7:3C:DB:D7:25:BF:65:4B:F1:8E:A8:71:0E:9F:79:A5:7A:B1:F2:FF:5F:95:31:6F.
+  Certificate valid Oct 26, 2026 through Oct 20, 2051. This is a certificate
+  fingerprint, not an artifact checksum; the AAB checksum remains unrecorded.
+- Generated huoyitong-release-test.apks (12 MB) from that AAB with the upload key.
+- Initial emulator install failed with UPDATE_INCOMPATIBLE due to the existing
+  app's different certificate. Only the emulator app was uninstalled; reinstall
+  succeeded and the user opened the release app from its launcher icon. The
+  physical phone installation was not changed. This was a fresh install, not an
+  upgrade/session-continuity test across different signatures.
+- Passed: branded login page; Brian phone/password sign-in; expected attendance
+  records; dismiss from Recent Apps then reopen without login; CSV share chooser
+  opens without error/crash. Release CSV recipient read/save/content was not
+  separately tested; earlier physical debug-build export checks remain valid evidence.
+- Focused emulator smoke test is complete. Do not repeat the full phone acceptance
+  suite without a relevant change. This does not establish physical signed-release,
+  Play install/update, forced process-death or interrupted-write behavior.
+
+## Retention decision (2026-10-28)
+
+See retention-plan.md. Brian's initial two-month preference is superseded by the
+user's five-year preference after discussing statutory recordkeeping. Brian keeps
+a separate attendance/payroll archive, per the user; its completeness, security
+and duration have not been independently checked. The user suggested two years
+if storage is a concern, but that fallback must not override applicable minimum
+retention requirements. Storage cost/volume has not yet been measured.
+
+This is a planning decision, not deployed deletion functionality. Public privacy
+pages continue to disclose the current indefinite historical retention accurately.

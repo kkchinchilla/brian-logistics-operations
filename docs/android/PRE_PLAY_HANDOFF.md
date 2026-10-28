@@ -1,6 +1,10 @@
 # Increment 1.4.51 — preparation before Play Console
 
-Updated 2026-10-26. Prepared, not submitted. No public-release approval.
+Updated 2026-10-28. Prepared, not submitted. No public-release approval.
+
+Current evidence and decisions are recorded in RELEASE_READINESS.md and
+retention-plan.md. Historical items below are updated where completed; the
+application remains Increment 1.4.59 (this follow-up changes documentation only).
 
 ## Completed in this increment
 
@@ -19,21 +23,25 @@ Updated 2026-10-26. Prepared, not submitted. No public-release approval.
 
 1. Public sign-up disabled and settings independently verified on 2026-10-26.
    Phone provider remains enabled; user confirmed Brian can sign out/sign in and
-   reach attendance. Administrator-created accounts need the follow-up test.
-2. Brian must confirm retention periods and a working deletion/anonymization process.
+   reach attendance. Administrator-created account creation/login/deletion passed.
+2. The user selected five-year retention on 2026-10-28, replacing two months, and
+   confirmed Brian keeps separate records. See retention-plan.md for the unresolved
+   category-specific retention clock, storage assessment and deletion implementation.
    The current Delete user action retains names, payroll and attendance history;
    it must not be represented as erasing all associated data. Public pages describe
    current behavior, not a completed Google policy assessment. Finalize them before
-   closed testing. No arbitrary retention period or legal basis has been invented.
-3. Verify Brian can receive and respond using the support mailbox; no test email was
-   sent by the assistant. Mailto links require an email app or manual copy/paste.
+   closed testing. A policy decision is not an implemented purge.
+3. Support mailbox test delivery and reply delivery passed, confirmed by the user.
+   This does not verify completion of a data-deletion request.
 4. Choose/provision an isolated reviewer backend and synthetic accounts. The existing
    backend contains company data and is not an appropriate all-access reviewer demo.
    Do not give reviewers Brian's password, personal phone or live finance access.
-5. Install the updated native build and test phone-number change using a dedicated
-   disposable account, then a signed-release restart/network/CSV smoke test.
-6. Rebuild the signed AAB after this increment. Existing AAB predates these assets.
-   Record its versionCode, versionName, SHA-256 and upload certificate fingerprint.
+5. Dedicated-account phone change passed on the physical phone. The signed release
+   emulator smoke test passed on 2026-10-28 (startup/login/attendance/session/share
+   chooser). Signed physical-device and Play install/update testing remain open.
+6. New signed AAB built Oct 27; structure and manifest reviewed; signer matches
+   the private upload key. Version 1.0/code 1 and certificate fingerprint are
+   recorded in RELEASE_READINESS.md. Record the final artifact SHA-256 separately.
    Keep the keystore and password private; increment versionCode for each later upload.
 7. Capture final screenshots on the release build with synthetic records; approve
    graphics (the current icon can still change). Browser previews are not evidence
@@ -42,10 +50,9 @@ Updated 2026-10-26. Prepared, not submitted. No public-release approval.
 
 ## Small next manual step
 
-Install 1.4.53 on the Mac/phone and verify the deleted empty test driver is absent
-from attendance. Then create one clearly identified disposable account through
-Brian's account-management UI to check Admin API creation still works with public
-signup disabled. Guide creation, login and cleanup as separate steps.
+The focused release emulator smoke test is complete. Continue the retention
+implementation and remaining reviewer/store preparation; do not repeat completed
+phone tests while awaiting Google verification. See retention-plan.md.
 
 ## Safe Mac update sequence (when prompted)
 
@@ -58,10 +65,13 @@ npx cap sync android
 node scripts/configure-android-privacy.mjs --check
 ```
 
-Then sync/run in Android Studio. Do not use npm ci to erase local Capacitor setup,
-do not apply old database migrations, and do not run npm audit fix --force.
+Then sync/run in Android Studio for debug testing. Do not use Run on the emulator
+currently holding the release-signed app: it attempts to install a differently
+signed debug build. Native dependencies are now pinned in the repository and npm
+ci was verified after 1.4.56; see dependency-maintenance.md. Do not apply old
+database migrations or run npm audit fix --force.
 If git reports local conflicts, stop and inspect; do not reset/clean the project.
-The app dependency audit still needs review on the Mac's actual native lockfile.
+The Mac dependency audit reported zero vulnerabilities after the 1.4.56 sync.
 
 ## After verification: Play sequence
 
