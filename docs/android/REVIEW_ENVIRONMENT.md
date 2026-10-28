@@ -1,6 +1,6 @@
 # Reviewer environment setup status
 
-Updated 2026-10-28 (Asia/Taipei). **Incomplete; not ready for reviewer accounts.**
+Updated 2026-10-28 (Asia/Taipei). **Schema setup verified; Auth and reviewer accounts are pending.**
 
 The user selected the existing Brian organization for the isolated reviewer project.
 Supabase quoted $0/month, and huoyitong-review was created in ap-southeast-1.
@@ -24,37 +24,42 @@ account-admin deployment still target the operational project.
 | 20261028073408 | increment_1418_optional_route_times_finance_rates |
 | 20261028073418 | increment_1419_account_management |
 | 20261028073426 | increment_1421_driver_readonly_attendance |
+| 20261028093710 | increment_1424_route_names_verified_after_sql_editor |
+| 20261028093723 | increment_1431_shared_duty_rates |
+| 20261028093729 | increment_1451_release_access_hardening |
 
-Verification after stopping: 41 public tables, all with RLS; zero Auth users;
-private.dashboard146_finance_owner() returns NULL. Runs/routes are empty. Do not
-repeat the baseline or the installed migrations.
+Verification after completion: 42 public tables, all with RLS; zero Auth users;
+private.dashboard146_finance_owner() returns NULL. Duty-rate table exists.
+Anonymous payroll/driver-rename/trigger-function execution is denied and public
+browser roles have no TRUNCATE/TRIGGER table grants. Do not repeat installed SQL.
 
-## Connector blocker
+## Route migration recovery — resolved by verified state
 
-Submitting the existing 1.4.24 route-name migration twice returned
-`McpServerError: Invalid or expired requestState` (INVALID_ARGUMENT). A separate
-empty-only variant with no backfills or trigger disabling also returned that
-error. Its local PGlite comparison matched the original migration's functions,
-triggers, constraints and columns, but **it was not applied**. Catalog/history
-checks confirmed that neither 1.4.24 variant ran; route_code still exists.
+The connector returned `McpServerError: Invalid or expired requestState` twice on
+1.4.24, and once on a locally verified empty-only alternative. At that point the
+original columns still existed; neither submission was recorded as installed.
+The user then ran the checked-in 1.4.24 SQL using the review project's SQL Editor
+and reported `42P01: relation "route1424_tables" does not exist`.
 
-There was no explicit approval-rejection reason in the response. Do not describe
-it as a user refusal, SQL failure, or an applied migration. Stop automatic retries.
-Use the project's SQL Editor with the user for the existing checked-in migration:
-supabase/migrations/20261023133135_increment_1424_route_names.sql. Recheck history
-and schema immediately before applying it manually. A SQL Editor run does not
-automatically record the same MCP migration history; reconcile the entry afterward
-before continuing rather than replaying the SQL.
+The next read-only check nevertheless found the complete target structure. Do not
+claim the cause of the editor error is known or that the original script is safe
+to rerun. All nine replaced function source hashes match the checked-in migration;
+new snapshot columns, removed code columns, NOT NULL/check constraint and route
+validation trigger match; the temporary helper is absent and no user triggers are
+disabled. The project has no users/routes/runs, so no company history was at risk.
 
-Then apply the existing 1.4.31 and 1.4.51 migrations, in order, in this REVIEW
-project only. The latter provides the grant hardening; security advisories on this
-partial baseline still flag three anonymous security-definer grants already fixed
-by that migration in the operational project. The private audit-table no-policy
-notice is intentional. Authenticated security-definer notices require the existing
-guard review, not blanket privilege changes.
+A verification-only migration (version 20261028093710) asserted the function hashes,
+columns, constraint and trigger state before recording the reconciled 1.4.24 state.
+It did not replay the conversion. The existing 1.4.31 and 1.4.51 migrations then
+applied successfully via the connector and were verified.
 
-Advisor reference:
-https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable
+Security Advisor no longer reports anonymous security-definer grants. Its one
+private audit-table no-policy notice is intentional; 16 authenticated definer
+notices concern the existing guarded RPC design. These are not proof that a full
+reviewer-role end-to-end check passed (there are no reviewer users yet).
+References:
+- https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
+- https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable
 
 ## After schema setup
 
