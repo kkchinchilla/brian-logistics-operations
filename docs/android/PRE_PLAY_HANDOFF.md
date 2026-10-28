@@ -4,7 +4,7 @@ Updated 2026-10-28. Prepared, not submitted. No public-release approval.
 
 Current evidence and decisions are recorded in RELEASE_READINESS.md and
 retention-plan.md. Historical items below are updated where completed; the
-application remains Increment 1.4.59 (this follow-up changes documentation only).
+current application increment is listed in README.md.
 
 ## Completed in this increment
 

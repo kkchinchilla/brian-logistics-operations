@@ -284,3 +284,31 @@ retention requirements. Storage cost/volume has not yet been measured.
 
 This is a planning decision, not deployed deletion functionality. Public privacy
 pages continue to disclose the current indefinite historical retention accurately.
+
+## Mobile navigation icons (Increment 1.4.60)
+
+The user paused reviewer-environment setup to replace mobile navigation text with
+the five supplied SVGs. Each original SVG is preserved in assets/navigation/ and
+used as a CSS mask, retaining the current yellow selected state and gray inactive
+state. Only the existing <=800px mobile bars change; desktop sidebar markup and
+labels are unchanged. Links retain Traditional Chinese accessible names and the
+current page is identified with aria-current. Tap targets are at least 48px high.
+
+Owner sees five destinations; ordinary supervisor sees three; driver still has
+no mobile navigation bar. Existing URLs, access checks, Back behavior and measured
+footer/safe-area clearance are unchanged. Routes' separate template sets colors
+on spans, so the icon explicitly inherits its link color to match other pages.
+
+Validation: build/check and the existing five-dashboard navigation-height check
+passed. Local Chromium checks using the actual HTML/CSS with application/backend
+scripts blocked passed 108 combinations of dashboard, permitted role, viewport
+(320/390/760 landscape/800/801/1280) and normal/doubled CSS font sizes. Checked icon
+masks, selected/inactive colors, accessible names, 48px tap targets, hidden driver
+navigation, measured bar height and unchanged desktop labels; inspected screenshots.
+These checks do not replace a physical Android WebView check.
+
+The Mac app and final signed AAB require rebuilding to include these assets. The
+existing release emulator holds the previous release-signed version: do not use
+Android Studio Run to overwrite it with a differently signed debug build. Select
+the physical Samsung debug-test device for the next focused icon appearance check.
+No database, payroll, account or reviewer-project changes were made.

@@ -1,0 +1,29 @@
+/* User-supplied SVGs replace only the mobile dashboard labels. Desktop sidebar
+   markup stays unchanged; link labels remain available to assistive technology. */
+.dashboard-nav-icon{display:none}
+@media(max-width:800px){
+ body[data-dashboard] .mobilebar a,
+ body[data-dashboard="routes"] #app .mobile-navbar a{
+  box-sizing:border-box;min-height:48px;padding:12px 2px;gap:0;
+  color:#a3a5aa;text-decoration:none;border-radius:8px;
+ }
+ body[data-dashboard] .mobilebar a.active,
+ body[data-dashboard="routes"] #app .mobile-navbar a.active{color:var(--yellow)}
+ body[data-dashboard] .mobilebar a:focus-visible,
+ body[data-dashboard="routes"] #app .mobile-navbar a:focus-visible{
+  outline:2px solid var(--yellow);outline-offset:-3px;
+ }
+ body[data-dashboard] .mobilebar .dashboard-nav-label,
+ body[data-dashboard="routes"] #app .mobile-navbar .dashboard-nav-label{display:none}
+ body[data-dashboard] .mobilebar .dashboard-nav-icon,
+ body[data-dashboard="routes"] #app .mobile-navbar .dashboard-nav-icon{
+  display:block;flex:none;width:24px;height:24px;color:inherit;background-color:currentColor;
+  -webkit-mask:var(--dashboard-nav-icon) center / contain no-repeat;
+  mask:var(--dashboard-nav-icon) center / contain no-repeat;pointer-events:none;
+ }
+ .nav-icon-attendance{--dashboard-nav-icon:url('../assets/navigation/01-daily-attendance.svg')}
+ .nav-icon-routes{--dashboard-nav-icon:url('../assets/navigation/02-route-management.svg')}
+ .nav-icon-vehicles{--dashboard-nav-icon:url('../assets/navigation/03-vehicle-management.svg')}
+ .nav-icon-monthly{--dashboard-nav-icon:url('../assets/navigation/04-monthly-report.svg')}
+ .nav-icon-accounts{--dashboard-nav-icon:url('../assets/navigation/05-account-management.svg')}
+}
