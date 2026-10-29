@@ -1,19 +1,37 @@
-/* Let enlarged system text reflow instead of clipping fixed-height controls. */
+/* Keep the previous button, native date/month picker and next button together. */
 body[data-dashboard] .date-navigation,
 body[data-dashboard] .driver-date-nav{
  display:grid;grid-template-columns:44px minmax(0,1fr) 44px;
- align-items:center;gap:6px;min-width:0;max-width:100%;
+ align-items:stretch;gap:6px;min-width:0;max-width:100%;
+ padding:0;border:0;border-radius:0;background:none;
 }
 body[data-dashboard] .date-navigation{width:min(100%,22em);flex-shrink:0}
 body[data-dashboard] .date-navigation .field,
 body[data-dashboard] .driver-date-nav .field{
+ grid-column:2;grid-row:1;
  box-sizing:border-box;width:100%;min-width:0;max-width:none;
  height:auto;min-height:44px;line-height:1.5;padding:8px 2px;
+ background:#303338;border:1px solid #505358;border-radius:10px;
 }
 body[data-dashboard] .date-navigation .icon-nav,
 body[data-dashboard] .driver-date-nav>.btn{
+ grid-row:1;
  display:grid;place-items:center;box-sizing:border-box;
- width:44px;min-width:44px;height:44px;min-height:44px;padding:0;
+ width:44px;min-width:44px;height:auto;min-height:44px;padding:0;
+ background:#303338;border:1px solid #4b4e53;border-radius:10px;
+}
+body[data-dashboard] .date-navigation>button:first-child,
+body[data-dashboard] .driver-date-nav>button:first-child{grid-column:1}
+body[data-dashboard] .date-navigation>button:last-child,
+body[data-dashboard] .driver-date-nav>button:last-child{grid-column:3}
+body[data-dashboard] .date-navigation .icon-nav:hover,
+body[data-dashboard] .driver-date-nav>.btn:hover{background:#3a3e42}
+/* Preserve the native picker while leaving more room for its date text. */
+body[data-dashboard] .date-navigation .field::-webkit-datetime-edit,
+body[data-dashboard] .driver-date-nav .field::-webkit-datetime-edit{padding:0}
+body[data-dashboard] .date-navigation .field::-webkit-calendar-picker-indicator,
+body[data-dashboard] .driver-date-nav .field::-webkit-calendar-picker-indicator{
+ margin:0;padding:2px;
 }
 .date-arrow{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 
@@ -50,14 +68,4 @@ body[data-dashboard="routes"] #app .toolbar .search{
  body[data-dashboard="routes"] #app .toolbar .filter{
  flex:1 1 100%;width:100%;min-width:0;
  }
-}
-/* At very narrow widths, a native date field needs its own row to retain the
-   full date/month and picker icon at large text sizes. Keep both arrows inside. */
-@media(max-width:380px){
- body[data-dashboard] .date-navigation .field,
- body[data-dashboard] .driver-date-nav .field{grid-column:1/-1;grid-row:1}
- body[data-dashboard] .date-navigation>button:first-child,
- body[data-dashboard] .driver-date-nav>button:first-child{grid-column:1;grid-row:2}
- body[data-dashboard] .date-navigation>button:last-child,
- body[data-dashboard] .driver-date-nav>button:last-child{grid-column:3;grid-row:2}
 }
