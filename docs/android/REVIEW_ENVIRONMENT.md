@@ -1,6 +1,6 @@
 # Reviewer environment setup status
 
-Updated 2026-10-28 (Asia/Taipei). **Schema setup verified; Auth and reviewer accounts are pending.**
+Updated 2026-10-29 (Asia/Taipei). **Schema setup verified; phone Auth configured; reviewer account creation is next.**
 
 The user selected the existing Brian organization for the isolated reviewer project.
 Supabase quoted $0/month, and huoyitong-review was created in ap-southeast-1.
@@ -63,11 +63,54 @@ References:
 
 ## After schema setup
 
-Phone provider/public-signup settings are not configured or independently verified
-yet. No reviewer credentials, finance owner, seed records or Edge Function have
-been created/deployed here. Configure Auth; create reviewer accounts through the
+The user ran the project-specific Management API command on their Mac and reported
+`Phone login enabled: true`, `Public sign-ups disabled: true`, and
+`Verified successfully.` on 2026-10-29. The command checked the config again after
+PATCHing only `external_phone_enabled`. The Dashboard Phone form required Twilio
+credentials even with Confirm phone off, so that form was cancelled. Do not ask
+the user to configure Twilio or repeat this completed settings step. A scoped PAT
+for this endpoint needs BOTH Auth Config and Project Settings read-write permissions.
+
+Read-only check on 2026-10-29: zero Auth users, zero profiles, finance owner NULL.
+No reviewer credentials, finance owner, seed records or Edge Function have been
+created/deployed here yet. Create reviewer accounts through the
 Auth Admin API (not direct Auth-table inserts); bind the verified reviewer owner;
 deploy account-admin; seed only fictional records and verify role boundaries.
+
+## Private Mac account bootstrap (prepared, not yet executed by the user)
+
+The user created a temporary project secret key named `review_account_setup`.
+Secret key names accept lowercase letters, digits and underscores. Its value is
+not known to the assistant and must never be pasted into chat or committed.
+
+Run `node scripts/create-review-accounts.mjs` on the Mac. It prompts before reading
+the clipboard, accepts an `sb_secret_` key, clears the clipboard, and sends it only
+to the fixed reviewer project's Auth endpoint. It creates three phone/password
+Auth users through the supported admin endpoint, with confirmed fictional numbers
+in NANPA's reserved 555-0100–0199 range. No email/SMS is sent, no managed Auth tables
+are modified by SQL, and it does not grant application permissions yet.
+
+Random passwords are saved BEFORE creation in
+`~/huoyitong-review-private/reviewer-accounts.json` (directory 0700, file 0600),
+outside the repo. That private file must be kept and never uploaded or pasted.
+The script does not save the secret API key or print passwords. It resumes only
+accounts matching the saved batch, phone and role markers; it refuses unknown
+accounts or missing saved credentials instead of resetting passwords. Markers
+are provisioning receipts, not the application's authorization source.
+
+The local automated test (`node tests/review-account-bootstrap.mjs`) covers
+successful creation, reruns, interrupted responses after creation, private file
+permissions, fixed endpoint/header use, secret-free logs and refusal of mismatched
+accounts. This is not a live reviewer login test. After the user runs the script,
+verify the three Auth identities, bind owner/profile roles, then continue Edge
+Function and fictional data setup. Revoke the temporary PAT and secret key once
+their setup tasks are complete; do not revoke the project's default runtime keys.
+
+References:
+- https://supabase.com/docs/reference/javascript/auth-admin-createuser
+- https://supabase.com/docs/guides/getting-started/api-keys
+- https://supabase.com/docs/guides/platform/personal-access-tokens
+- https://www.nanpa.com/numbering/555-line-numbers
 
 The final distributed app must provide reviewers a stable, documented route to
 this environment while real users retain operational access. A separate AAB with

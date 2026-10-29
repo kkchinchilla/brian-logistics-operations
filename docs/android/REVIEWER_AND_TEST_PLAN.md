@@ -6,7 +6,8 @@ to the operational company backend. Existing automated fixtures are not a live d
 ## Isolated reviewer environment
 
 The user selected the Brian organization and the separate huoyitong-review project
-was created at the quoted $0/month on 2026-10-28. Schema setup is verified, with Auth/accounts pending: see
+was created at the quoted $0/month on 2026-10-28. Schema setup and phone Auth settings
+are verified; reviewer accounts are still pending: see
 [REVIEW_ENVIRONMENT.md](REVIEW_ENVIRONMENT.md) for installed migrations and
 next setup steps before taking any provisioning action. Do not create a duplicate.
 Use schema baseline plus later migrations in docs/DATABASE.md, preserve real Supabase
