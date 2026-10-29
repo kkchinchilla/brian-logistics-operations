@@ -39,12 +39,12 @@ Required rates are set; the sample driver's calculated summary has no issues.
   reopened snapshot preservation, open-day exclusion, role denials and replay guard.
 - An independent database read after installation returned the same 2,900 total,
   three counted deliveries, two rentals, and the expected date states.
-- Live user-session sample-data verification is still pending. On the Mac run
-  `node scripts/check-review-sample.mjs`. It uses the private reviewer credential
-  file, checks the owner's payroll and driver's assignments, and signs out its
-  temporary sessions. It does not change business data or print credentials.
+- Live user-session verification passed on the user's Mac on 2026-10-29:
+  expected salary, closed/reopened/open dates and driver assignments all passed.
+  The checker signed out its temporary sessions without changing business data
+  or printing credentials. Do not repeat unless changes justify another check.
 
 The seed SQL in `supabase/reviewer/seed-demo.sql` refuses to run over existing
 business data. Do not replay it or use it against an operational database.
-The web/Android app still needs a stable, clearly labelled demonstration entry;
-the backend sample alone does not complete reviewer UI or release readiness.
+The shared build now includes a labelled demonstration login; see
+[REVIEW_UI_ENTRY.md](REVIEW_UI_ENTRY.md). Device acceptance remains pending.

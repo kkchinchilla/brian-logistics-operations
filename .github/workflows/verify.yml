@@ -28,6 +28,7 @@ jobs:
       - run: node tests/review-account-bootstrap.mjs
       - run: node tests/review-permissions.mjs && node tests/review-access.mjs
       - run: node tests/review-sample.mjs
+      - run: node tests/review-ui-entry.mjs
       - run: npm run schema:generate && npm run test:schema
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4
