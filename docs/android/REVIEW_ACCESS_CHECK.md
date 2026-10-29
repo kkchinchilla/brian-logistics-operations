@@ -7,9 +7,11 @@ The user ran the live access check on their Mac and reported that all three
 reviewer sign-in and permission checks passed. The temporary test sessions were
 signed out. Passwords and keys were not printed or added to the repository.
 
-This completes the account-access check only. Sample business data, app access
-to the demonstration environment, and remaining release tests are still pending.
+This completes the account-access check only. Fictional sample business data is
+now prepared and database-verified; its live sample check is next (see
+[REVIEW_SAMPLE_DATA.md](REVIEW_SAMPLE_DATA.md)). App access to the demonstration
+environment and remaining release tests are still pending.
 Do not repeat this check unless relevant changes or failures justify it.
 
-Next preparation step: remove the temporary setup credentials while retaining
-the reviewer login credentials privately. Cleanup has not yet been confirmed.
+The user confirmed removal of both temporary setup credentials on 2026-10-29.
+The reviewer login credentials remain privately on the user's Mac.
