@@ -1,0 +1,16 @@
+/* The three-column roster should not inherit the wide dispatch-table layout. */
+@media(max-width:800px){
+ body[data-dashboard="vehicles"] #fleet-table[data-fleet-view="drivers"] .gridtable{
+  width:100%;min-width:0;table-layout:fixed;
+ }
+ body[data-dashboard="vehicles"] #fleet-table[data-fleet-view="drivers"] .gridtable th,
+ body[data-dashboard="vehicles"] #fleet-table[data-fleet-view="drivers"] .gridtable td{
+  height:auto;padding:12px 8px;white-space:normal;overflow-wrap:anywhere;line-height:1.6;
+ }
+ body[data-dashboard="vehicles"] #fleet-table[data-fleet-view="drivers"] .gridtable .sticky{
+  width:32%;min-width:0;max-width:none;
+ }
+ body[data-dashboard="vehicles"] #fleet-table[data-fleet-view="drivers"] .gridtable th:last-child{
+  width:calc(3em + 16px);
+ }
+}
