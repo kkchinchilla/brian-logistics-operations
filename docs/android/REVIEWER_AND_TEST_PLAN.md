@@ -1,13 +1,15 @@
 # Reviewer access and remaining tests
 
-No reviewer credentials exist yet. Never commit passwords or give reviewers access
-to the operational company backend. Existing automated fixtures are not a live demo.
+Reviewer credentials now exist privately on the user's Mac. Application roles and
+the reviewer account-admin deployment are configured; live access checks and sample
+business data are pending. Never commit passwords or give reviewers access to the
+operational company backend. Existing automated fixtures are not a live demo.
 
 ## Isolated reviewer environment
 
 The user selected the Brian organization and the separate huoyitong-review project
 was created at the quoted $0/month on 2026-10-28. Schema setup and phone Auth settings
-are verified; reviewer accounts are still pending: see
+are verified; reviewer accounts and role binding are configured: see
 [REVIEW_ENVIRONMENT.md](REVIEW_ENVIRONMENT.md) for installed migrations and
 next setup steps before taking any provisioning action. Do not create a duplicate.
 Use schema baseline plus later migrations in docs/DATABASE.md, preserve real Supabase

@@ -1,6 +1,6 @@
 # Reviewer environment setup status
 
-Updated 2026-10-29 (Asia/Taipei). **Schema setup verified; phone Auth configured; reviewer account creation is next.**
+Updated 2026-10-29 (Asia/Taipei). **Reviewer Auth users, application roles and account-admin are configured. Live credential checks are next.**
 
 The user selected the existing Brian organization for the isolated reviewer project.
 Supabase quoted $0/month, and huoyitong-review was created in ap-southeast-1.
@@ -12,8 +12,9 @@ Supabase quoted $0/month, and huoyitong-review was created in ap-southeast-1.
 
 The empty-project check passed before installing the portable baseline. No real
 company rows or Auth accounts were copied. The local portable-schema restoration
-test passed before provisioning. The website, Android configuration and existing
-account-admin deployment still target the operational project.
+test passed before provisioning. The website and Android configuration still
+target the operational project. It and its account-admin deployment are unchanged;
+the reviewer project now has its own account-admin deployment.
 
 ## Installed in the REVIEW project only
 
@@ -27,8 +28,9 @@ account-admin deployment still target the operational project.
 | 20261028093710 | increment_1424_route_names_verified_after_sql_editor |
 | 20261028093723 | increment_1431_shared_duty_rates |
 | 20261028093729 | increment_1451_release_access_hardening |
+| 20261029020705 | reviewer_bind_accounts |
 
-Verification after completion: 42 public tables, all with RLS; zero Auth users;
+Schema verification before account bootstrap: 42 public tables, all with RLS; zero Auth users;
 private.dashboard146_finance_owner() returns NULL. Duty-rate table exists.
 Anonymous payroll/driver-rename/trigger-function execution is denied and public
 browser roles have no TRUNCATE/TRIGGER table grants. Do not repeat installed SQL.
@@ -71,13 +73,33 @@ credentials even with Confirm phone off, so that form was cancelled. Do not ask
 the user to configure Twilio or repeat this completed settings step. A scoped PAT
 for this endpoint needs BOTH Auth Config and Project Settings read-write permissions.
 
-Read-only check on 2026-10-29: zero Auth users, zero profiles, finance owner NULL.
-No reviewer credentials, finance owner, seed records or Edge Function have been
-created/deployed here yet. Create reviewer accounts through the
-Auth Admin API (not direct Auth-table inserts); bind the verified reviewer owner;
-deploy account-admin; seed only fictional records and verify role boundaries.
+The Mac bootstrap has now completed. A subsequent database check found exactly
+three confirmed, non-deleted Auth users with the expected fictional phone/role
+pairs and one common bootstrap batch. Passwords remain private on the Mac.
+The reviewer-only role binding was applied after a full-schema local test.
+It resolved generated Auth IDs from the verified batch instead of hardcoding them.
+The existing finance-owner function now freezes the resolved owner UUID; runtime
+authorization still uses the guarded profile/owner rules, not bootstrap metadata.
 
-## Private Mac account bootstrap (prepared, not yet executed by the user)
+Verified profiles: 審查管理員 = active dispatcher + finance owner;
+審查主管 = active dispatcher without finance; 審查司機 = active driver without finance.
+`account-admin` version 1 is ACTIVE here, with `verify_jwt=true` and the existing
+handler's Auth.getUser + live-session owner check. The deployed source matches
+`supabase/functions/account-admin/` (33 local handler tests passed). Anonymous
+requests to both account-admin and dashboard_get_capabilities returned HTTP 401.
+
+Security Advisor still reports the intentional private audit-table no-policy
+notice and 16 guarded authenticated SECURITY DEFINER notices. It also reports
+disabled leaked-password protection; that setting has not been changed. The
+bootstrap generated random passwords; this does not count as enabling that feature.
+Track the finding for release readiness:
+https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
+Next: run the private Mac live credential check below, then seed fictional records
+and implement stable reviewer access in the distributed app. No live user-password
+sign-in or role-based HTTP check is claimed until the user runs the check.
+
+## Private Mac account bootstrap (completed)
 
 The user created a temporary project secret key named `review_account_setup`.
 Secret key names accept lowercase letters, digits and underscores. Its value is
@@ -101,10 +123,33 @@ are provisioning receipts, not the application's authorization source.
 The local automated test (`node tests/review-account-bootstrap.mjs`) covers
 successful creation, reruns, interrupted responses after creation, private file
 permissions, fixed endpoint/header use, secret-free logs and refusal of mismatched
-accounts. This is not a live reviewer login test. After the user runs the script,
-verify the three Auth identities, bind owner/profile roles, then continue Edge
-Function and fictional data setup. Revoke the temporary PAT and secret key once
-their setup tasks are complete; do not revoke the project's default runtime keys.
+accounts. This is not a live reviewer login test. Auth identity verification,
+owner/profile binding and reviewer Edge deployment are complete. Revoke the
+temporary PAT and `review_account_setup` key once setup/checks are complete;
+do not revoke the project's default runtime keys.
+
+## Next manual step: live account-access check
+
+Run `node scripts/check-review-access.mjs` on the same Mac. It reads the existing
+private credentials file, uses only the review project's public client key, and
+does not ask for or save a secret key. It signs in each account, checks its own
+profile and finance capability, checks live-session account administration, and
+expects supervisor/driver requests to account management to be denied. Only the
+owner should receive the three-account directory. Each obtained test session is
+signed out with `scope=local`, including when a permission assertion fails.
+No passwords, access/refresh tokens, phone numbers or directory rows are printed.
+The check does not create/edit/delete business records or change passwords.
+
+Local tests: `node tests/review-permissions.mjs` restores the real schema and
+checks the binding, privilege boundary and replay protection;
+`node tests/review-access.mjs` checks the HTTP verification workflow, denials,
+credential-free output and session cleanup using mocks. Both passed, but live
+password-based HTTP verification still requires the user's Mac credentials.
+
+Reviewer-only SQL is in `supabase/reviewer/migrations/`, deliberately outside the
+operational migration chain. Its source filename was generated by CLI migration
+new; the installed MCP migration timestamp is recorded separately in the table.
+Never apply that directory to the operational project or replay the binding.
 
 References:
 - https://supabase.com/docs/reference/javascript/auth-admin-createuser
