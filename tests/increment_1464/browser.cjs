@@ -82,6 +82,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
+    if(dashboard==='routes'&&width<=800)await page.waitForFunction(()=>getComputedStyle(document.querySelector('#drawer')).visibility==='hidden');
     if(width===390||width===1366||((dashboard==='attendance'||dashboard==='monthly')&&[801,1024].includes(width)))await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
     await page.locator('.dashboard-footer').scrollIntoViewIfNeeded();
     // Desktop routes still use an inner workspace. Scroll both possible owners
@@ -132,6 +133,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     await page.locator('#entity-cancel').click();
     assert.equal(await page.locator('#f-name').inputValue(),'APP版面測試','Closing a nested dialog retains the unsaved route');
     await page.locator('#cancel-form').click();
+    await page.waitForFunction(()=>getComputedStyle(document.querySelector('#drawer')).visibility==='hidden');
     assert.equal(await page.locator('#overlay.open').count(),0);
     assert.equal(await page.evaluate(()=>scrollY),savedScroll,'Closing the route editor preserves page position');
     if(actor==='owner'){
