@@ -1,6 +1,6 @@
 # 貨易通
 
-Current release: **Increment 1.4.65 — single-row numeric date navigation** (2026-10-30). See the [increment record](docs/INCREMENT_1_4_65.md). See the [preparation handoff](docs/android/PRE_PLAY_HANDOFF.md) and [acceptance tracker](docs/android/RELEASE_READINESS.md). Android remains in testing; this is not public-launch approval.
+Current release: **Increment 1.4.66 — desktop date and action alignment** (2026-10-30). See the [increment record](docs/INCREMENT_1_4_66.md). See the [preparation handoff](docs/android/PRE_PLAY_HANDOFF.md) and [acceptance tracker](docs/android/RELEASE_READINESS.md). Android remains in testing; this is not public-launch approval.
 
 Traditional Chinese logistics dispatch, daily attendance, route and vehicle management, and monthly payroll reconciliation. Vanilla HTML/CSS/JavaScript with Supabase Auth, PostgreSQL, RPCs and row-level security.
 

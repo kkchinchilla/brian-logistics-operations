@@ -51,7 +51,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
    assert.equal(errors.length,0,errors.join(';'));assert.equal(external.length,0,'Fixture must never contact external services');
    assert.equal(await page.locator('.reviewer-notice').count(),prefix?1:0);
    assert(await page.evaluate(()=>document.fonts.check('600 20px Inter','2026')&&document.fonts.check('500 20px "Noto Sans TC"','貨易通年月日')),'Bundled fonts load');
-   for(const width of [320,390,844,1366]){
+   for(const width of [320,390,800,801,844,1024,1366]){
     await page.setViewportSize({width,height:width===844?390:900});
     await page.evaluate(()=>{document.scrollingElement.scrollTop=0;document.querySelector('.workspace')?.scrollTo(0,0);});
     await page.evaluate(()=>document.fonts.ready);
@@ -67,10 +67,22 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
      });
      assert.deepEqual([layout.size,layout.color,layout.line],['16px','rgb(255, 255, 255)','19.2px']);
      assert(layout.touch&&layout.inside&&layout.sameRow&&layout.picker&&layout.center&&layout.flanked&&layout.height===33,JSON.stringify(layout));
+     const header=await page.evaluate(()=>{
+      const nav=document.querySelector('.compact-date-navigation'),account=document.querySelector('#account-name');
+      const actions=document.querySelector('.desktop-date-actions'),n=nav.getBoundingClientRect(),a=account.getBoundingClientRect();
+      const buttons=actions?[...actions.querySelectorAll('button')].map(e=>e.getBoundingClientRect()):[];
+      return {desktop:!!actions,dateInHeader:nav.parentElement.id==='head-actions',nameVisible:!!a.height,
+       sameRow:Math.abs((a.top+a.bottom-n.top-n.bottom)/2)<1,nameRight:a.left>=n.right,
+       buttonsBelow:buttons.length>0&&buttons.every(b=>b.top>=Math.max(n.bottom,a.bottom)),
+       buttonsAligned:buttons.length>0&&Math.abs(buttons[0].left-n.left)<1&&buttons.every(b=>Math.abs(b.top-buttons[0].top)<1),
+       mobileDriver:!document.querySelector('.driver-toolbar')||nav.parentElement.classList.contains('driver-toolbar')};
+     });
+     if(width>800)assert(header.desktop&&header.dateInHeader&&header.nameVisible&&header.sameRow&&header.nameRight&&header.buttonsBelow&&header.buttonsAligned,`${actor}/${dashboard} ${width}: ${JSON.stringify(header)}`);
+     else assert(!header.desktop&&header.mobileDriver,`${actor}/${dashboard}: original mobile placement`);
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
-    if(width===390||width===1366)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
+    if(width===390||width===1366||((dashboard==='attendance'||dashboard==='monthly')&&[801,1024].includes(width)))await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
     await page.locator('.dashboard-footer').scrollIntoViewIfNeeded();
     // Routes scroll an inner workspace. A fixed bar is not accounted for by
     // scrollIntoViewIfNeeded when the footer is already inside that workspace.
@@ -92,6 +104,24 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     assert.equal(await input.inputValue(),monthly?'2027-01':'2027-01-01');
     await input.fill(monthly?'2026-10':'2026-10-30');await input.dispatchEvent('change');
     assert.equal(await input.inputValue(),monthly?'2026-10':'2026-10-30');
+    const date=await input.inputValue();
+    await page.setViewportSize({width:390,height:900});
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    assert.equal(await input.inputValue(),date,'Switching to mobile retains the selected date');
+    assert.equal(await page.locator('.desktop-date-actions').count(),0,'Desktop action wrapper is removed on mobile');
+    if(actor==='driver-one'){
+     assert.equal(await page.locator('.driver-toolbar #driver-date,.driver-toolbar #driver-refresh').count(),2,'Driver controls return to their original mobile toolbar');
+     await page.locator('#driver-refresh').click();await page.waitForSelector(ready.attendance);
+    }
+    await page.evaluate(()=>{document.activeElement?.blur();document.scrollingElement.scrollTop=0;});
+    await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-returned-mobile.png`),fullPage:true,animations:'disabled'});
+    await page.setViewportSize({width:1366,height:900});
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    assert.equal(await page.locator('#head-actions .compact-date-native').count(),1,'Desktop control returns without duplication');
+    if(actor==='driver-one'){
+     assert.equal(await page.locator('#head-actions #driver-refresh').count(),1);
+     await page.locator('#driver-refresh').click();await page.waitForSelector(ready.attendance);
+    }
    }
    if(dashboard==='attendance'&&actor!=='driver-one'){
     await page.evaluate(()=>{
