@@ -82,10 +82,11 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
+    if(dashboard==='routes'&&width<=800)await page.waitForFunction(()=>getComputedStyle(document.querySelector('#drawer')).visibility==='hidden');
     if(width===390||width===1366||((dashboard==='attendance'||dashboard==='monthly')&&[801,1024].includes(width)))await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
     await page.locator('.dashboard-footer').scrollIntoViewIfNeeded();
-    // Routes scroll an inner workspace. A fixed bar is not accounted for by
-    // scrollIntoViewIfNeeded when the footer is already inside that workspace.
+    // Desktop routes still use an inner workspace. Scroll both possible owners
+    // to prove the footer clears the fixed mobile navigation.
     await page.evaluate(()=>{document.scrollingElement.scrollTop=document.scrollingElement.scrollHeight;const workspace=document.querySelector('.workspace');if(workspace)workspace.scrollTop=workspace.scrollHeight;});
     const footerPosition=await page.evaluate(()=>{
      const footer=document.querySelector('.dashboard-footer'),bar=document.querySelector('.mobilebar,.mobile-navbar');
@@ -97,6 +98,53 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-footer.png`),animations:'disabled'});
     checks++;
    }
+   // The header must travel with the document on every mobile dashboard.
+   // For routes this also checks the mobile breakpoint and editor anchoring.
+   for(const width of (dashboard==='routes'?[320,390,800]:[390])){
+    await page.setViewportSize({width,height:600});
+    await page.evaluate(()=>{document.scrollingElement.scrollTop=0;document.querySelector('.workspace')?.scrollTo(0,0);});
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    const before=await page.evaluate(()=>({header:document.querySelector('.head').getBoundingClientRect().top,bar:document.querySelector('.mobilebar,.mobile-navbar').getBoundingClientRect().top}));
+    await page.locator('.head h1').hover();await page.mouse.wheel(0,400);
+    await page.waitForFunction(()=>scrollY>40);
+    const after=await page.evaluate(()=>({header:document.querySelector('.head').getBoundingClientRect().top,bar:document.querySelector('.mobilebar,.mobile-navbar').getBoundingClientRect().top,y:scrollY,workspace:document.querySelector('.workspace')?.scrollTop||0}));
+    assert(Math.abs(before.header-after.header-after.y)<1,`${dashboard}: header scrolls with the document`);
+    if(actor!=='driver-one')assert(Math.abs(before.bar-after.bar)<1,`${dashboard}: bottom navigation stays fixed`);
+    if(dashboard==='routes')assert.equal(after.workspace,0,'Mobile routes no longer scroll an independent workspace');
+    if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-mobile-scrolled.png`),animations:'disabled'});
+   }
+   if(dashboard==='routes'){
+    await page.setViewportSize({width:320,height:600});
+    const horizontal=await page.evaluate(()=>{const table=document.querySelector('#table-scroll');table.scrollLeft=60;return {overflow:table.scrollWidth>table.clientWidth,x:table.scrollLeft};});
+    assert(horizontal.overflow&&horizontal.x>0,'Mobile route table keeps horizontal scrolling');
+    await page.setViewportSize({width:390,height:600});
+    await page.locator('#routes-body tr').first().scrollIntoViewIfNeeded();
+    const savedScroll=await page.evaluate(()=>scrollY);
+    await page.locator('#routes-body tr').first().click();
+    await page.waitForFunction(()=>{const r=document.querySelector('#drawer').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1;});
+    assert(await page.evaluate(()=>{const r=document.querySelector('#overlay').getBoundingClientRect();return r.top===0&&r.bottom===innerHeight;}),'Route overlay covers the viewport after page scrolling');
+    await page.mouse.move(1,1);await page.mouse.wheel(0,300);
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    assert.equal(await page.evaluate(()=>scrollY),savedScroll,'Open route editor locks background scrolling');
+    await page.locator('#f-name').fill('APP版面測試');
+    await page.locator('#drawer [data-create-kind="region"]').click();
+    await page.waitForFunction(()=>{const r=document.querySelector('#entity-modal').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1;});
+    await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-routes-nested-dialog.png`),animations:'disabled'});
+    await page.locator('#entity-cancel').click();
+    assert.equal(await page.locator('#f-name').inputValue(),'APP版面測試','Closing a nested dialog retains the unsaved route');
+    await page.locator('#cancel-form').click();
+    await page.waitForFunction(()=>getComputedStyle(document.querySelector('#drawer')).visibility==='hidden');
+    assert.equal(await page.locator('#overlay.open').count(),0);
+    assert.equal(await page.evaluate(()=>scrollY),savedScroll,'Closing the route editor preserves page position');
+    if(actor==='owner'){
+     await page.locator('#tab-rates').click();await page.locator('#rates-body button').first().click();
+     await page.waitForFunction(()=>{const r=document.querySelector('#rate-modal').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1;});
+     await page.locator('#rate-cancel').click();await page.locator('#tab-routes').click();
+    }
+   }
+   await page.setViewportSize({width:1366,height:900});
+   await page.evaluate(()=>{document.scrollingElement.scrollTop=0;document.querySelector('.workspace')?.scrollTo(0,0);});
+   await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
    if(dashboard==='attendance'||dashboard==='monthly'){
     const monthly=dashboard==='monthly',input=page.locator('.compact-date-native');
     await input.fill(monthly?'2026-12':'2026-12-31');await input.dispatchEvent('change');

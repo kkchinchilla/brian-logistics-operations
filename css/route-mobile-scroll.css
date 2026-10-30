@@ -1,0 +1,26 @@
+/* Routes use a separate prototype shell. On mobile, scroll the whole page like
+   the other dashboards; keep editing layers and navigation viewport-bound. */
+@media(max-width:800px){
+ body[data-dashboard="routes"] #app{height:auto;min-height:100dvh;border:0}
+ body[data-dashboard="routes"] #app .main{
+  flex:1 0 auto;min-height:100dvh;overflow:visible;
+ }
+ body[data-dashboard="routes"] #app .page-header{position:static}
+ body[data-dashboard="routes"] #app .workspace{
+  flex:1 0 auto;overflow:visible;min-height:0;
+ }
+ body[data-dashboard="routes"] #app .overlay,
+ body[data-dashboard="routes"] #app .drawer,
+ body[data-dashboard="routes"] #app .rate-modal,
+ body[data-dashboard="routes"] #app .toast{position:fixed}
+ body[data-dashboard="routes"] #app .drawer{
+  max-height:84dvh;visibility:hidden;pointer-events:none;
+  transition:transform .22s ease,visibility 0s linear .22s;
+ }
+ body[data-dashboard="routes"] #app .drawer.open{
+  visibility:visible;pointer-events:auto;transition-delay:0s;
+ }
+ body[data-dashboard="routes"] #app .rate-modal{max-height:90dvh;overflow-y:auto}
+ body[data-dashboard="routes"] #app .toast{bottom:calc(var(--dashboard-nav-height,58px) + 16px)}
+ body[data-dashboard="routes"]:has(#app .overlay.open){overflow-y:hidden}
+}
