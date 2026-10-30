@@ -63,10 +63,10 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
      const layout=await page.evaluate(()=>{
       const label=document.querySelector('.compact-date-label'),input=document.querySelector('.compact-date-native'),nav=document.querySelector('.compact-date-navigation');
       const l=label.getBoundingClientRect(),r=nav.getBoundingClientRect(),buttons=[...nav.querySelectorAll('button')].map(b=>b.getBoundingClientRect());
-      return {size:getComputedStyle(label).fontSize,color:getComputedStyle(label).color,line:getComputedStyle(label).lineHeight,touch:buttons.every(b=>b.width>=44&&b.height>=44),inside:l.left>=r.left&&l.right<=r.right,sameRow:buttons.every(b=>b.top<l.bottom&&b.bottom>l.top),picker:input.getBoundingClientRect().width>0};
+      return {size:getComputedStyle(label).fontSize,color:getComputedStyle(label).color,line:getComputedStyle(label).lineHeight,touch:buttons.every(b=>b.width>=32&&b.height>=32),inside:l.left>=r.left&&l.right<=r.right,sameRow:buttons.every(b=>b.top<l.bottom&&b.bottom>l.top),picker:input.getBoundingClientRect().width>0,center:Math.abs((l.left+l.right-r.left-r.right)/2)<1,height:r.height,flanked:buttons[0].right<=l.left&&buttons[1].left>=l.right};
      });
-     assert.deepEqual([layout.size,layout.color,layout.line],['20px','rgb(255, 255, 255)','24px']);
-     assert(layout.touch&&layout.inside&&layout.sameRow&&layout.picker,JSON.stringify(layout));
+     assert.deepEqual([layout.size,layout.color,layout.line],['16px','rgb(255, 255, 255)','19.2px']);
+     assert(layout.touch&&layout.inside&&layout.sameRow&&layout.picker&&layout.center&&layout.flanked&&layout.height===33,JSON.stringify(layout));
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
@@ -90,8 +90,26 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     await input.fill(monthly?'2026-12':'2026-12-31');await input.dispatchEvent('change');
     await page.locator('.compact-date-arrow').last().click();
     assert.equal(await input.inputValue(),monthly?'2027-01':'2027-01-01');
-    await page.locator('.compact-date-reset').click();
+    await input.fill(monthly?'2026-10':'2026-10-30');await input.dispatchEvent('change');
     assert.equal(await input.inputValue(),monthly?'2026-10':'2026-10-30');
+   }
+   if(dashboard==='attendance'&&actor!=='driver-one'){
+    await page.evaluate(()=>{
+     plan143.open=true;plan143.month='2026-10';plan143.driver='driver-one';plan143.tab='apply';
+     document.querySelector('#plan-panel').classList.add('show');document.querySelector('#plan-panel').setAttribute('aria-hidden','false');
+     renderApply143();
+    });
+    for(const width of [320,390,1366]){
+     await page.setViewportSize({width,height:900});
+     const layout=await page.evaluate(()=>{
+      const nav=document.querySelector('.plan-datebar'),label=nav.querySelector('.compact-date-label');
+      const r=nav.getBoundingClientRect(),l=label.getBoundingClientRect(),buttons=[...nav.querySelectorAll('button')].map(e=>e.getBoundingClientRect());
+      return {height:r.height,center:Math.abs((l.left+l.right-r.left-r.right)/2)<1,flanked:buttons[0].right<=l.left&&buttons[1].left>=l.right};
+     });
+     assert(layout.height===33&&layout.center&&layout.flanked,`Batch calendar ${width}: ${JSON.stringify(layout)}`);
+     if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-batch-calendar.png`),animations:'disabled'});
+    }
+    await page.evaluate(()=>{closePlan143();document.querySelector('#plan-content').replaceChildren();});
    }
    // Approximate Android text enlargement by doubling computed font sizes.
    // This supplements, and does not replace, the actual phone acceptance check.
@@ -106,7 +124,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
    if(dashboard==='attendance'||dashboard==='monthly'){
     assert(await page.evaluate(()=>{
      const r=document.querySelector('.compact-date-navigation').getBoundingClientRect();
-     return [...document.querySelectorAll('.compact-date-label,.compact-date-arrows')].every(e=>{const x=e.getBoundingClientRect();return x.left>=r.left-1&&x.right<=r.right+1;});
+     return [...document.querySelectorAll('.compact-date-label,.compact-date-arrow,.compact-date-main svg')].every(e=>{const x=e.getBoundingClientRect();return x.left>=r.left-1&&x.right<=r.right+1;});
     }),'Enlarged date label/arrow controls remain inside the navigator');
    }
    assert.equal(errors.length,0,errors.join(';'));assert.equal(external.length,0);

@@ -5,8 +5,11 @@ Status: development/testing; **not approved for public launch**.
 Google developer verification was confirmed by the user on October 29. The user
 reported completing the Play app-creation form at approximately 22:15 Taiwan time.
 Recheck the current Console screen before continuing; no upload or rollout is confirmed.
-Increment 1.4.64 adds compact dates and bundled fonts; its physical-phone check and
-a fresh signed build remain pending. See [the increment record](../INCREMENT_1_4_64.md).
+The user confirmed the 1.4.64 fonts/layout update on October 30, then supplied a new
+single-row date design. Increment 1.4.65 implements that replacement across daily,
+monthly and batch-calendar navigation. Its physical-phone check, reviewer-entry
+acceptance and a fresh signed build remain pending. See
+[the increment record](../INCREMENT_1_4_65.md).
 This tracker reflects the current application and supersedes older prototype
 assumptions for Android testing. Keep the UI in Traditional Chinese.
 
@@ -73,7 +76,7 @@ for 值班、跟車、學習 are included in payroll; rental cost is deducted an
 
 1. Inspect the native project on the Mac: application ID, app name, version code,
    version name, SDK targets, manifest and required permissions. The repository
-   package version is still 1.4.27; do not infer Android release versions from it.
+   package version is 1.4.65; do not infer Android release versions from it.
 2. Prepare the release signing/upload key on the user's Mac and an appropriate
    backup. Never request passwords, private keys or signing files in chat.
 3. Build a signed release bundle and test the release build on a physical phone;

@@ -34,7 +34,7 @@ jobs:
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4
         with:
-          name: app-1.4.64
+          name: app-1.4.65
           path: dist/
       - name: Upload GitHub Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: compact-date-layout-1.4.64
+          name: compact-date-layout-1.4.65
           path: tests/increment_1464/_screenshots/
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
