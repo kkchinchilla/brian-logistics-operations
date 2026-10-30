@@ -30,32 +30,45 @@ async function setup(actor='driver-one',monthly=false){
  return {dom,ctx,f,doc,input,change:async value=>{input.value=value;input.dispatchEvent(new dom.window.Event('change',{bubbles:true}));await tick();}};
 }
 for(const role of ['driver-one','supervisor','owner']){
- const e=await setup(role),id=role==='driver-one'?'driver':'management',prev=e.doc.querySelector('.compact-date-arrows button:first-child'),next=e.doc.querySelector('.compact-date-arrows button:last-child');
+ const e=await setup(role),id=role==='driver-one'?'driver':'management',prev=e.doc.querySelector('.compact-date-arrow:first-child'),next=e.doc.querySelector('.compact-date-arrow:last-child');
  ok(`${id}: native input survives with label`,e.input.type==='date'&&e.input.getAttribute('aria-label')==='出勤日期');
- ok(`${id}: compact date and weekday agree`,e.doc.querySelector('.compact-date-label').textContent==='10月30日'&&e.doc.querySelector('.compact-date-context').textContent==='2026 年 · 星期五');
- ok(`${id}: current marker replaces reset`,!e.doc.querySelector('.compact-date-current').hidden&&e.doc.querySelector('.compact-date-reset').hidden);
+ ok(`${id}: numeric date matches the reference`,e.doc.querySelector('.compact-date-label').textContent==='10/30/2026');
+ ok(`${id}: only previous, picker and next remain`,e.input.closest('.compact-date-navigation').children.length===3&&!e.doc.querySelector('.compact-date-context,.compact-date-status,#driver-today'));
  await e.change('2028-02-28');next.click();await tick();
- ok(`${id}: leap day stays consistent with loaded date`,e.input.value==='2028-02-29'&&e.doc.querySelector('.compact-date-label').textContent==='2月29日'&&e.f.state.calls.some(c=>c.args?.p_date==='2028-02-29'));
+ ok(`${id}: leap day stays consistent with loaded date`,e.input.value==='2028-02-29'&&e.doc.querySelector('.compact-date-label').textContent==='02/29/2028'&&e.f.state.calls.some(c=>c.args?.p_date==='2028-02-29'));
  next.click();await tick();ok(`${id}: day crosses month end`,e.input.value==='2028-03-01');prev.click();await tick();ok(`${id}: previous returns to leap day`,e.input.value==='2028-02-29');
- await e.change('2026-12-31');next.click();await tick();ok(`${id}: year boundary updates context`,e.input.value==='2027-01-01'&&e.doc.querySelector('.compact-date-context').textContent==='2027 年 · 星期五');
+ await e.change('2026-12-31');next.click();await tick();ok(`${id}: year boundary updates numeric date`,e.input.value==='2027-01-01'&&e.doc.querySelector('.compact-date-label').textContent==='01/01/2027');
  const calls=e.f.state.calls.length;await e.change('');ok(`${id}: clearing selection restores it without a query`,e.input.value==='2027-01-01'&&e.f.state.calls.length===calls);
- e.doc.querySelector('.compact-date-reset').click();await tick();ok(`${id}: reset reloads today once`,e.input.value==='2026-10-30'&&!e.doc.querySelector('.compact-date-current').hidden);
+ await e.change('2026-10-30');ok(`${id}: native picker returns to today`,e.doc.querySelector('.compact-date-label').textContent==='10/30/2026');
  if(role==='driver-one')ok('driver controls stay read-only',!e.doc.querySelector('#new-run,#close,#template-open')&&!e.doc.querySelector('#driver-content button,input:not(.compact-date-native)'));
  else{
   vm.runInContext("boardDate='2026-11-03';document.querySelector('#service-date').value=boardDate;",e.ctx);await e.ctx.fetchBoard();
-  ok(`${id}: programmatic template date updates label`,e.doc.querySelector('.compact-date-label').textContent==='11月3日');
+  ok(`${id}: programmatic template date updates label`,e.doc.querySelector('.compact-date-label').textContent==='11/03/2026');
  }
- ok(`${id}: refresh does not duplicate status or controls`,e.doc.querySelectorAll('.compact-date-status').length===1&&e.doc.querySelectorAll('.compact-date-native').length===1);
+ ok(`${id}: refresh does not duplicate controls`,e.doc.querySelectorAll('.compact-date-arrow').length===2&&e.doc.querySelectorAll('.compact-date-native').length===1);
  e.dom.window.close();
 }
 const m=await setup('owner',true);
 await m.change('2026-12');m.doc.getElementById('month-next').click();await tick();
-ok('monthly year boundary reloads the selected month',m.input.value==='2027-01'&&m.doc.querySelector('.compact-date-context').textContent==='2027 年'&&m.f.state.calls.at(-1).args.p_month==='2027-01-01');
+ok('monthly year boundary reloads the selected month',m.input.value==='2027-01'&&m.doc.querySelector('.compact-date-label').textContent==='01/2027'&&m.f.state.calls.at(-1).args.p_month==='2027-01-01');
 m.doc.getElementById('month-prev').click();await tick();ok('monthly previous returns across year boundary',m.input.value==='2026-12');
 const calls=m.f.state.calls.length;await m.change('');ok('empty monthly selection never reaches payroll RPC',m.input.value==='2026-12'&&m.f.state.calls.length===calls);
-m.doc.getElementById('month-today').click();await tick();ok('monthly reset selects current month',m.input.value==='2026-10'&&!m.doc.querySelector('.compact-date-current').hidden);
+await m.change('2026-10');ok('monthly picker selects current month',m.doc.querySelector('.compact-date-label').textContent==='10/2026');
 m.dom.window.close();
 for(const role of ['supervisor','driver-one']){
  const e=await setup(role,true);ok(`${role}: no month control or payroll request without finance access`,!e.input&&!e.f.state.calls.some(c=>c.rpc==='dashboard_get_calculated_payroll'));e.dom.window.close();
 }
+const p=await setup('supervisor');
+vm.runInContext("plan143.open=true;plan143.month='2026-12';plan143.driver='driver-one';plan143.tab='apply';loadCalendar143=async()=>{};renderApply143();",p.ctx);
+const planInput=()=>p.doc.getElementById('plan-month-picker');
+ok('batch calendar uses the same numeric month navigator',planInput().closest('.compact-date-navigation').querySelector('.compact-date-label').textContent==='12/2026');
+p.doc.querySelector('[data-plan-action="next-month"]').click();await tick();
+ok('batch calendar delegated next keeps working across a year',planInput().value==='2027-01');
+p.doc.querySelector('[data-plan-action="prev-month"]').click();await tick();
+ok('batch calendar delegated previous returns to the original month',planInput().value==='2026-12');
+planInput().value='';planInput().dispatchEvent(new p.dom.window.Event('change',{bubbles:true}));await tick();
+ok('batch calendar empty selection restores the valid month',planInput().value==='2026-12');
+planInput().value='1899-12';planInput().dispatchEvent(new p.dom.window.Event('change',{bubbles:true}));await tick();
+ok('batch calendar preserves its supported year range',planInput().value==='2026-12'&&planInput().min==='1900-01'&&planInput().max==='9998-12');
+p.dom.window.close();
 console.log(`RESULT: ${checks} compact-date interaction checks passed`);

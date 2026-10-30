@@ -35,8 +35,12 @@ No schema migration, account change, operational-data write or payroll rule chan
 - Local Chromium and the connected browser could not start in the recovery environment;
   the separate CI layout job must pass before deployment, alongside the existing verify job.
 
-Physical Android acceptance of this increment is still pending. Desktop Chromium text
-enlargement is an approximation, not evidence of Samsung WebView/system-text behavior.
+On October 30, after the Mac update instructions, the user confirmed: “Done. The fonts
+and layout are updated.” The focused font/layout visual check is recorded as passed.
+This confirmation does not establish all-role/date-interaction, enlarged-text or reviewer
+entry acceptance. The refreshed reviewer entry and fresh signed build remain pending.
+Desktop Chromium text enlargement remains an approximation, not evidence of Samsung
+WebView/system-text behavior.
 
 ## Release timeline checkpoint
 
