@@ -11,9 +11,12 @@ The user's supplied screenshot replaces the 1.4.64 compact-date design. The
   next arrow on the right, and one thin bottom divider.
 - Daily attendance uses MM/DD/YYYY for driver, supervisor and owner. Monthly
   reports and the batch-scheduling calendar use MM/YYYY.
-- Normal-size control is 53px tall including its divider, with 44px touch targets.
-  Inter numerals are 24px, weight 500. Enlarged text may wrap before the year to
-  remain readable without overlapping the arrows.
+- After reviewing the first preview, the user requested a significant size reduction.
+  Normal-size control is now 33px tall including its divider (previous preview: 53px),
+  with 32px targets and no bottom padding. Inter numerals are 16px (previously 24px),
+  weight 500. Side arrows are 16px and the yellow chevron is 12px. Desktop width
+  reduces from 22em to 18em; mobile controls retain the available width. Enlarged
+  text may wrap before the year to remain readable without overlapping the arrows.
 - Remove the second context line and the title-side today/current-month/reset
   controls. Any date, including today, remains selectable in the native picker.
 - Keep the original input IDs, native picker, arrow handlers, batch-calendar event

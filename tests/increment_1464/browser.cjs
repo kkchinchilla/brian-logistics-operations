@@ -63,10 +63,10 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
      const layout=await page.evaluate(()=>{
       const label=document.querySelector('.compact-date-label'),input=document.querySelector('.compact-date-native'),nav=document.querySelector('.compact-date-navigation');
       const l=label.getBoundingClientRect(),r=nav.getBoundingClientRect(),buttons=[...nav.querySelectorAll('button')].map(b=>b.getBoundingClientRect());
-      return {size:getComputedStyle(label).fontSize,color:getComputedStyle(label).color,line:getComputedStyle(label).lineHeight,touch:buttons.every(b=>b.width>=44&&b.height>=44),inside:l.left>=r.left&&l.right<=r.right,sameRow:buttons.every(b=>b.top<l.bottom&&b.bottom>l.top),picker:input.getBoundingClientRect().width>0,center:Math.abs((l.left+l.right-r.left-r.right)/2)<1,height:r.height,flanked:buttons[0].right<=l.left&&buttons[1].left>=l.right};
+      return {size:getComputedStyle(label).fontSize,color:getComputedStyle(label).color,line:getComputedStyle(label).lineHeight,touch:buttons.every(b=>b.width>=32&&b.height>=32),inside:l.left>=r.left&&l.right<=r.right,sameRow:buttons.every(b=>b.top<l.bottom&&b.bottom>l.top),picker:input.getBoundingClientRect().width>0,center:Math.abs((l.left+l.right-r.left-r.right)/2)<1,height:r.height,flanked:buttons[0].right<=l.left&&buttons[1].left>=l.right};
      });
-     assert.deepEqual([layout.size,layout.color,layout.line],['24px','rgb(255, 255, 255)','28.8px']);
-     assert(layout.touch&&layout.inside&&layout.sameRow&&layout.picker&&layout.center&&layout.flanked&&layout.height===53,JSON.stringify(layout));
+     assert.deepEqual([layout.size,layout.color,layout.line],['16px','rgb(255, 255, 255)','19.2px']);
+     assert(layout.touch&&layout.inside&&layout.sameRow&&layout.picker&&layout.center&&layout.flanked&&layout.height===33,JSON.stringify(layout));
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
@@ -106,7 +106,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
       const r=nav.getBoundingClientRect(),l=label.getBoundingClientRect(),buttons=[...nav.querySelectorAll('button')].map(e=>e.getBoundingClientRect());
       return {height:r.height,center:Math.abs((l.left+l.right-r.left-r.right)/2)<1,flanked:buttons[0].right<=l.left&&buttons[1].left>=l.right};
      });
-     assert(layout.height===53&&layout.center&&layout.flanked,`Batch calendar ${width}: ${JSON.stringify(layout)}`);
+     assert(layout.height===33&&layout.center&&layout.flanked,`Batch calendar ${width}: ${JSON.stringify(layout)}`);
      if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-batch-calendar.png`),animations:'disabled'});
     }
     await page.evaluate(()=>{closePlan143();document.querySelector('#plan-content').replaceChildren();});
