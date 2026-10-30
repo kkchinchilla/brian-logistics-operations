@@ -25,6 +25,7 @@ jobs:
       - run: node tests/increment_1450/android-splash.mjs
       - run: node tests/increment_1451/release-prep.mjs
       - run: node tests/increment_1457/navigation-space.cjs
+      - run: npm run test:date-navigation
       - run: node tests/review-account-bootstrap.mjs
       - run: node tests/review-permissions.mjs && node tests/review-access.mjs
       - run: node tests/review-sample.mjs
@@ -33,16 +34,32 @@ jobs:
       - run: npm run test:demo
       - uses: actions/upload-artifact@v4
         with:
-          name: app-1.4.27
+          name: app-1.4.64
           path: dist/
       - name: Upload GitHub Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist/
+  layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build && npm run test:ui-layout
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compact-date-layout-1.4.64
+          path: tests/increment_1464/_screenshots/
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: verify
+    needs: [verify, layout]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

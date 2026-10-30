@@ -32,6 +32,7 @@ await fetchBoard();
 async function refreshBoard143(){try{await fetchBoard();}catch(e){notify('出勤資料重新載入失敗，請重新整理：'+(e.message||String(e)));}}
 function shift(amount){const d=new Date(boardDate+'T12:00:00');d.setDate(d.getDate()+amount);boardDate=d.toLocaleDateString('en-CA');$('#service-date').value=boardDate;refreshBoard143()}
 async function fetchBoard(){
+ globalThis.CompactDateNavigation?.refresh($('#service-date'));
  const date=boardDate,req=++boardRequest;
  scheduleReady=false;actualWriteReady=false;closeoutReady1421=false;$('#close').disabled=true;$('#new-run').disabled=true;$('#template-open').disabled=true;
  // The new run columns require migration 141. Until then preserve the old 1.4 board.

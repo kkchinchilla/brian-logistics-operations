@@ -1,0 +1,51 @@
+/* Approved compact date concept, shared by driver/management attendance and payroll. */
+body[data-dashboard] .compact-date-navigation{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:12px;width:min(100%,22em);max-width:100%;min-width:0;
+ padding:0 0 16px;border:0;border-bottom:1px solid #393c40;border-radius:0;background:none;
+}
+body[data-dashboard] .compact-date-trigger{
+ position:relative;display:flex;flex-direction:column;justify-content:center;
+ gap:4px;min-width:0;min-height:44px;margin:0;border-radius:6px;cursor:pointer;
+}
+.compact-date-main{display:flex;align-items:center;gap:5px;min-width:0}
+.compact-date-label{
+ display:inline-flex;align-items:baseline;gap:2px;color:#fff;
+ font-size:20px;line-height:1.2;letter-spacing:-.015em;font-weight:600;
+ font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.compact-date-unit{font-family:"Noto Sans TC",sans-serif;font-weight:500;letter-spacing:0}
+.compact-date-main svg{display:block;width:15px;height:15px;flex:none;color:#ffc533;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.compact-date-context{color:#a3a7ae;font-size:12px;line-height:1.3;letter-spacing:.03em;white-space:nowrap}
+body[data-dashboard] input.compact-date-native{
+ position:absolute;inset:0;display:block;box-sizing:border-box;opacity:0;
+ width:100%;height:100%;max-width:none;min-width:0;min-height:0;
+ margin:0;padding:0;border:0;font-size:16px;cursor:pointer;color-scheme:dark;
+}
+.compact-date-native::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
+.compact-date-trigger:focus-within{outline:2px solid #ffc533;outline-offset:5px}
+.compact-date-arrows{display:flex;flex:none;align-items:center;gap:2px;margin-left:auto}
+body[data-dashboard] .compact-date-navigation .compact-date-arrow{
+ display:grid;place-items:center;box-sizing:border-box;flex:none;
+ width:44px;min-width:44px;height:44px;min-height:44px;margin:0;padding:0;
+ border:0;border-radius:50%;background:transparent;color:#b9bdc3;
+}
+body[data-dashboard] .compact-date-navigation .compact-date-arrow:not(:disabled):hover{background:#303338;color:#f5f5f3}
+body[data-dashboard] .compact-date-navigation .compact-date-arrow:not(:disabled):active{background:#393c40}
+.compact-date-arrow .date-arrow{width:20px;height:20px;stroke-width:1.5}
+.tgj-page-title.has-date-status{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px}
+.compact-date-status{display:flex;align-items:center;justify-content:flex-end;margin-left:auto;min-height:44px}
+.compact-date-current{font-size:12px;color:#ffc533;font-weight:500;white-space:nowrap}
+body[data-dashboard] .compact-date-reset{
+ border:0;border-radius:6px;background:transparent;color:#a3a7ae;font:inherit;
+ font-size:12px;font-weight:500;line-height:1.3;padding:10px 0;min-height:44px;white-space:nowrap;cursor:pointer;
+}
+body[data-dashboard] .compact-date-reset:hover{color:#ffc533}
+.compact-date-arrow:focus-visible,.compact-date-reset:focus-visible{outline:2px solid #ffc533;outline-offset:2px}
+@media(max-width:800px){
+ body[data-dashboard] .compact-date-navigation{width:100%;flex-basis:100%}
+ body[data-dashboard="attendance"] .head>div:first-child,
+ body[data-dashboard="monthly"] .head>div:first-child{width:100%}
+ body[data-attendance-view="driver"] .head{display:flex}
+}
+@media(max-width:380px){body[data-dashboard] .compact-date-navigation{gap:8px}}

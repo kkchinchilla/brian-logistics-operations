@@ -12,6 +12,7 @@ await loadMonth()}
 const first=()=>month+'-01',last=()=>{let d=new Date(month+'-01T12:00:00');d.setMonth(d.getMonth()+1);d.setDate(0);return d.toLocaleDateString('en-CA')};
 let monthRequest=0,monthlyReady=false,closedDates=[];
 async function loadMonth(){
+ globalThis.CompactDateNavigation?.refresh($('#month'));
  const request=++monthRequest,selectedMonth=month;
  monthlyReady=false;$('#export').disabled=true;$('#export-reconciliation').disabled=true;PayrollSettings1491.setState(null);
  $('#supplement-settings').disabled=true;
