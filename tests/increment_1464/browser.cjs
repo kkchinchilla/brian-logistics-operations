@@ -72,11 +72,16 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
     if(width===390||width===1366)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
     await page.locator('.dashboard-footer').scrollIntoViewIfNeeded();
-    assert(await page.evaluate(()=>{
+    // Routes scroll an inner workspace. A fixed bar is not accounted for by
+    // scrollIntoViewIfNeeded when the footer is already inside that workspace.
+    await page.evaluate(()=>{document.scrollingElement.scrollTop=document.scrollingElement.scrollHeight;const workspace=document.querySelector('.workspace');if(workspace)workspace.scrollTop=workspace.scrollHeight;});
+    const footerPosition=await page.evaluate(()=>{
      const footer=document.querySelector('.dashboard-footer'),bar=document.querySelector('.mobilebar,.mobile-navbar');
      const bottom=footer.getBoundingClientRect().bottom,nav=bar?.getBoundingClientRect();
-     return bottom<=innerHeight+1&&(!nav?.height||bottom<=nav.top+1);
-    }),`${dashboard} ${width}: footer can be read above mobile navigation`);
+     return {bottom,viewport:innerHeight,navTop:nav?.top,navHeight:nav?.height,clear:bottom<=innerHeight+1&&(!nav?.height||bottom<=nav.top+1)};
+    });
+    if(!footerPosition.clear)await page.screenshot({path:path.join(out,`footer-failure-${dashboard}-${width}.png`),animations:'disabled'});
+    assert(footerPosition.clear,`${dashboard} ${width}: footer can be read above mobile navigation: ${JSON.stringify(footerPosition)}`);
     if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-footer.png`),animations:'disabled'});
     checks++;
    }
