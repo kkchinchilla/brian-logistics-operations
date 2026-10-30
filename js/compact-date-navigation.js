@@ -2,6 +2,30 @@
    All reads, role checks and stale-response handling stay in the page modules. */
 (()=>{'use strict';
  const controls=new WeakMap();
+ function desktopHeader(nav){
+  if(nav.classList.contains('plan-datebar'))return;
+  const header=document.getElementById('head-actions'),desktop=window.matchMedia?.('(min-width:801px)');
+  if(!header||!desktop)return;
+  const toolbar=nav.closest('.driver-toolbar'),source=toolbar||header;
+  const actions=[...source.children].filter(node=>node.tagName==='BUTTON');
+  const placements=[nav,...actions].map(node=>{
+   const anchor=document.createComment('mobile control position');node.before(anchor);return {node,anchor};
+  });
+  const row=document.createElement('div');row.className='desktop-date-actions';
+  const toolbarHidden=toolbar?.hidden;
+  function arrange(){
+   const focused=document.activeElement,restoreFocus=placements.some(({node})=>node.contains(focused));
+   if(desktop.matches){
+    header.classList.add('desktop-date-header');header.prepend(nav);row.append(...actions);header.append(row);
+    if(toolbar)toolbar.hidden=true;
+   }else{
+    placements.forEach(({node,anchor})=>anchor.after(node));row.remove();header.classList.remove('desktop-date-header');
+    if(toolbar)toolbar.hidden=toolbarHidden;
+   }
+   if(restoreFocus&&focused.isConnected)focused.focus({preventScroll:true});
+  }
+  desktop.addEventListener('change',arrange);arrange();
+ }
  function parse(value,monthly){
   if(!(monthly?/^\d{4}-\d{2}$/:/^\d{4}-\d{2}-\d{2}$/).test(value))return null;
   const [year,month,day=1]=value.split('-').map(Number),date=new Date(0);
@@ -31,6 +55,7 @@
    if(!parse(input.value,monthly)||input.value<input.min||input.value>input.max){input.value=state.lastValid;event.stopImmediatePropagation();}
    refresh(input);
   },true);
+  desktopHeader(nav);
   return state;
  }
  function refresh(input){

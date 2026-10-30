@@ -40,6 +40,26 @@ body[data-dashboard] .compact-date-navigation .compact-date-arrow:not(:disabled)
 .compact-date-arrow .date-arrow{width:16px;height:16px;stroke-width:1.5}
 .compact-date-arrow:focus-visible{outline:2px solid #ffc533;outline-offset:2px}
 body[data-dashboard] .plan-datebar.compact-date-navigation{width:100%}
+/* Desktop-only header: date + account above a left-aligned action row. */
+@media(min-width:801px){
+ body[data-dashboard] .head:has(>.desktop-date-header){display:flex;align-items:flex-start}
+ body[data-dashboard] .head>.desktop-date-header{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+  justify-content:normal;gap:8px 20px;width:max-content;max-width:100%;min-width:0;
+  margin-left:auto;
+ }
+ body[data-dashboard] .desktop-date-header>.compact-date-navigation{
+  grid-column:1;grid-row:1;width:18em;max-width:100%;
+ }
+ body[data-dashboard] .desktop-date-header>#account-name{
+  display:block;grid-column:2;grid-row:1;justify-self:end;min-width:0;
+  max-width:16em;white-space:normal;overflow-wrap:anywhere;
+ }
+ body[data-dashboard] .desktop-date-actions{
+  grid-column:1/-1;grid-row:2;display:flex;align-items:center;justify-content:flex-start;
+  flex-wrap:wrap;gap:9px;min-width:0;
+ }
+}
 @media(max-width:800px){
  body[data-dashboard] .compact-date-navigation{width:100%;flex-basis:100%}
  body[data-dashboard="attendance"] .head>div:first-child,
