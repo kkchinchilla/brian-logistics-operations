@@ -19,6 +19,7 @@ const DriverAttendance1421=(()=>{
   await load();
  }
  async function load(){
+  globalThis.CompactDateNavigation?.refresh($('#driver-date'));
   const request=++token,day=date,id=currentUser.id;
   $('#driver-content').setAttribute('aria-busy','true');
   $('#driver-content').innerHTML='<p class="driver-empty">正在載入班表…</p>';

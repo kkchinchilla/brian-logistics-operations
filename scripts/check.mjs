@@ -25,3 +25,17 @@ for(const f of fs.readdirSync(out).filter(f=>f.endsWith('.html'))){
  assert.ok(!fs.readFileSync(path.join(out,f),'utf8').includes('cdn.jsdelivr.net/npm/@supabase'),'Authentication SDK must be bundled');
 }
 console.log('Pinned authentication SDK integrity passed');
+
+const fonts=JSON.parse(fs.readFileSync(path.join(root,'assets/fonts/manifest.json'),'utf8'));
+for(const prefix of ['', 'reviewer/']){
+ for(const font of fonts.fonts){
+  const data=fs.readFileSync(path.join(out,prefix,'assets/fonts',font.file));
+  assert.equal(data.length,font.bytes);assert.equal(createHash('sha256').update(data).digest('hex'),font.sha256);
+ }
+ for(const page of fs.readdirSync(path.join(out,prefix)).filter(f=>f.endsWith('.html'))){
+  const html=fs.readFileSync(path.join(out,prefix,page),'utf8');
+  assert(html.includes('css/typography.css?v=1464'),`${prefix+page}: missing bundled typography`);
+  assert(!/fonts\.(googleapis|gstatic)\.com/.test(html),'No remote font dependency');
+ }
+}
+console.log('Bundled font integrity and typography links passed for company/reviewer pages');

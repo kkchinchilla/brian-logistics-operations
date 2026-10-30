@@ -1,8 +1,12 @@
 # 貨易通 Android preparation and acceptance tracker
 
-Updated: 2026-10-28 (Asia/Taipei).
+Updated: 2026-10-30 (Asia/Taipei).
 Status: development/testing; **not approved for public launch**.
-Google developer address verification must be resubmitted and is pending, per the user.
+Google developer verification was confirmed by the user on October 29. The user
+reported completing the Play app-creation form at approximately 22:15 Taiwan time.
+Recheck the current Console screen before continuing; no upload or rollout is confirmed.
+Increment 1.4.64 adds compact dates and bundled fonts; its physical-phone check and
+a fresh signed build remain pending. See [the increment record](../INCREMENT_1_4_64.md).
 This tracker reflects the current application and supersedes older prototype
 assumptions for Android testing. Keep the UI in Traditional Chinese.
 
