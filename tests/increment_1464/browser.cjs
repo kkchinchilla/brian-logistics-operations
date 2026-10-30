@@ -33,7 +33,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
   for(const prefix of ['', 'reviewer/'])for(const [actor,dashboard]of cases){
    const context=await browser.newContext({viewport:{width:390,height:844},timezoneId:'Asia/Taipei'}),page=await context.newPage(),errors=[],external=[];
    page.on('pageerror',e=>errors.push(e.message));
-   await page.clock.install({time:new Date('2026-10-30T04:00:00Z')});
+   await page.clock.setFixedTime(new Date('2026-10-30T04:00:00Z'));
    await context.route('**/*',async route=>{
     const url=new URL(route.request().url());if(url.hostname!=='huoyitong.test'){external.push(url.href);return route.abort();}
     const rel=decodeURIComponent(url.pathname).replace(/^\//,''),file=path.join(root,'dist',rel);
@@ -53,7 +53,9 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
    assert(await page.evaluate(()=>document.fonts.check('600 20px Inter','2026')&&document.fonts.check('500 20px "Noto Sans TC"','貨易通年月日')),'Bundled fonts load');
    for(const width of [320,390,844,1366]){
     await page.setViewportSize({width,height:width===844?390:900});
+    await page.evaluate(()=>{document.scrollingElement.scrollTop=0;document.querySelector('.workspace')?.scrollTo(0,0);});
     await page.evaluate(()=>document.fonts.ready);
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${prefix}${actor}/${dashboard} ${width}: no page overflow`);
     const style=await page.evaluate(()=>({font:getComputedStyle(document.body).fontFamily,links:[...document.querySelectorAll('.dashboard-footer .privacy-links a')].every(e=>getComputedStyle(e).textDecorationLine==='none')}));
     assert(style.font.startsWith('Inter'));assert(style.font.includes('Noto Sans TC'));assert(style.links);
@@ -68,8 +70,23 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     }
     if(actor==='driver-one')assert.equal(await page.locator('.mobilebar:visible,#new-run,#close').count(),0);
     if(dashboard==='routes')assert.equal(await page.locator('.compact-date-native').count(),0,'No new date navigator on routes');
-    if(width===390||width===1366)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true});
+    if(width===390||width===1366)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-${width}.png`),fullPage:true,animations:'disabled'});
+    await page.locator('.dashboard-footer').scrollIntoViewIfNeeded();
+    assert(await page.evaluate(()=>{
+     const footer=document.querySelector('.dashboard-footer'),bar=document.querySelector('.mobilebar,.mobile-navbar');
+     const bottom=footer.getBoundingClientRect().bottom,nav=bar?.getBoundingClientRect();
+     return bottom<=innerHeight+1&&(!nav?.height||bottom<=nav.top+1);
+    }),`${dashboard} ${width}: footer can be read above mobile navigation`);
+    if(width===390)await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-footer.png`),animations:'disabled'});
     checks++;
+   }
+   if(dashboard==='attendance'||dashboard==='monthly'){
+    const monthly=dashboard==='monthly',input=page.locator('.compact-date-native');
+    await input.fill(monthly?'2026-12':'2026-12-31');await input.dispatchEvent('change');
+    await page.locator('.compact-date-arrow').last().click();
+    assert.equal(await input.inputValue(),monthly?'2027-01':'2027-01-01');
+    await page.locator('.compact-date-reset').click();
+    assert.equal(await input.inputValue(),monthly?'2026-10':'2026-10-30');
    }
    // Approximate Android text enlargement by doubling computed font sizes.
    // This supplements, and does not replace, the actual phone acceptance check.
@@ -77,7 +94,9 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
    await page.evaluate(()=>{
     const sizes=[...document.querySelectorAll('body,body *')].map(e=>[e,parseFloat(getComputedStyle(e).fontSize)]);
     for(const [e,size]of sizes)if(Number.isFinite(size))e.style.fontSize=size*2+'px';
+    document.scrollingElement.scrollTop=0;document.querySelector('.workspace')?.scrollTo(0,0);
    });
+   await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${dashboard}: enlarged text overflow`);
    if(dashboard==='attendance'||dashboard==='monthly'){
     assert(await page.evaluate(()=>{
@@ -86,7 +105,7 @@ const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css'
     }),'Enlarged date label/arrow controls remain inside the navigator');
    }
    assert.equal(errors.length,0,errors.join(';'));assert.equal(external.length,0);
-   await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-large-text.png`),fullPage:true});
+   await page.screenshot({path:path.join(out,`${prefix?'reviewer':'company'}-${actor}-${dashboard}-large-text.png`),fullPage:true,animations:'disabled'});
    await context.close();console.log('PASS:',prefix||'company/',actor,dashboard);
   }
   console.log(`RESULT: ${checks} viewport checks plus 18 enlarged-text checks passed; screenshots in ${out}`);
