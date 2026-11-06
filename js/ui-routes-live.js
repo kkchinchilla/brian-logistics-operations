@@ -61,7 +61,7 @@ function render(){
  $('region-hint').textContent=`共 ${regions.length} 個地區`;$('zone-hint').textContent=`共 ${zones.length} 個溫層`;
  ['routes','rates','manage'].forEach(t=>{$('tab-'+t).classList.toggle('active',tab===t);$(t==='routes'?'route-view':t==='rates'?'rate-view':'manage-view').classList.toggle('hide',tab!==t)});
  $('section-title').textContent={routes:'路線列表',rates:'地區 × 溫層費率表',manage:'地區與溫層管理'}[tab];
- $('section-sub').textContent={routes:'查看並管理實際 Supabase 路線',rates:'修改地區與溫層的配送費用',manage:'新增、編輯與移除分類'}[tab];
+ $('section-sub').textContent={routes:'管理配送路線、地區與溫層',rates:'修改地區與溫層的配送費用',manage:'新增、編輯與移除分類'}[tab];
 }
 function openLayer(id){$('overlay').classList.add('open');$(id).classList.add('open');$(id).setAttribute('aria-hidden','false')}
 function dismiss(){editing=rateEditing=entityEditing=null;['drawer','rate-modal','entity-modal'].forEach(id=>{$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')});$('overlay').classList.remove('open')}
